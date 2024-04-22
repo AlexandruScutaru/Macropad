@@ -6,9 +6,11 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Qml)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 qt_standard_project_setup()
 
@@ -28,15 +30,25 @@ qt_add_qml_module(appMacropadCompanion
     SOURCES
         AudioOutputSwitcher.cpp
         AudioOutputSwitcher.h
+        EventFilter.cpp
+        EventFilter.h
         IPolicyConfig.h
         NativeEventFilter.cpp
         NativeEventFilter.h
+        TrayIcon.cpp
+        TrayIcon.h
         WinApiWrapper.cpp
         WinApiWrapper.h
 )
 
 file(GLOB_RECURSE QML_SRC "*.qml")
 source_group("QML Files" FILES ${QML_SRC})
+
+qt_add_resources(appMacropadCompanion "resources"
+    PREFIX "/"
+    FILES
+        resources/app_icon.png
+)
 
 set_target_properties(appMacropadCompanion PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
@@ -45,21 +57,11 @@ set_target_properties(appMacropadCompanion PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(appMacropadCompanion
-    PRIVATE Qt6::Quick
-)
-
-target_link_libraries(appMacropadCompanion
-    PRIVATE Qt6::QuickControls2
-)
-
-target_link_libraries(appMacropadCompanion
-    PRIVATE Qt6::Multimedia
-)
-
-target_link_libraries(appMacropadCompanion
-    PRIVATE User32
-)
+target_link_libraries(appMacropadCompanion PRIVATE Qt6::Quick)
+target_link_libraries(appMacropadCompanion PRIVATE Qt6::QuickControls2)
+target_link_libraries(appMacropadCompanion PRIVATE Qt6::Multimedia)
+target_link_libraries(appMacropadCompanion PRIVATE Qt6::Widgets)
+target_link_libraries(appMacropadCompanion PRIVATE User32)
 
 include(GNUInstallDirs)
 install(TARGETS appMacropadCompanion
@@ -67,3 +69,9 @@ install(TARGETS appMacropadCompanion
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+qt_generate_deploy_qml_app_script(TARGET appMacropadCompanion
+    OUTPUT_SCRIPT deploy_script
+    NO_COMPILER_RUNTIME
+)
+install(SCRIPT ${deploy_script})

@@ -13,6 +13,15 @@ Window {
     title: qsTr("Macropad Companion")
     color: "#222222"
 
+    function windowShowRequested() {
+        if (mainWindow.visibility === Window.Hidden || mainWindow.visibility === Window.Minimized) {
+            mainWindow.show();
+        }
+
+        mainWindow.raise();
+        mainWindow.requestActivate();
+    }
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 10

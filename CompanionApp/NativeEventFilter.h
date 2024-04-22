@@ -14,7 +14,10 @@ class NativeEventFilter : public QObject
 {
     Q_OBJECT
 public:
-    virtual bool nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result) Q_DECL_OVERRIDE;
+    explicit NativeEventFilter(QObject* parent = nullptr);
+    ~NativeEventFilter();
+
+    virtual bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) override;
 
 signals:
     void hotKeyTrigerred();

@@ -6,8 +6,8 @@
 #include <algorithm>
 
 
-AudioOutputSwitcher::AudioOutputSwitcher(QObject *parent)
-    : QObject{parent}
+AudioOutputSwitcher::AudioOutputSwitcher(QObject* parent)
+    : QObject(parent)
 {
     qDebug() << "AudioOutputSwitcher::AudioOutputSwitcher";
     WinApiWrapper::RegisterGlobalShortcut(WinApiWrapper::HotKeys::CYCLE_AUDIO_OUTPUTS);
