@@ -24,8 +24,10 @@ qt_add_qml_module(appMacropadCompanion
     URI MacropadCompanion
     VERSION 1.0
     QML_FILES
-        Bar.qml
-        Foo.qml
+        CButton.qml
+        CSlider.qml
+        CText.qml
+        DebugControlsView.qml
         Main.qml
     SOURCES
         AudioOutputSwitcher.cpp
