@@ -2,10 +2,15 @@
 #include <QQmlApplicationEngine>
 #include <QQuickStyle>
 #include <QSystemTrayIcon>
+#include <QDialog>
+#include <QPushButton>
+#include <QHBoxLayout>
 
 #include "AudioOutputSwitcher.h"
 #include "NativeEventFilter.h"
 #include "TrayIcon.h"
+
+#include "HidWrapper.h"
 
 
 int main(int argc, char *argv[]) {
@@ -67,6 +72,13 @@ int main(int argc, char *argv[]) {
     );
 
     engine.load(QStringLiteral("MacropadCompanion/Main.qml"));
+
+    auto hid = new HidWrapper(qApp);
+    if (hid->init()) {
+        if (hid->openDevice(0xFEED, 0xB00B)) {
+            while(hid->recv()) {}
+        }
+    }
 
     return app.exec();
 }

@@ -12,6 +12,11 @@ find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
+set(HIDAPI_DIR ./deps/hidapi/cmake)
+find_package(HIDAPI REQUIRED)
+set(HIDAPI_INCLUDE ./deps/hidapi/include)
+include_directories(HIDAPI ${HIDAPI_INCLUDE})
+
 qt_standard_project_setup()
 
 qt_add_executable(appMacropadCompanion
@@ -37,6 +42,8 @@ qt_add_qml_module(appMacropadCompanion
         IPolicyConfig.h
         NativeEventFilter.cpp
         NativeEventFilter.h
+        HidWrapper.cpp
+        HidWrapper.h
         TrayIcon.cpp
         TrayIcon.h
         WinApiWrapper.cpp
@@ -63,6 +70,8 @@ target_link_libraries(appMacropadCompanion PRIVATE Qt6::Quick)
 target_link_libraries(appMacropadCompanion PRIVATE Qt6::QuickControls2)
 target_link_libraries(appMacropadCompanion PRIVATE Qt6::Multimedia)
 target_link_libraries(appMacropadCompanion PRIVATE Qt6::Widgets)
+
+target_link_libraries(appMacropadCompanion PRIVATE HIDAPI::hidapi)
 target_link_libraries(appMacropadCompanion PRIVATE User32)
 
 include(GNUInstallDirs)
