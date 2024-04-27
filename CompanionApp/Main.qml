@@ -43,10 +43,9 @@ Window {
         }
 
         Item {
-            SplitView.minimumWidth: 120
-            SplitView.preferredHeight: 200
+            SplitView.minimumWidth: 200
             SplitView.maximumWidth: 300
-            width: 260
+            width: 280
 
             DebugControlsView {
                 anchors.fill: parent

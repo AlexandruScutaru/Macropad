@@ -20,19 +20,19 @@ Item {
             model: 4
 
             RowLayout {
+                id: row
                 required property int index
                 spacing: 8
 
                 CText {
                    Layout.fillWidth: true
-                   Layout.preferredWidth: 2
+                   Layout.maximumWidth: row.width * 0.3
                    label: "Slider" + " " + index
-                   fontSize: 18
+                   fontSize: 16
                 }
 
                 CSlider {
                     Layout.fillWidth: true
-                    Layout.preferredWidth: 3
 
                     current: 50
                 }

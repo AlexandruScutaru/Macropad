@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     auto hid = new HidWrapper(qApp);
     if (hid->init()) {
         if (hid->openDevice(0xFEED, 0xB00B)) {
-            while(hid->recv()) {}
+            //while(hid->recv()) {}
         }
     }
 
