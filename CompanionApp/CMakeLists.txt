@@ -32,11 +32,13 @@ qt_add_qml_module(appMacropadCompanion
         CButton.qml
         CSlider.qml
         CText.qml
-        DebugControlsView.qml
+        DevHelperView.qml
         Main.qml
     SOURCES
         AudioOutputSwitcher.cpp
         AudioOutputSwitcher.h
+        DevHelperController.cpp
+        DevHelperController.h
         EventFilter.cpp
         EventFilter.h
         IPolicyConfig.h

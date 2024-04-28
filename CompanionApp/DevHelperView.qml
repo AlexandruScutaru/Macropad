@@ -5,11 +5,16 @@ import QtQuick.Controls.Basic 2.15
 
 Item {
     id: root
+
+    anchors.fill: parent
+    anchors.margins: 8
+
+    required property DevHelperController controller
+
     ColumnLayout {
         id: mainLayout
 
-        width: root.width
-        height: root.height
+        anchors.fill: root
         spacing: 12
 
         Item {
@@ -20,20 +25,18 @@ Item {
             model: 4
 
             RowLayout {
-                id: row
                 required property int index
                 spacing: 8
 
                 CText {
                    Layout.fillWidth: true
-                   Layout.maximumWidth: row.width * 0.3
+                   Layout.minimumWidth: 70
                    label: "Slider" + " " + index
                    fontSize: 16
                 }
 
                 CSlider {
                     Layout.fillWidth: true
-
                     current: 50
                 }
             }
@@ -47,7 +50,7 @@ Item {
             toolTipText: "Cycle through available audio output devices"
 
             onButtonClicked: {
-                console.log("Switch Output button clicked");
+                controller.onSwitchOutputClicked();
             }
         }
 

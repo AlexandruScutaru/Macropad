@@ -5,12 +5,22 @@
 #include <QDialog>
 #include <QPushButton>
 #include <QHBoxLayout>
+#include <QQmlComponent>
+#include <QQuickItem>
+#include <QQmlContext>
 
 #include "AudioOutputSwitcher.h"
 #include "NativeEventFilter.h"
 #include "TrayIcon.h"
 
 #include "HidWrapper.h"
+#include "DevHelperController.h"
+
+#ifdef NDEBUG
+static constexpr bool IS_DEBUG = false;
+#else
+static constexpr bool IS_DEBUG = true;
+#endif
 
 
 int main(int argc, char *argv[]) {
@@ -49,6 +59,17 @@ int main(int argc, char *argv[]) {
 
             const auto qmlWindow = engine.rootObjects().constFirst();
 
+            if (IS_DEBUG) {
+                if (auto devHelperViewContainer = qmlWindow->findChild<QObject*>("devHelperViewContainer"); devHelperViewContainer) {
+                    QQmlComponent devView(&engine, QStringLiteral("MacropadCompanion/DevHelperView.qml"));
+                    auto devHelperController = new DevHelperController(qApp);
+
+                    auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DevHelperController*>(devHelperController) }});
+                    QQuickItem* item = qobject_cast<QQuickItem*>(component);
+                    item->setParentItem(qobject_cast<QQuickItem*>(devHelperViewContainer));
+                }
+            }
+
             auto trayIcon = new TrayIcon(qApp);
             QObject::connect(trayIcon, &TrayIcon::activated, qApp, [winPtr = QPointer(qmlWindow)](QSystemTrayIcon::ActivationReason reason){
                 if (!winPtr) {
@@ -71,6 +92,7 @@ int main(int argc, char *argv[]) {
         Qt::QueuedConnection
     );
 
+    engine.rootContext()->setContextProperty("isDebugInstance", IS_DEBUG);
     engine.load(QStringLiteral("MacropadCompanion/Main.qml"));
 
     auto hid = new HidWrapper(qApp);

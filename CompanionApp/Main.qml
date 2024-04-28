@@ -26,7 +26,6 @@ Window {
         id: contentSplitter
 
         anchors.fill: parent
-        anchors.margins: 8
         orientation: Qt.Horizontal
 
         handle: Rectangle {
@@ -43,20 +42,19 @@ Window {
         }
 
         Item {
+            id: devHelperViewContainer
+            objectName: "devHelperViewContainer"
+
             SplitView.minimumWidth: 200
             SplitView.maximumWidth: 300
             width: 280
-
-            DebugControlsView {
-                anchors.fill: parent
-                anchors.rightMargin: 8
-            }
+            visible: isDebugInstance
         }
 
         Item {
             Rectangle {
                 anchors.fill: parent
-                anchors.leftMargin: 8
+                anchors.margins: 8
                 color: "#333333"
                 radius: 8
 
