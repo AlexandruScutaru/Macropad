@@ -58,6 +58,8 @@ void Macropad::initDevHelperView() {
 
     if (auto devHelperViewContainer = qmlWindow->findChild<QObject*>(DEV_HELPER_QML_CONTAINER_NAME); devHelperViewContainer) {
         auto devHelperController = new DevHelperController(this);
+        devHelperController->onPotentiometersUpdated({ 20, 83, 14, 0});
+
         QObject::connect(devHelperController, &DevHelperController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
         QQmlComponent devView(&mQmlEngine, QStringLiteral("MacropadCompanion/DevHelperView.qml"));

@@ -22,22 +22,25 @@ Item {
         }
 
         Repeater {
-            model: 4
+            model: controller.getModel()
 
             RowLayout {
-                required property int index
                 spacing: 8
 
                 CText {
                    Layout.fillWidth: true
                    Layout.minimumWidth: 70
-                   label: "Slider" + " " + index
+                   label: "Slider%1".arg(model.id)
                    fontSize: 16
                 }
 
                 CSlider {
                     Layout.fillWidth: true
-                    current: 50
+                    current: model.value
+
+                    onSliderMoved: (value) => {
+                        controller.onSliderMoved(model.id, value);
+                    }
                 }
             }
         }

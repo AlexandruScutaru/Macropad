@@ -5,10 +5,10 @@ import QtQuick.Controls.Basic 2.15
 Slider {
     id: slider
 
+    signal sliderMoved(value: int)
     property int start: 0
     property int end: 100
     property int current
-
 
     from: start
     value: current
@@ -39,5 +39,9 @@ Slider {
         implicitHeight: 24
         radius: 12
         color: slider.hovered ? "#485441" : "#3e4a36"
+    }
+
+    onMoved: {
+        slider.sliderMoved(slider.value);
     }
 }

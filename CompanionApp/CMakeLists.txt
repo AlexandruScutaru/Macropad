@@ -39,6 +39,8 @@ qt_add_qml_module(appMacropadCompanion
         AudioOutputSwitcher.h
         DevHelperController.cpp
         DevHelperController.h
+        DevHelperModel.cpp
+        DevHelperModel.h
         EventFilter.cpp
         EventFilter.h
         HidWrapper.cpp
