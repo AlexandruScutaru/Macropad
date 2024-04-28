@@ -15,5 +15,5 @@ DevHelperController::~DevHelperController() {
 
 
 void DevHelperController::onSwitchOutputClicked() {
-    qDebug() << "switch output button clicked";
+    emit switchOutputRequested();
 }

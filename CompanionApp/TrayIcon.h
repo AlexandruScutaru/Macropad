@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QSystemTrayIcon>
 
 
 class TrayIcon : public QObject {
@@ -11,7 +10,7 @@ public:
     ~TrayIcon();
 
 signals:
-    void activated(QSystemTrayIcon::ActivationReason reason);
+    void activated();
     void showActionTriggered();
     void quitActionTriggered();
 

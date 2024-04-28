@@ -10,7 +10,6 @@ AudioOutputSwitcher::AudioOutputSwitcher(QObject* parent)
     : QObject(parent)
 {
     qDebug() << "AudioOutputSwitcher::AudioOutputSwitcher";
-    WinApiWrapper::RegisterGlobalShortcut(WinApiWrapper::HotKeys::CYCLE_AUDIO_OUTPUTS);
 }
 
 AudioOutputSwitcher::~AudioOutputSwitcher() {
@@ -18,20 +17,13 @@ AudioOutputSwitcher::~AudioOutputSwitcher() {
 }
 
 
-void AudioOutputSwitcher::onHotKeyTriggered() {
-    qDebug() << "switch output hoykey pressed";
+void AudioOutputSwitcher::onSwitchOutputRequested() {
+    qDebug() << "AudioOutputSwitcher::onSwitchOutputRequested";
 
     auto devices = WinApiWrapper::EnumerateOutputDevices();
     if (devices.endpoints.empty()) {
-        qDebug() << "no output devices connected";
+        qWarning() << "no output devices connected";
         return;
-    }
-
-    qDebug() << "Default device: " << devices.defaultDeviceID;
-    qDebug() << "Available devices";
-    for (const auto& device: devices.endpoints) {
-        auto deb = qDebug();
-        deb << "index: " << device.index << " decsription: " << device.description << " id: " << device.id;
     }
 
     auto res = std::find_if(
@@ -39,14 +31,16 @@ void AudioOutputSwitcher::onHotKeyTriggered() {
         [id = devices.defaultDeviceID](const auto& device) {
             return id == device.id;
         }
-        );
+    );
 
     if (res == devices.endpoints.end()) {
         WinApiWrapper::SetDefaultDevice(devices.endpoints[0].id);
         return;
     }
 
-    auto currentIndex = std::distance(devices.endpoints.begin(), res);
-    currentIndex = (currentIndex + 1) % devices.endpoints.size();
-    WinApiWrapper::SetDefaultDevice(devices.endpoints[currentIndex].id);
+    auto index = std::distance(devices.endpoints.begin(), res);
+    index = (index + 1) % devices.endpoints.size();
+    if (WinApiWrapper::SetDefaultDevice(devices.endpoints[index].id)) {
+        qDebug() << "switched audio output to: " << devices.endpoints[index].description;
+    }
 }

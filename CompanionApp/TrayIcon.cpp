@@ -1,8 +1,10 @@
 #include "TrayIcon.h"
 
 #include <QAction>
+#include <QSystemTrayIcon>
 #include <QApplication>
 #include <QDebug>
+#include <QPointer>
 #include <QMenu>
 
 
@@ -12,7 +14,7 @@ TrayIcon::TrayIcon(QObject *parent)
     qDebug() << "TrayIcon::TrayIcon";
 
     if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-        qDebug() << "system tray not available";
+        qWarning() << "system tray not available";
         return;
     }
 
@@ -35,7 +37,15 @@ TrayIcon::TrayIcon(QObject *parent)
     trayIcon->setToolTip("Macropad Companion");
     trayIcon->show();
 
-    QObject::connect(trayIcon, &QSystemTrayIcon::activated, this, &TrayIcon::activated);
+    QObject::connect(trayIcon, &QSystemTrayIcon::activated, this, [this, thisPtr = QPointer(this)](QSystemTrayIcon::ActivationReason reason) {
+        if (!thisPtr) {
+            return;
+        }
+
+        if (reason == QSystemTrayIcon::ActivationReason::Trigger) {
+            emit activated();
+        }
+    });
 }
 
 TrayIcon::~TrayIcon() {

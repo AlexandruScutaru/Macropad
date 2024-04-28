@@ -4,6 +4,12 @@
 #include <vector>
 
 
+enum class HotKeys {
+    CYCLE_AUDIO_OUTPUTS = 0,
+
+    UKNOWN
+};
+
 struct DeviceInfo {
     int index = 0;
     std::string description;
@@ -18,13 +24,10 @@ struct OutputDevices {
 
 class WinApiWrapper {
 public:
-    enum class HotKeys {
-        CYCLE_AUDIO_OUTPUTS = 0
-    };
-
     static OutputDevices EnumerateOutputDevices();
     static bool SetDefaultDevice(const std::string& id);
     static bool RegisterGlobalShortcut(HotKeys hotKey);
+    static HotKeys ParseHotKeyMessageParam(long long lParam);
 
 private:
     WinApiWrapper() {};

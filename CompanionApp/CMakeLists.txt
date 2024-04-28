@@ -41,11 +41,13 @@ qt_add_qml_module(appMacropadCompanion
         DevHelperController.h
         EventFilter.cpp
         EventFilter.h
-        IPolicyConfig.h
-        NativeEventFilter.cpp
-        NativeEventFilter.h
         HidWrapper.cpp
         HidWrapper.h
+        IPolicyConfig.h
+        Macropad.cpp
+        Macropad.h
+        NativeEventFilter.cpp
+        NativeEventFilter.h
         TrayIcon.cpp
         TrayIcon.h
         WinApiWrapper.cpp

@@ -9,6 +9,8 @@
 #endif
 
 
+enum class HotKeys;
+
 class NativeEventFilter : public QObject
                         , public QAbstractNativeEventFilter
 {
@@ -20,6 +22,6 @@ public:
     virtual bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) override;
 
 signals:
-    void hotKeyTrigerred();
+    void hotKeyTriggered(HotKeys hotKey);
 
 };

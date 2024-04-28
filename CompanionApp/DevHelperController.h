@@ -13,4 +13,6 @@ public:
 
     Q_INVOKABLE void onSwitchOutputClicked();
 
+signals:
+    void switchOutputRequested();
 };

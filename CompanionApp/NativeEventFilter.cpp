@@ -1,4 +1,5 @@
 #include "NativeEventFilter.h"
+#include "WinApiWrapper.h"
 
 #include <QDebug>
 
@@ -20,8 +21,10 @@ bool NativeEventFilter::nativeEventFilter(const QByteArray& eventType, void* mes
 
     MSG* msg = static_cast<MSG*>(message);
     if (msg->message == WM_HOTKEY) {
-        emit hotKeyTrigerred();
-        return true;
+        if (const auto hotKey = WinApiWrapper::ParseHotKeyMessageParam(msg->lParam); hotKey != HotKeys::UKNOWN) {
+            emit hotKeyTriggered(hotKey);
+            return true;
+        }
     }
 
     return false;

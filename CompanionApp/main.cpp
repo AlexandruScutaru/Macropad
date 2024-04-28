@@ -1,26 +1,18 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
-#include <QQuickStyle>
-#include <QSystemTrayIcon>
-#include <QDialog>
-#include <QPushButton>
-#include <QHBoxLayout>
-#include <QQmlComponent>
-#include <QQuickItem>
 #include <QQmlContext>
+#include <QQuickStyle>
+#include <QIcon>
 
-#include "AudioOutputSwitcher.h"
-#include "NativeEventFilter.h"
-#include "TrayIcon.h"
-
-#include "HidWrapper.h"
-#include "DevHelperController.h"
+#include "Macropad.h"
 
 #ifdef NDEBUG
 static constexpr bool IS_DEBUG = false;
 #else
 static constexpr bool IS_DEBUG = true;
 #endif
+
+static constexpr auto SHOW_WINDOW_QML_FUNC_NAME = "windowShowRequested";
 
 
 int main(int argc, char *argv[]) {
@@ -29,17 +21,12 @@ int main(int argc, char *argv[]) {
     QQmlApplicationEngine engine;
     QQuickStyle::setStyle("basic");
 
-    auto audioOutputSwitcher = new AudioOutputSwitcher(qApp);
-    auto nativeEventFilter = new NativeEventFilter(qApp);
-
-    QObject::connect(nativeEventFilter, &NativeEventFilter::hotKeyTrigerred, audioOutputSwitcher, &AudioOutputSwitcher::onHotKeyTriggered);
-
-    app.installNativeEventFilter(static_cast<QAbstractNativeEventFilter*>(nativeEventFilter));
+    auto macropad = new Macropad(engine, qApp);
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed,
-        &app, []() {
-            qDebug() << "QQmlApplicationEngine::objectCreationFailed";
+        &app, [](const QUrl &url) {
+            qDebug() << "QQmlApplicationEngine::objectCreationFailed for " << url;
             QCoreApplication::exit(-1);
         },
         Qt::QueuedConnection
@@ -47,60 +34,31 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated,
-        &app, [&engine](QObject* obj, const QUrl& objUrl) {
+        &app, [&engine, macropad](QObject* obj, const QUrl& url) {
             if (!obj) {
-                qDebug() << "QQmlApplicationEngine created object is null (for some reason)";
+                qDebug() << "QQmlApplicationEngine created object is null (for some reason) for " << url;
                 QCoreApplication::exit(-2);
             }
 
             if(engine.rootObjects().isEmpty()) {
                 return;
             }
-
             const auto qmlWindow = engine.rootObjects().constFirst();
 
-            if (IS_DEBUG) {
-                if (auto devHelperViewContainer = qmlWindow->findChild<QObject*>("devHelperViewContainer"); devHelperViewContainer) {
-                    QQmlComponent devView(&engine, QStringLiteral("MacropadCompanion/DevHelperView.qml"));
-                    auto devHelperController = new DevHelperController(qApp);
-
-                    auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DevHelperController*>(devHelperController) }});
-                    QQuickItem* item = qobject_cast<QQuickItem*>(component);
-                    item->setParentItem(qobject_cast<QQuickItem*>(devHelperViewContainer));
-                }
-            }
-
-            auto trayIcon = new TrayIcon(qApp);
-            QObject::connect(trayIcon, &TrayIcon::activated, qApp, [winPtr = QPointer(qmlWindow)](QSystemTrayIcon::ActivationReason reason){
+            macropad->onInitialized(IS_DEBUG);
+            QObject::connect(macropad, &Macropad::showWindowRequested, qApp, [winPtr = QPointer(qmlWindow)]() {
                 if (!winPtr) {
                     return;
                 }
-                if (reason == QSystemTrayIcon::ActivationReason::Trigger) {
-                    QMetaObject::invokeMethod(winPtr, "windowShowRequested");
-                }
-            });
 
-            QObject::connect(trayIcon, &TrayIcon::showActionTriggered, qApp, [winPtr = QPointer(qmlWindow)]() {
-                if (!winPtr) {
-                    return;
-                }
-                QMetaObject::invokeMethod(winPtr, "windowShowRequested");
+                QMetaObject::invokeMethod(winPtr, SHOW_WINDOW_QML_FUNC_NAME);
             });
-
-            QObject::connect(trayIcon, &TrayIcon::quitActionTriggered, qApp, &QApplication::quit);
         },
         Qt::QueuedConnection
     );
 
     engine.rootContext()->setContextProperty("isDebugInstance", IS_DEBUG);
     engine.load(QStringLiteral("MacropadCompanion/Main.qml"));
-
-    auto hid = new HidWrapper(qApp);
-    if (hid->init()) {
-        if (hid->openDevice(0xFEED, 0xB00B)) {
-            //while(hid->recv()) {}
-        }
-    }
 
     return app.exec();
 }

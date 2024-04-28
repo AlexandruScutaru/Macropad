@@ -9,9 +9,7 @@ public:
     explicit AudioOutputSwitcher(QObject* parent = nullptr);
     ~AudioOutputSwitcher();
 
-    void switchOutput();
-
 public slots:
-    void onHotKeyTriggered();
+    void onSwitchOutputRequested();
 
 };
