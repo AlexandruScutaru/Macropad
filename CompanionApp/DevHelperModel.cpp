@@ -23,7 +23,11 @@ void DevHelperModel::reset() {
 }
 
 void DevHelperModel::setData(const std::vector<Row>& data) {
-    beginInsertRows(QModelIndex(), 0, data.size());
+    if (!data.size()) {
+        return;
+    }
+
+    beginInsertRows(QModelIndex(), 0, data.size() - 1);
     mData = data;
     endInsertRows();
 

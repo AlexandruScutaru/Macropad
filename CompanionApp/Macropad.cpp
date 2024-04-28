@@ -3,6 +3,7 @@
 #include "AudioOutputSwitcher.h"
 #include "DevHelperController.h"
 #include "NativeEventFilter.h"
+#include "PotentiometersReader.h"
 #include "WinApiWrapper.h"
 
 #include <QApplication>
@@ -26,6 +27,7 @@ Macropad::~Macropad() {
 
 void Macropad::onInitialized(bool isDebug) {
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
+    mPotentiometersReader = new PotentiometersReader(this);
 
     initTrayIcon();
     initHotkey();
@@ -33,6 +35,8 @@ void Macropad::onInitialized(bool isDebug) {
     if (isDebug) {
         initDevHelperView();
     }
+
+    mPotentiometersReader->startReading();
 }
 
 
@@ -58,8 +62,7 @@ void Macropad::initDevHelperView() {
 
     if (auto devHelperViewContainer = qmlWindow->findChild<QObject*>(DEV_HELPER_QML_CONTAINER_NAME); devHelperViewContainer) {
         auto devHelperController = new DevHelperController(this);
-        devHelperController->onPotentiometersUpdated({ 20, 83, 14, 0});
-
+        QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, devHelperController, &DevHelperController::onPotentiometersUpdated);
         QObject::connect(devHelperController, &DevHelperController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
         QQmlComponent devView(&mQmlEngine, QStringLiteral("MacropadCompanion/DevHelperView.qml"));

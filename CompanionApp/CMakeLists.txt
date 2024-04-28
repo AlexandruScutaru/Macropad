@@ -43,13 +43,17 @@ qt_add_qml_module(appMacropadCompanion
         DevHelperModel.h
         EventFilter.cpp
         EventFilter.h
-        HidWrapper.cpp
-        HidWrapper.h
+        HidCommunicationThread.cpp
+        HidCommunicationThread.h
+        HidHelper.cpp
+        HidHelper.h
         IPolicyConfig.h
         Macropad.cpp
         Macropad.h
         NativeEventFilter.cpp
         NativeEventFilter.h
+        PotentiometersReader.cpp
+        PotentiometersReader.h
         TrayIcon.cpp
         TrayIcon.h
         WinApiWrapper.cpp

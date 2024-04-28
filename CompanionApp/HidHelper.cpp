@@ -1,4 +1,4 @@
-#include "HidWrapper.h"
+#include "HidHelper.h"
 
 #include <QDebug>
 #include <atlstr.h>
@@ -11,14 +11,14 @@ static std::string getHidError() {
 }
 
 
-HidWrapper::HidWrapper(QObject* parent)
+HidHelper::HidHelper(QObject* parent)
     : QObject(parent)
 {
-    qDebug() << "HidWrapper::HidWrapper";
+    qDebug() << "HidHelper::HidHelper";
 }
 
-HidWrapper::~HidWrapper() {
-    qDebug() << "HidWrapper::~HidWrapper";
+HidHelper::~HidHelper() {
+    qDebug() << "HidHelper::~HidHelper";
 
     if (mDevice) {
         hid_close(mDevice);
@@ -28,7 +28,7 @@ HidWrapper::~HidWrapper() {
     hid_exit();
 }
 
-bool HidWrapper::init() {
+bool HidHelper::init() {
     if (hid_init() < 0) {
         qWarning() << "hid_init error: " << getHidError();
         return false;
@@ -37,7 +37,7 @@ bool HidWrapper::init() {
     return true;
 }
 
-bool HidWrapper::openDevice(int vid, int pid) {
+hid_device* HidHelper::openDevice(int vid, int pid) {
     std::string path;
 
     const auto devices = hid_enumerate(vid, pid);
@@ -66,7 +66,7 @@ bool HidWrapper::openDevice(int vid, int pid) {
 
     if (path.empty()) {
         qWarning() << "couldn't find device";
-        return false;
+        return nullptr;
     }
 
     qDebug() << "Trying to open path: " << path;
@@ -74,7 +74,7 @@ bool HidWrapper::openDevice(int vid, int pid) {
     mDevice = hid_open_path(path.c_str());
     if (!mDevice) {
         qWarning() << "Unable to open HID device! error: " << getHidError();
-        return false;
+        return nullptr;
     }
 
     hid_set_nonblocking(mDevice, 0);
@@ -87,19 +87,5 @@ bool HidWrapper::openDevice(int vid, int pid) {
         qDebug() << "opened device:  " << std::string(CW2A(buffer));
     }
 
-    return true;
-}
-
-bool HidWrapper::recv() {
-    unsigned char data[32] = {0};
-    if (hid_read(mDevice, data, 32) < 0) {
-        qWarning() << "error reading hid " << getHidError();
-        return false;
-    }
-
-    auto pot = data[1];
-    auto value = data[2] + (data[3] << 8);
-    qDebug() << "HID reading: pot " << pot << " value " << value;
-
-    return true;
+    return mDevice;
 }

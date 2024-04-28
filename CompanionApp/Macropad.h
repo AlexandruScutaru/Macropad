@@ -7,8 +7,9 @@
 
 enum class HotKeys;
 
-class TrayIcon;
 class AudioOutputSwitcher;
+class PotentiometersReader;
+class TrayIcon;
 
 class Macropad : public QObject {
     Q_OBJECT
@@ -30,7 +31,8 @@ private:
     void initHotkey();
 
     QQmlApplicationEngine& mQmlEngine;
-    TrayIcon* mTrayIcon{ nullptr };
     AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
+    PotentiometersReader* mPotentiometersReader{ nullptr };
+    TrayIcon* mTrayIcon{ nullptr };
 
 };
