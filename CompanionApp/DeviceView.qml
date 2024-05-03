@@ -1,0 +1,101 @@
+import QtQuick 2.15
+import QtQuick.Layouts
+import QtQuick.Controls.Basic 2.15
+
+
+Item {
+    id: root
+
+    anchors.fill: parent
+    anchors.margins: 16
+
+    required property DeviceController controller
+
+    ColumnLayout {
+        id: mainLayout
+
+        anchors.fill: root
+        spacing: 12
+
+        CText {
+            Layout.fillWidth: true
+            Layout.topMargin: 8
+            Layout.alignment: Qt.AlignVCenter
+
+            label: qsTr("Connect to a device")
+            fontSize: 20
+            hAlign: Text.AlignLeft
+        }
+
+        DeviceSearch {
+            Layout.fillWidth: true
+            Layout.topMargin: 16
+
+            onSearchClicked: (vid, pid) => {
+                controller.search(vid, pid);
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.topMargin: 8
+
+            focus: false
+
+            color: "#2d2d2d"
+            radius: 8
+            z: -1
+
+            ListView {
+                id: list
+
+                anchors.fill: parent
+                anchors.margins: 4
+                anchors.rightMargin: 0
+                clip: true
+                boundsMovement: Flickable.StopAtBounds
+                focus: true
+                spacing: 4
+
+                model: controller.getModel()
+                delegate: DeviceListDelegate {}
+
+                function getSelectedDevicePath() {
+                    return currentItem.path;
+                }
+
+                onCurrentIndexChanged: {
+                    connectButton.disabled = false;
+                }
+
+                ScrollBar.vertical: ScrollBar {
+                    id: vScrollBar
+                    active: true
+                    policy: ScrollBar.AsNeeded
+                    orientation: Qt.Vertical
+
+                    contentItem: Rectangle {
+                        implicitWidth: (vScrollBar.hovered || vScrollBar.pressed) ? 8 : 4
+                        radius: width / 2
+                        color: (vScrollBar.hovered || vScrollBar.pressed) ? "#70ffffff" : "#50ffffff"
+                    }
+                }
+            }
+        }
+
+        CButton {
+            id: connectButton
+            Layout.alignment: Qt.AlignRight
+            Layout.topMargin: 16
+
+            label: "Connect"
+            toolTipText: "Connect to the selected device"
+            disabled: true
+
+            onButtonClicked: {
+                controller.openDevice(list.getSelectedDevicePath());
+            }
+        }
+    }
+}

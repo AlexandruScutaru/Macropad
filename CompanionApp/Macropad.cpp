@@ -2,6 +2,7 @@
 #include "TrayIcon.h"
 #include "AudioOutputSwitcher.h"
 #include "DevHelperController.h"
+#include "DeviceController.h"
 #include "NativeEventFilter.h"
 #include "PotentiometersReader.h"
 #include "WinApiWrapper.h"
@@ -12,6 +13,7 @@
 #include <QQuickItem>
 
 static constexpr auto DEV_HELPER_QML_CONTAINER_NAME = "devHelperViewContainer";
+static constexpr auto DEVICE_QML_CONTAINER_NAME = "deviceViewContainer";
 
 
 Macropad::Macropad(QQmlApplicationEngine& engine, QObject* parent)
@@ -26,6 +28,8 @@ Macropad::~Macropad() {
 }
 
 void Macropad::onInitialized(bool isDebug) {
+    const auto qmlWindow = getMainWindowObject();
+
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
 
@@ -33,10 +37,10 @@ void Macropad::onInitialized(bool isDebug) {
     initHotkey();
 
     if (isDebug) {
-        initDevHelperView();
+        initDevHelperView(qmlWindow);
     }
 
-    mPotentiometersReader->startReading();
+    initDeviceView(qmlWindow);
 }
 
 
@@ -46,6 +50,12 @@ void Macropad::onHotKeyTriggered(HotKeys hotKey) {
     }
 }
 
+QObject* const Macropad::getMainWindowObject() {
+    const auto qmlWindow = mQmlEngine.rootObjects().constFirst();
+    assert(qmlWindow && "Couldn't get main window object");
+    return qmlWindow;
+}
+
 void Macropad::initTrayIcon() {
     auto trayIcon = new TrayIcon(this);
     QObject::connect(trayIcon, &TrayIcon::activated, this, &Macropad::showWindowRequested);
@@ -53,13 +63,7 @@ void Macropad::initTrayIcon() {
     QObject::connect(trayIcon, &TrayIcon::quitActionTriggered, qApp, &QApplication::quit);
 }
 
-void Macropad::initDevHelperView() {
-    const auto qmlWindow = mQmlEngine.rootObjects().constFirst();
-    if (!qmlWindow) {
-        qWarning() << "cannot get main window object";
-        return;
-    }
-
+void Macropad::initDevHelperView(const QObject* const qmlWindow) {
     if (auto devHelperViewContainer = qmlWindow->findChild<QObject*>(DEV_HELPER_QML_CONTAINER_NAME); devHelperViewContainer) {
         auto devHelperController = new DevHelperController(this);
         QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, devHelperController, &DevHelperController::onPotentiometersUpdated);
@@ -69,6 +73,18 @@ void Macropad::initDevHelperView() {
         auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DevHelperController*>(devHelperController) }});
         auto item = qobject_cast<QQuickItem*>(component);
         item->setParentItem(qobject_cast<QQuickItem*>(devHelperViewContainer));
+    }
+}
+
+void Macropad::initDeviceView(const QObject* const qmlWindow) {
+    if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(DEVICE_QML_CONTAINER_NAME); deviceViewContainer) {
+        auto deviceController = new DeviceController(this);
+        QObject::connect(deviceController, &DeviceController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
+
+        QQmlComponent devView(&mQmlEngine, QStringLiteral("MacropadCompanion/DeviceView.qml"));
+        auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DeviceController*>(deviceController) }});
+        auto item = qobject_cast<QQuickItem*>(component);
+        item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
     }
 }
 

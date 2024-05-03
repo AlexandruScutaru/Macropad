@@ -26,8 +26,11 @@ private slots:
     void onHotKeyTriggered(HotKeys hotKey);
 
 private:
+    QObject* const getMainWindowObject();
+
     void initTrayIcon();
-    void initDevHelperView();
+    void initDevHelperView(const QObject* const qmlWindow);
+    void initDeviceView(const QObject* const qmlWindow);
     void initHotkey();
 
     QQmlApplicationEngine& mQmlEngine;

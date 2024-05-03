@@ -7,7 +7,7 @@ Item {
     id: root
 
     anchors.fill: parent
-    anchors.margins: 8
+    anchors.margins: 16
 
     required property DevHelperController controller
 

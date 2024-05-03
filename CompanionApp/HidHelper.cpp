@@ -37,55 +37,42 @@ bool HidHelper::init() {
     return true;
 }
 
-hid_device* HidHelper::openDevice(int vid, int pid) {
-    std::string path;
+std::vector<HidDeviceInfo> HidHelper::enumerateDevices(int vid, int pid) {
+    std::vector<HidDeviceInfo> devicesInfo;
 
     const auto devices = hid_enumerate(vid, pid);
-    qDebug() << "Available devices:";
     auto device = devices;
     while(device) {
-        if (device->usage_page == 0xFF60 && device->usage == 0x61) {
-            path = std::string(device->path);
-        }
-
-        qDebug()
-                << " vid: " << device->vendor_id
-                << " pid: " << device->product_id
-                << " serial: " << std::string(CW2A(device->serial_number))
-                << " product: " << std::string(CW2A(device->product_string))
-                << " usage page: " << device->usage_page
-                << " usage id: " << device->usage
-                << " path: " << device->path;
+        devicesInfo.push_back({
+            .vid = device->vendor_id,
+            .pid = device->product_id,
+            .usagePage = device->usage_page,
+            .usageId = device->usage,
+            .product = std::string(CW2A(device->product_string)),
+            .manufacturer = std::string(CW2A(device->manufacturer_string)),
+            .serial = std::string(CW2A(device->serial_number)),
+            .path = std::string(device->path)
+        });
 
         device = device->next;
         mDevicesCount++;
-
     }
 
     hid_free_enumeration(devices);
 
-    if (path.empty()) {
-        qWarning() << "couldn't find device";
-        return nullptr;
-    }
+    return devicesInfo;
+}
 
-    qDebug() << "Trying to open path: " << path;
+hid_device* HidHelper::openDevice(const std::string& path) {
+    qDebug() << "Open device path: " << path;
 
     mDevice = hid_open_path(path.c_str());
-    if (!mDevice) {
-        qWarning() << "Unable to open HID device! error: " << getHidError();
-        return nullptr;
+     if (!mDevice) {
+         qWarning() << "Unable to open HID device! error: " << getHidError();
+         return nullptr;
     }
 
     hid_set_nonblocking(mDevice, 0);
-
-    const int length = 128;
-    wchar_t buffer[length];
-    if (hid_get_product_string(mDevice, buffer, length) < 0) {
-        qWarning() << "could not get HID device product string" << getHidError();
-    } else {
-        qDebug() << "opened device:  " << std::string(CW2A(buffer));
-    }
 
     return mDevice;
 }

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic
 
+
 Window {
     id: mainWindow
 
@@ -52,21 +53,8 @@ Window {
         }
 
         Item {
-            Rectangle {
-                anchors.fill: parent
-                anchors.margins: 8
-                color: "#333333"
-                radius: 8
-
-                CText {
-                    anchors.centerIn: parent
-                    width: parent.width
-
-                    label: "The other view"
-                    fontSize: 32
-                    hAlign: Text.AlignHCenter
-                }
-            }
+            id: deviceViewContainer
+            objectName: "deviceViewContainer"
         }
     }
 }

@@ -5,7 +5,10 @@
 
 #include <vector>
 
-class HidHelper;
+extern "C" {
+#include <hidapi.h>
+}
+
 class HidCommunicationThread;
 
 
@@ -15,7 +18,7 @@ public:
     explicit PotentiometersReader(QObject* parent = nullptr);
     ~PotentiometersReader();
 
-    void startReading();
+    void startReading(hid_device* device);
 
 signals:
     void potentiometersUpdated(const std::vector<int>& values);
@@ -26,7 +29,6 @@ private slots:
 
 private:
     QPointer<HidCommunicationThread> mHidThread{ nullptr };
-    HidHelper* mHidHelper{ nullptr };
     std::vector<int> mPotValues;
 
 };

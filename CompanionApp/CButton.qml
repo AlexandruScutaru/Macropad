@@ -8,16 +8,25 @@ Button {
     signal buttonClicked
     property string label
     property string toolTipText
-
-    text: label
+    property bool disabled: false
 
     leftPadding: 10
     rightPadding: 10
 
+    text: label
+    enabled: !disabled
+
+    function getBgColor() {
+        if (button.disabled) return "#3e443b";
+        if (button.down) return "#4e5946";
+        if (button.hovered) return "#485441";
+        return "#3e4a36";
+    }
+
     contentItem: Text {
         text: button.text
         font: button.font
-        color: "#d9e7cb"
+        color: enabled ? "#d9e7cb" : "#80ffffff"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -26,8 +35,7 @@ Button {
     background: Rectangle {
         implicitWidth: 48
         implicitHeight: 32
-        color: button.down ? "#4e5946"
-                           : button.hovered ? "#485441" : "#3e4a36"
+        color: getBgColor()
         border.width: 0
         radius: height / 2
     }
@@ -39,8 +47,7 @@ Button {
     ToolTip {
         id: tooltip
         text: toolTipText
-        visible: button.hovered
+        visible: button.hovered && button.enabled && !button.down
         delay: 600
     }
-
 }

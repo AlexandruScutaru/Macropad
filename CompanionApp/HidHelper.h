@@ -2,9 +2,23 @@
 
 #include <QObject>
 
+#include <vector>
+
 extern "C" {
 #include <hidapi.h>
 }
+
+
+struct HidDeviceInfo {
+    int vid{ 0 };
+    int pid{ 0 };
+    int usagePage{ 0 };
+    int usageId{ 0 };
+    std::string product;
+    std::string manufacturer;
+    std::string serial;
+    std::string path;
+};
 
 
 class HidHelper : public QObject {
@@ -14,7 +28,8 @@ public:
     ~HidHelper();
 
     bool init();
-    hid_device* openDevice(int vid, int pid);
+    std::vector<HidDeviceInfo> enumerateDevices(int vid, int pid);
+    hid_device* openDevice(const std::string& path);
 
 
 private:

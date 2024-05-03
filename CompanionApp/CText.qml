@@ -6,12 +6,14 @@ Text {
     id: txt
 
     property string label
-    property int fontSize: 20
+    property int fontSize: 12
     property int hAlign: Text.AlignLeft
+    property int vAlign: Text.AlignVCenter
 
     text: label
     color: "#d9e7cb"
     font.pointSize: fontSize
     elide: Text.ElideRight
     horizontalAlignment: hAlign
+    verticalAlignment: vAlign
 }

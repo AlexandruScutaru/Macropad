@@ -30,9 +30,14 @@ qt_add_qml_module(appMacropadCompanion
     VERSION 1.0
     QML_FILES
         CButton.qml
+        CIconButton.qml
         CSlider.qml
         CText.qml
+        CTextField.qml
         DevHelperView.qml
+        DeviceListDelegate.qml
+        DeviceSearch.qml
+        DeviceView.qml
         Main.qml
     SOURCES
         AudioOutputSwitcher.cpp
@@ -41,6 +46,10 @@ qt_add_qml_module(appMacropadCompanion
         DevHelperController.h
         DevHelperModel.cpp
         DevHelperModel.h
+        DeviceController.cpp
+        DeviceController.h
+        DeviceInfoModel.cpp
+        DeviceInfoModel.h
         EventFilter.cpp
         EventFilter.h
         HidCommunicationThread.cpp
@@ -67,6 +76,8 @@ qt_add_resources(appMacropadCompanion "resources"
     PREFIX "/"
     FILES
         resources/app_icon.png
+        resources/info_icon.png
+        resources/search_icon.png
 )
 
 set_target_properties(appMacropadCompanion PROPERTIES
