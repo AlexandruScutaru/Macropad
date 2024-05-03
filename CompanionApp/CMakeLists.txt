@@ -35,6 +35,8 @@ qt_add_qml_module(appMacropadCompanion
         CText.qml
         CTextField.qml
         DevHelperView.qml
+        DeviceConnectView.qml
+        DeviceDashboardView.qml
         DeviceListDelegate.qml
         DeviceSearchHeader.qml
         DeviceStackView.qml
@@ -67,7 +69,6 @@ qt_add_qml_module(appMacropadCompanion
         TrayIcon.h
         WinApiWrapper.cpp
         WinApiWrapper.h
-        QML_FILES DeviceConnectView.qml
 )
 
 file(GLOB_RECURSE QML_SRC "*.qml")

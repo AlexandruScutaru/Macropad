@@ -28,6 +28,7 @@ public:
 
 signals:
     void deviceOpened(hid_device* device);
+    void deviceConnected();
 
 private:
     static int convertToInt(const QString& hexStr);

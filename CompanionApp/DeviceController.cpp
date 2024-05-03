@@ -50,6 +50,7 @@ void DeviceController::search(const QString& vid, const QString& pid) {
 void DeviceController::openDevice(const QString& path) {
     if (auto device = mHidHelper->openDevice(path.toStdString()); device) {
         emit deviceOpened(device);
+        emit deviceConnected();
     }
 }
 
