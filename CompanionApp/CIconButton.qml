@@ -31,7 +31,7 @@ Button {
     ToolTip {
         id: tooltip
         text: toolTipText
-        visible: button.hovered && button.enabled && !button.down
+        visible: button.hovered && button.enabled && !button.down && text.length > 0
         delay: 600
     }
 

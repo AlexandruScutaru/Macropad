@@ -9,11 +9,14 @@ Text {
     property int fontSize: 12
     property int hAlign: Text.AlignLeft
     property int vAlign: Text.AlignVCenter
+    property int wrap: Text.NoWrap
+
+    horizontalAlignment: hAlign
+    verticalAlignment: vAlign
 
     text: label
     color: "#d9e7cb"
     font.pointSize: fontSize
     elide: Text.ElideRight
-    horizontalAlignment: hAlign
-    verticalAlignment: vAlign
+    wrapMode: wrap
 }

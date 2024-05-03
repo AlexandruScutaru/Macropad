@@ -36,8 +36,8 @@ qt_add_qml_module(appMacropadCompanion
         CTextField.qml
         DevHelperView.qml
         DeviceListDelegate.qml
-        DeviceSearch.qml
-        DeviceView.qml
+        DeviceSearchHeader.qml
+        DeviceStackView.qml
         Main.qml
     SOURCES
         AudioOutputSwitcher.cpp
@@ -67,6 +67,7 @@ qt_add_qml_module(appMacropadCompanion
         TrayIcon.h
         WinApiWrapper.cpp
         WinApiWrapper.h
+        QML_FILES DeviceConnectView.qml
 )
 
 file(GLOB_RECURSE QML_SRC "*.qml")
@@ -76,6 +77,7 @@ qt_add_resources(appMacropadCompanion "resources"
     PREFIX "/"
     FILES
         resources/app_icon.png
+        resources/close_icon.png
         resources/info_icon.png
         resources/search_icon.png
 )

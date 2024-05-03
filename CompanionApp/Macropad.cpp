@@ -81,7 +81,7 @@ void Macropad::initDeviceView(const QObject* const qmlWindow) {
         auto deviceController = new DeviceController(this);
         QObject::connect(deviceController, &DeviceController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
 
-        QQmlComponent devView(&mQmlEngine, QStringLiteral("MacropadCompanion/DeviceView.qml"));
+        QQmlComponent devView(&mQmlEngine, QStringLiteral("MacropadCompanion/DeviceStackView.qml"));
         auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DeviceController*>(deviceController) }});
         auto item = qobject_cast<QQuickItem*>(component);
         item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));

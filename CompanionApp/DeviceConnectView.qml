@@ -4,17 +4,10 @@ import QtQuick.Controls.Basic 2.15
 
 
 Item {
-    id: root
-
     anchors.fill: parent
-    anchors.margins: 16
-
-    required property DeviceController controller
 
     ColumnLayout {
-        id: mainLayout
-
-        anchors.fill: root
+        anchors.fill: parent
         spacing: 12
 
         CText {
@@ -27,7 +20,7 @@ Item {
             hAlign: Text.AlignLeft
         }
 
-        DeviceSearch {
+        DeviceSearchHeader {
             Layout.fillWidth: true
             Layout.topMargin: 16
 
@@ -48,7 +41,7 @@ Item {
             z: -1
 
             ListView {
-                id: list
+                id: listView
 
                 anchors.fill: parent
                 anchors.margins: 4
@@ -94,7 +87,7 @@ Item {
             disabled: true
 
             onButtonClicked: {
-                controller.openDevice(list.getSelectedDevicePath());
+                controller.openDevice(listView.getSelectedDevicePath());
             }
         }
     }

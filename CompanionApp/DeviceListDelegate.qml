@@ -16,7 +16,7 @@ Rectangle {
     required property string path
     required property int index
 
-    width: list.width - 12
+    width: listView.width - 12
     height: 30
     radius: 8
 
@@ -55,7 +55,7 @@ Rectangle {
             size: 28
 
             onButtonClicked: {
-                popup.visible = true;
+                popup.openAt(mapToItem(parent, deviceEntry.x, deviceEntry.y));
             }
         }
     }
@@ -78,49 +78,141 @@ Rectangle {
         }
 
         onClicked: {
-            list.currentIndex = index
+            listView.currentIndex = index
         }
     }
 
     Popup {
         id: popup
-        x: 0
-        y: 0
-        width: 300
+
+        width: deviceEntry.width
         height: 200
-        modal: false
+        margins: 0
+        padding: 4
+
+        modal: true
         focus: true
-        dim: false
+        dim: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         visible: false
+        background: Rectangle {
+            color: "#2d2d2d"
+            border.width: 1
+            border.color: "#4d4d4d"
+            radius: 8
+        }
+
+        parent: listView
+
+        function openAt(coords: point) {
+            popup.x = 0;
+            popup.y = coords.y - listView.visibleArea.yPosition * listView.contentHeight;
+            popup.open();
+        }
 
         ColumnLayout {
             anchors.fill: parent
-            spacing: 4
+            anchors.margins: 0
+            spacing: 0
 
-            CText {
-                Layout.fillWidth: true
-                label: vid
+            RowLayout {
+                spacing: 8
+
+                CText {
+                    Layout.alignment: Qt.AlignTop
+                    Layout.fillWidth: true
+
+                    label: manufacturer + " " + product
+                    fontSize: 12
+                }
+
+                CIconButton {
+                    id: closeButton
+
+                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
+
+                    iconName: "qrc:///resources/close_icon.png"
+                    toolTipText: ""
+                    size: 28
+
+                    onButtonClicked: {
+                        popup.close();
+                    }
+                }
             }
-            CText {
-                Layout.fillWidth: true
-                label: pid
+
+            Item {
+                Layout.fillHeight: true
             }
-            CText {
-                Layout.fillWidth: true
-                label: usagePage
+
+            InfoRow {
+                rowLabel: "Vendor ID:"
+                rowValue: vid
             }
-            CText {
-                Layout.fillWidth: true
-                label: usageId
+
+            InfoRow {
+                rowLabel: "Product ID:"
+                rowValue: pid
             }
-            CText {
-                Layout.fillWidth: true
-                label: serial
+
+            InfoRow {
+                rowLabel: "Usage Page:"
+                rowValue: usagePage
             }
-            CText {
+
+            InfoRow {
+                rowLabel: "Usage ID:"
+                rowValue: usageId
+            }
+
+            InfoRow {
+                rowLabel: "Serial ID:"
+                rowValue: serial
+            }
+
+            InfoRow {
+                rowLabel: "Path:"
+                rowValue: path
+                valueWrap: Text.WrapAnywhere
+                showSeparator: false
+            }
+
+            Item {
+                Layout.fillHeight: true
+            }
+        }
+
+        component InfoRow : ColumnLayout {
+            property alias rowLabel: label.label
+            property alias rowValue: value.label
+            property alias valueWrap: value.wrap
+            property alias showSeparator: separatorLine.visible
+
+            spacing: 0
+
+            RowLayout {
+                spacing: 8
+    
+                CText {
+                    id: label
+                    Layout.preferredWidth: 100
+                    fontSize: 10
+                }
+    
+                CText {
+                    id: value
+                    Layout.fillWidth: true
+                    fontSize: 10
+                }
+            }
+
+            Rectangle {
+                id: separatorLine
+
                 Layout.fillWidth: true
-                label: path
+                Layout.topMargin: 2
+                height: 1
+                color: "#242424"
             }
         }
     }

@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Basic
 
 
-Window {
+ApplicationWindow {
     id: mainWindow
 
     width: 640
