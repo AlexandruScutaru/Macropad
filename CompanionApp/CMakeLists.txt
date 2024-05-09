@@ -2,13 +2,16 @@ cmake_minimum_required(VERSION 3.16)
 
 project(MacropadCompanion VERSION 0.1 LANGUAGES CXX)
 
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set(CMAKE_INSTALL_PREFIX ${BUILD_DIRECTORY}/output/ CACHE PATH "Custom Macropad install directory" FORCE)
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Qml)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
-find_package(Qt6 REQUIRED COMPONENTS Multimedia)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
@@ -84,15 +87,11 @@ qt_add_resources(appMacropadCompanion "resources"
 )
 
 set_target_properties(appMacropadCompanion PROPERTIES
-    MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
-    MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-    MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
 
 target_link_libraries(appMacropadCompanion PRIVATE Qt6::Quick)
 target_link_libraries(appMacropadCompanion PRIVATE Qt6::QuickControls2)
-target_link_libraries(appMacropadCompanion PRIVATE Qt6::Multimedia)
 target_link_libraries(appMacropadCompanion PRIVATE Qt6::Widgets)
 
 target_link_libraries(appMacropadCompanion PRIVATE HIDAPI::hidapi)
@@ -100,13 +99,13 @@ target_link_libraries(appMacropadCompanion PRIVATE User32)
 
 include(GNUInstallDirs)
 install(TARGETS appMacropadCompanion
-    BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
+install(IMPORTED_RUNTIME_ARTIFACTS HIDAPI::hidapi)
+
 qt_generate_deploy_qml_app_script(TARGET appMacropadCompanion
     OUTPUT_SCRIPT deploy_script
-    NO_COMPILER_RUNTIME
 )
 install(SCRIPT ${deploy_script})

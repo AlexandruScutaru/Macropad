@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     );
 
     engine.rootContext()->setContextProperty("isDebugInstance", IS_DEBUG);
-    engine.load(QStringLiteral("MacropadCompanion/Main.qml"));
+    engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
 
     return app.exec();
 }
