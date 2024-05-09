@@ -20,12 +20,20 @@ TextField {
         implicitWidth: 200
         implicitHeight: 40
         color: "transparent"
-        border.color: "transparent"
+        border.color: "red"
+        border.width: acceptableInput ? 0 : 1
     }
 
     onAccepted: {
         if (acceptableInput || text.length === 0) {
             textField.inputAccepted(text);
         }
+    }
+
+    ToolTip {
+        id: invalidInput
+        text: "Input is not valid! Either leave the field empty or type a 4-digit hex number"
+        visible: !acceptableInput && textField.hovered
+        delay: 600
     }
 }

@@ -8,8 +8,8 @@ ApplicationWindow {
 
     width: 640
     height: 480
-    minimumWidth: 320
-    minimumHeight: 240
+    minimumWidth: 640
+    minimumHeight: 480
     visible: true
     title: qsTr("Macropad Companion")
     color: "#222222"
@@ -49,12 +49,50 @@ ApplicationWindow {
             SplitView.minimumWidth: 200
             SplitView.maximumWidth: 300
             width: 280
-            visible: isDebugInstance
+            visible: false
         }
 
         Item {
             id: deviceViewContainer
             objectName: "deviceViewContainer"
+        }
+    }
+
+    Popup {
+        id: devHelperOverlay
+
+        margins: 0
+        padding: 0
+        modal: false
+        dim: false
+        focus: true
+        closePolicy: Popup.NoAutoClose
+        visible: isDebugInstance
+        parent: Overlay.overlay
+
+        x: 16
+        y: mainWindow.height - height - 16
+
+        width: expandDevButton.width
+        height: expandDevButton.height
+
+        background: Rectangle {
+            color: "transparent"
+            border.width: 0
+        }
+
+        CIconButton {
+            id: expandDevButton
+
+            iconName: "qrc:///resources/sliders_icon.png"
+            toolTipText: "Expand dev helper view"
+            buttonSize: 32
+
+            anchors.centerIn: parent
+
+            onButtonClicked: {
+                devHelperViewContainer.visible = !devHelperViewContainer.visible;
+            }
         }
     }
 }

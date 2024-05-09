@@ -14,6 +14,12 @@ Rectangle {
 
     color: "#2d2d2d"
 
+    function onSearchRequested() {
+        if (vid.acceptableInput && pid.acceptableInput) {
+            searchClicked(vid.text, pid.text);
+        }
+    }
+
     RowLayout {
         id: mainLayout
 
@@ -33,6 +39,10 @@ Rectangle {
             Layout.fillWidth: true
 
             placeholder: qsTr("Vendor ID")
+
+            onInputAccepted: (value) => {
+                onSearchRequested();
+            }
         }
 
         Rectangle {
@@ -49,6 +59,10 @@ Rectangle {
             Layout.fillWidth: true
 
             placeholder: qsTr("Product ID")
+
+            onInputAccepted: (value) => {
+                onSearchRequested();
+            }
         }
 
         Item {
@@ -61,9 +75,10 @@ Rectangle {
 
             iconName: "qrc:///resources/search_icon.png"
             toolTipText: "Search for this device"
+            iconPadding: 8
 
             onButtonClicked: {
-                searchClicked(vid.text, pid.text);
+                onSearchRequested();
             }
         }
     }

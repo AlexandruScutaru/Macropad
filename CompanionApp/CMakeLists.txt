@@ -84,6 +84,7 @@ qt_add_resources(appMacropadCompanion "resources"
         resources/close_icon.png
         resources/info_icon.png
         resources/search_icon.png
+        resources/sliders_icon.png
 )
 
 set_target_properties(appMacropadCompanion PROPERTIES

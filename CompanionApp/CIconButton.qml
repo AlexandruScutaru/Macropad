@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls.Basic 2.15
+import Qt5Compat.GraphicalEffects
 
 
 Button {
@@ -8,16 +9,27 @@ Button {
     signal buttonClicked
     property string iconName
     property string toolTipText
-    property int size: 32
+    property int buttonSize: 32
+    property int iconPadding: 4
 
-    icon.color: "#d9e7cb"
-    icon.source: iconName
-    icon.width: size / 2
-    icon.height: size / 2
+    Image {
+        id: iconImage
+        anchors.centerIn: parent
+        source: iconName
+        width: buttonSize - iconPadding * 2
+        height: buttonSize - iconPadding * 2
+        mipmap: true
+    }
+
+    ColorOverlay {
+        anchors.fill: iconImage
+        source: iconImage
+        color: "#d9e7cb"
+    }
 
     background: Rectangle {
-        implicitWidth: size
-        implicitHeight: size
+        implicitWidth: buttonSize
+        implicitHeight: buttonSize
         color: button.down ? "#484848"
                            : button.hovered ? "#4d4d4d" : "transparent"
         border.width: 0

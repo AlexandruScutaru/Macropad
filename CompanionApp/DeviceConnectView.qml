@@ -63,7 +63,7 @@ Item {
                 ScrollBar.vertical: ScrollBar {
                     id: vScrollBar
                     active: true
-                    policy: ScrollBar.AsNeeded
+                    policy: listView.contentHeight > listView.height ? ScrollBar.AlwaysOn : ScrollBar.AlwaysOff
                     orientation: Qt.Vertical
 
                     contentItem: Rectangle {

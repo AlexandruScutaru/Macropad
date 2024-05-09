@@ -52,7 +52,8 @@ Rectangle {
 
             iconName: "qrc:///resources/info_icon.png"
             toolTipText: "See details"
-            size: 28
+            buttonSize: 28
+            iconPadding: 6
 
             onButtonClicked: {
                 popup.openAt(mapToItem(parent, deviceEntry.x, deviceEntry.y));
@@ -133,7 +134,8 @@ Rectangle {
 
                     iconName: "qrc:///resources/close_icon.png"
                     toolTipText: ""
-                    size: 28
+                    buttonSize: 28
+                    iconPadding: 6
 
                     onButtonClicked: {
                         popup.close();
