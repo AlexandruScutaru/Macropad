@@ -32,6 +32,7 @@ void Macropad::onInitialized(bool isDebug) {
 
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
+    mDeviceController = new DeviceController(mPotentiometersReader, this);
 
     initTrayIcon();
     initHotkey();
@@ -66,7 +67,7 @@ void Macropad::initTrayIcon() {
 void Macropad::initDevHelperView(const QObject* const qmlWindow) {
     if (auto devHelperViewContainer = qmlWindow->findChild<QObject*>(DEV_HELPER_QML_CONTAINER_NAME); devHelperViewContainer) {
         auto devHelperController = new DevHelperController(this);
-        QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, devHelperController, &DevHelperController::onPotentiometersUpdated);
+        QObject::connect(mDeviceController, &DeviceController::slidersChanged, devHelperController, &DevHelperController::onSlidersUpdated);
         QObject::connect(devHelperController, &DevHelperController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
         QQmlComponent devView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/DevHelperView.qml"));
@@ -78,11 +79,8 @@ void Macropad::initDevHelperView(const QObject* const qmlWindow) {
 
 void Macropad::initDeviceView(const QObject* const qmlWindow) {
     if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(DEVICE_QML_CONTAINER_NAME); deviceViewContainer) {
-        auto deviceController = new DeviceController(this);
-        QObject::connect(deviceController, &DeviceController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
-
         QQmlComponent devView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/DeviceStackView.qml"));
-        auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DeviceController*>(deviceController) }});
+        auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DeviceController*>(mDeviceController) }});
         auto item = qobject_cast<QQuickItem*>(component);
         item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
     }

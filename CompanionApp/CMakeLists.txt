@@ -37,7 +37,9 @@ qt_add_qml_module(appMacropadCompanion
         CSlider.qml
         CText.qml
         CTextField.qml
+        CVerticalProgressBar.qml
         DevHelperView.qml
+        DeviceCalibrationView.qml
         DeviceConnectView.qml
         DeviceDashboardView.qml
         DeviceListDelegate.qml
@@ -51,6 +53,8 @@ qt_add_qml_module(appMacropadCompanion
         DevHelperController.h
         DevHelperModel.cpp
         DevHelperModel.h
+        DeviceCalibrationModel.cpp
+        DeviceCalibrationModel.h
         DeviceController.cpp
         DeviceController.h
         DeviceInfoModel.cpp

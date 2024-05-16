@@ -7,9 +7,12 @@ Item {
     ColumnLayout {
         anchors.fill: parent
 
+        Item {
+            Layout.fillHeight: true;
+        }
+
         CText {
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
 
             label: qsTr("Device connected")
             fontSize: 28
@@ -17,15 +20,24 @@ Item {
         }
 
         CButton {
-            id: configB
-            Layout.alignment: Qt.AlignBottom | Qt.AlignRight
+            Layout.alignment: Qt.AlignHCenter
 
-            label: "Configure"
-            toolTipText: "Configure the device"
+            label: "Calibrate"
+            toolTipText: "Calibrate the sliders"
 
             onButtonClicked: {
-                console.log("Configure clicked");
+                controller.setIsCalibrating(true);
+                stack.push(calibrationView)
             }
         }
+
+        Item {
+            Layout.fillHeight: true;
+        }
+    }
+
+    Component {
+        id: calibrationView
+        DeviceCalibrationView {}
     }
 }

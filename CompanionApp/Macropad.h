@@ -8,6 +8,7 @@
 enum class HotKeys;
 
 class AudioOutputSwitcher;
+class DeviceController;
 class PotentiometersReader;
 class TrayIcon;
 
@@ -34,8 +35,11 @@ private:
     void initHotkey();
 
     QQmlApplicationEngine& mQmlEngine;
+
     AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
     PotentiometersReader* mPotentiometersReader{ nullptr };
+    DeviceController* mDeviceController{nullptr};
+
     TrayIcon* mTrayIcon{ nullptr };
 
 };

@@ -1,31 +1,42 @@
 #include "DeviceController.h"
 #include "HidHelper.h"
+#include "PotentiometersReader.h"
 
 #include <QDebug>
 
 
-DeviceController::DeviceController(QObject* parent)
+DeviceController::DeviceController(PotentiometersReader* potentiometersReader, QObject* parent)
     : QObject(parent)
-    , mModel(new DeviceInfoModel(this))
+    , mPotentiometersReader(potentiometersReader)
+    , mDeviceInfoModel(new DeviceInfoModel(this))
+    , mDeviceCalibrationModel(new DeviceCalibrationModel(this))
+    , mPotentiometersInfo(std::vector<PotentiometerInfo>(4))
 {
     qDebug() << "DeviceController::DeviceController";
 
     mHidHelper = new HidHelper(this);
     mHidInitted = mHidHelper->init();
+
+    QObject::connect(this, &DeviceController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
+    QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, this, &DeviceController::onPotentiometersUpdated);
 }
 
 DeviceController::~DeviceController() {
     qDebug() << "DeviceController::~DeviceController";
 }
 
-DeviceInfoModel* DeviceController::getModel() {
-    return mModel;
+DeviceInfoModel* DeviceController::getDeviceInfoModel() {
+    return mDeviceInfoModel;
+}
+
+DeviceCalibrationModel* DeviceController::getDeviceCalibrationModel() {
+    return mDeviceCalibrationModel;
 }
 
 void DeviceController::search(const QString& vid, const QString& pid) {
     const auto info = mHidHelper->enumerateDevices(convertToInt(vid), convertToInt(pid));
 
-    mModel->reset();
+    mDeviceInfoModel->reset();
 
     std::vector<DeviceInfoModel::Row> model;
     model.reserve(info.size());
@@ -43,15 +54,70 @@ void DeviceController::search(const QString& vid, const QString& pid) {
         model.push_back(row);
     }
 
-    mModel->setData(model);
+    mDeviceInfoModel->setData(model);
 }
 
-//device->usage_page == 0xFF60 && device->usage == 0x61)
 void DeviceController::openDevice(const QString& path) {
     if (auto device = mHidHelper->openDevice(path.toStdString()); device) {
         emit deviceOpened(device);
         emit deviceConnected();
     }
+}
+
+void DeviceController::onPotentiometersUpdated(const std::vector<int>& values) {
+    if (values.size() != mPotentiometersInfo.size()) {
+        mPotentiometersInfo = std::vector<PotentiometerInfo>(4);
+    }
+
+    for (int i = 0; i < mPotentiometersInfo.size(); i++) {
+        mPotentiometersInfo[i].value = values[i];
+    }
+
+    if (mIsCalibrating) {
+        handleCalibration(values);
+    } else {
+        std::vector<int> normalizedValues;
+        normalizedValues.reserve(mPotentiometersInfo.size());
+        std::transform(mPotentiometersInfo.begin(), mPotentiometersInfo.end(), std::back_inserter(normalizedValues), [](const auto& pot) {
+            return std::clamp(static_cast<int>((pot.value - pot.min) / static_cast<double>(pot.max - pot.min) * 100), 0, 100);
+        });
+
+        emit slidersChanged(normalizedValues);
+    }
+}
+
+void DeviceController::setIsCalibrating(bool isCalibrating) {
+    mIsCalibrating = isCalibrating;
+
+    if (mIsCalibrating) {
+        std::vector<int> currentValues(mPotentiometersInfo.size());
+        for (int i = 0; i < mPotentiometersInfo.size(); i++) {
+            mPotentiometersInfo[i].min = 1023;
+            mPotentiometersInfo[i].max = 0;
+            currentValues[i] = mPotentiometersInfo[i].value;
+        }
+        handleCalibration(currentValues);
+    }
+}
+
+void DeviceController::handleCalibration(const std::vector<int>& values) {
+    mDeviceCalibrationModel->reset();
+    std::vector<DeviceCalibrationModel::Row> model;
+    model.reserve(mPotentiometersInfo.size());
+
+    for (int i = 0; i < mPotentiometersInfo.size(); i++) {
+        if (values[i] >= 0 && values[i] < mPotentiometersInfo[i].min) mPotentiometersInfo[i].min = values[i];
+        if (values[i] >= 0 && values[i] > mPotentiometersInfo[i].max) mPotentiometersInfo[i].max = values[i];
+
+        DeviceCalibrationModel::Row row;
+        row[DeviceCalibrationModel::IdRole] = i;
+        row[DeviceCalibrationModel::MinRole] = mPotentiometersInfo[i].min;
+        row[DeviceCalibrationModel::MaxRole] = mPotentiometersInfo[i].max;
+        row[DeviceCalibrationModel::ValueRole] = mPotentiometersInfo[i].value;
+        model.push_back(row);
+    }
+
+    mDeviceCalibrationModel->setData(model);
 }
 
 int DeviceController::convertToInt(const QString& hexStr) {

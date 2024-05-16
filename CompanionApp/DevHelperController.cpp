@@ -27,7 +27,7 @@ void DevHelperController::onSliderMoved(int sliderId, int value) {
     qDebug() << "Slider " << sliderId << " moved to " << value;
 }
 
-void DevHelperController::onPotentiometersUpdated(const std::vector<int>& values) {
+void DevHelperController::onSlidersUpdated(const std::vector<int>& values) {
     mModel->reset();
 
     std::vector<DevHelperModel::Row> model;

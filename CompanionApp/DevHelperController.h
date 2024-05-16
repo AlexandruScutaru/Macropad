@@ -19,7 +19,7 @@ public:
     Q_INVOKABLE void onSliderMoved(int sliderId, int value);
 
 public slots:
-    void onPotentiometersUpdated(const std::vector<int>& values);
+    void onSlidersUpdated(const std::vector<int>& values);
 
 signals:
     void switchOutputRequested();

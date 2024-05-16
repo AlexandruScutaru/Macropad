@@ -33,7 +33,11 @@ void PotentiometersReader::onMessageReceived(const std::vector<unsigned char>& d
     auto value = data[2] + (data[3] << 8);
 
     if (pot >= 0 && pot < mPotValues.size()) {
-        mPotValues[pot] = (value / 255.0) * 100;
+        if (abs(value - mPotValues[pot]) < 2) {
+            return;
+        }
+
+        mPotValues[pot] = value;
         emit potentiometersUpdated(mPotValues);
     }
 }

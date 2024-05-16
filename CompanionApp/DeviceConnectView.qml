@@ -49,7 +49,7 @@ Item {
                 focus: true
                 spacing: 4
 
-                model: controller.getModel()
+                model: controller.getDeviceInfoModel()
                 delegate: DeviceListDelegate {}
 
                 function getSelectedDevicePath() {
