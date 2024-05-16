@@ -16,13 +16,20 @@ Item {
 
         anchors.fill: parent
 
-        initialItem: connectView
         clip: true
+
+        Component.onCompleted: {
+            controller.openLastDevice();
+        }
 
         Connections {
             target: controller
             function onDeviceConnected() {
-                stack.push(dashboardView)
+                stack.replace(dashboardView);
+            }
+
+            function onNoDeviceSaved() {
+                stack.replace(connectView);
             }
         }
 

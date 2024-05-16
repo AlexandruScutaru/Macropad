@@ -6,11 +6,13 @@
 #include "NativeEventFilter.h"
 #include "PotentiometersReader.h"
 #include "WinApiWrapper.h"
+#include "DebugChecker.h"
 
 #include <QApplication>
 #include <QDebug>
 #include <QQmlComponent>
 #include <QQuickItem>
+#include <QSettings>
 
 static constexpr auto DEV_HELPER_QML_CONTAINER_NAME = "devHelperViewContainer";
 static constexpr auto DEVICE_QML_CONTAINER_NAME = "deviceViewContainer";
@@ -44,6 +46,33 @@ void Macropad::onInitialized(bool isDebug) {
     initDeviceView(qmlWindow);
 }
 
+void Macropad::saveDevHelperExpandState(bool isExpanded) {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    settings.setValue("windowState/devHelperState", isExpanded);
+}
+
+bool Macropad::devHelperExpandState() {
+    if (!IS_DEBUG) {
+        return false;
+    }
+
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    return settings.value("windowState/devHelperState", false).toBool();
+}
+
+QSize Macropad::windowSize() {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    auto w = settings.value("windowState/width", 640).toInt();
+    auto h = settings.value("windowState/height", 380).toInt();
+
+    return QSize(w, h);
+}
+
+void Macropad::saveWindowSize(int w, int h) {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    settings.setValue("windowState/width", w);
+    settings.setValue("windowState/height", h);
+}
 
 void Macropad::onHotKeyTriggered(HotKeys hotKey) {
     if (hotKey == HotKeys::CYCLE_AUDIO_OUTPUTS) {

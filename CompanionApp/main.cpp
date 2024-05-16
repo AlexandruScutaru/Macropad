@@ -4,13 +4,8 @@
 #include <QQuickStyle>
 #include <QIcon>
 
+#include "DebugChecker.h"
 #include "Macropad.h"
-
-#ifdef NDEBUG
-static constexpr bool IS_DEBUG = false;
-#else
-static constexpr bool IS_DEBUG = true;
-#endif
 
 static constexpr auto SHOW_WINDOW_QML_FUNC_NAME = "windowShowRequested";
 
@@ -20,6 +15,9 @@ int main(int argc, char *argv[]) {
     QApplication::setWindowIcon(QIcon(":/resources/app_icon.png"));
     QQmlApplicationEngine engine;
     QQuickStyle::setStyle("basic");
+
+    QApplication::setOrganizationName("Macropad");
+    QApplication::setApplicationName("Companion");
 
     auto macropad = new Macropad(engine, qApp);
 
@@ -58,6 +56,7 @@ int main(int argc, char *argv[]) {
     );
 
     engine.rootContext()->setContextProperty("isDebugInstance", IS_DEBUG);
+    engine.rootContext()->setContextProperty("MacroPad", macropad);
     engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
 
     return app.exec();

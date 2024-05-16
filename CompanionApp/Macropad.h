@@ -23,6 +23,12 @@ public:
 signals:
     void showWindowRequested();
 
+public slots:
+    bool devHelperExpandState();
+    void saveDevHelperExpandState(bool isExpanded);
+    QSize windowSize();
+    void saveWindowSize(int w, int h);
+
 private slots:
     void onHotKeyTriggered(HotKeys hotKey);
 

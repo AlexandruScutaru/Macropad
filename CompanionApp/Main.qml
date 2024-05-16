@@ -14,6 +14,20 @@ ApplicationWindow {
     title: qsTr("Macropad Companion")
     color: "#222222"
 
+    onWidthChanged: {
+        MacroPad.saveWindowSize(width, height);
+    }
+
+    onHeightChanged: {
+        MacroPad.saveWindowSize(width, height);
+    }
+
+    Component.onCompleted: {
+        var size = MacroPad.windowSize();
+        width = size.width;
+        height = size.height;
+    }
+
     function windowShowRequested() {
         if (mainWindow.visibility === Window.Hidden || mainWindow.visibility === Window.Minimized) {
             mainWindow.show();
@@ -50,6 +64,10 @@ ApplicationWindow {
             SplitView.maximumWidth: 300
             width: 280
             visible: false
+
+            Component.onCompleted: {
+                visible = MacroPad.devHelperExpandState();
+            }
         }
 
         Item {
@@ -92,6 +110,7 @@ ApplicationWindow {
 
             onButtonClicked: {
                 devHelperViewContainer.visible = !devHelperViewContainer.visible;
+                MacroPad.saveDevHelperExpandState(devHelperViewContainer.visible);
             }
         }
     }

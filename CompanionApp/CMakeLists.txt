@@ -49,6 +49,7 @@ qt_add_qml_module(appMacropadCompanion
     SOURCES
         AudioOutputSwitcher.cpp
         AudioOutputSwitcher.h
+        DebugChecker.h
         DevHelperController.cpp
         DevHelperController.h
         DevHelperModel.cpp

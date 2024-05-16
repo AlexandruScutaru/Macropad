@@ -2,7 +2,9 @@
 #include "HidHelper.h"
 #include "PotentiometersReader.h"
 
+#include <QApplication>
 #include <QDebug>
+#include <QSettings>
 
 
 DeviceController::DeviceController(PotentiometersReader* potentiometersReader, QObject* parent)
@@ -16,6 +18,8 @@ DeviceController::DeviceController(PotentiometersReader* potentiometersReader, Q
 
     mHidHelper = new HidHelper(this);
     mHidInitted = mHidHelper->init();
+
+    readCalibrationInfo();
 
     QObject::connect(this, &DeviceController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
     QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, this, &DeviceController::onPotentiometersUpdated);
@@ -59,14 +63,52 @@ void DeviceController::search(const QString& vid, const QString& pid) {
 
 void DeviceController::openDevice(const QString& path) {
     if (auto device = mHidHelper->openDevice(path.toStdString()); device) {
+        saveConnectedDevicePath(path);
+
         emit deviceOpened(device);
         emit deviceConnected();
     }
 }
 
+void DeviceController::saveConnectedDevicePath(const QString& path) {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    settings.setValue("device/lastDevicePath", path);
+}
+
+void DeviceController::saveCalibrationInfo() {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    settings.beginGroup("device");
+    settings.beginWriteArray("sliders");
+    for (int i = 0; i < mPotentiometersInfo.size(); i++) {
+        settings.setArrayIndex(i);
+        settings.setValue("min", mPotentiometersInfo[i].min);
+        settings.setValue("max", mPotentiometersInfo[i].max);
+    }
+    settings.endArray();
+    settings.endGroup();
+}
+
+void DeviceController::readCalibrationInfo() {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    settings.beginGroup("device");
+
+    auto size = settings.beginReadArray("sliders");
+    mPotentiometersInfo.clear();
+    mPotentiometersInfo.resize(size);
+    for (int i = 0; i < size; i++) {
+        settings.setArrayIndex(i);
+        auto min = settings.value("min", 0).toInt();
+        auto max = settings.value("max", 1023).toInt();
+        mPotentiometersInfo[i].min = min;
+        mPotentiometersInfo[i].max = max;
+    }
+    settings.endArray();
+    settings.endGroup();
+}
+
 void DeviceController::onPotentiometersUpdated(const std::vector<int>& values) {
     if (values.size() != mPotentiometersInfo.size()) {
-        mPotentiometersInfo = std::vector<PotentiometerInfo>(4);
+        mPotentiometersInfo = std::vector<PotentiometerInfo>(values.size());
     }
 
     for (int i = 0; i < mPotentiometersInfo.size(); i++) {
@@ -97,7 +139,20 @@ void DeviceController::setIsCalibrating(bool isCalibrating) {
             currentValues[i] = mPotentiometersInfo[i].value;
         }
         handleCalibration(currentValues);
+    } else {
+        saveCalibrationInfo();
     }
+}
+
+void DeviceController::openLastDevice() {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+
+    if (const auto path = settings.value("device/lastDevicePath", "").toString(); !path.isEmpty()) {
+        openDevice(path);
+        return;
+    }
+
+    emit noDeviceSaved();
 }
 
 void DeviceController::handleCalibration(const std::vector<int>& values) {

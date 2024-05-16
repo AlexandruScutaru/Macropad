@@ -37,10 +37,12 @@ public:
     Q_INVOKABLE void search(const QString& vid, const QString& pid);
     Q_INVOKABLE void openDevice(const QString& path);
     Q_INVOKABLE void setIsCalibrating(bool isCalibrating);
+    Q_INVOKABLE void openLastDevice();
 
 signals:
     void deviceOpened(hid_device* device);
     void deviceConnected();
+    void noDeviceSaved();
     void slidersChanged(const std::vector<int>& values);
 
 private slots:
@@ -48,6 +50,9 @@ private slots:
 
 private:
     void handleCalibration(const std::vector<int>& rawValues);
+    void saveConnectedDevicePath(const QString& path);
+    void saveCalibrationInfo();
+    void readCalibrationInfo();
 
     static int convertToInt(const QString& hexStr);
 
