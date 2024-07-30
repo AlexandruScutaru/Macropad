@@ -20,7 +20,7 @@ AudioOutputSwitcher::~AudioOutputSwitcher() {
 void AudioOutputSwitcher::onSwitchOutputRequested() {
     qDebug() << "AudioOutputSwitcher::onSwitchOutputRequested";
 
-    auto devices = WinApiWrapper::EnumerateOutputDevices();
+    auto devices = WinApiWrapper::GetOutputDevicesInfo();
     if (devices.endpoints.empty()) {
         qWarning() << "no output devices connected";
         return;
@@ -34,13 +34,13 @@ void AudioOutputSwitcher::onSwitchOutputRequested() {
     );
 
     if (res == devices.endpoints.end()) {
-        WinApiWrapper::SetDefaultDevice(devices.endpoints[0].id);
+        WinApiWrapper::SetDefaultOutputDevice(devices.endpoints[0].id);
         return;
     }
 
     auto index = std::distance(devices.endpoints.begin(), res);
     index = (index + 1) % devices.endpoints.size();
-    if (WinApiWrapper::SetDefaultDevice(devices.endpoints[index].id)) {
+    if (WinApiWrapper::SetDefaultOutputDevice(devices.endpoints[index].id)) {
         qDebug() << "switched audio output to: " << devices.endpoints[index].description;
     }
 }
