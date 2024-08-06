@@ -1,6 +1,6 @@
 #include "DeviceController.h"
-#include "HidHelper.h"
-#include "PotentiometersReader.h"
+#include "../hid/HidHelper.h"
+#include "../hid/PotentiometersReader.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -67,12 +67,21 @@ void DeviceController::openDevice(const QString& path) {
 
         emit deviceOpened(device);
         emit deviceConnected();
+        return;
     }
+
+    clearConnectedDevicePath();
+    emit noDeviceSaved();
 }
 
 void DeviceController::saveConnectedDevicePath(const QString& path) {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
     settings.setValue("device/lastDevicePath", path);
+}
+
+void DeviceController::clearConnectedDevicePath() {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
+    settings.remove("device/lastDevicePath");
 }
 
 void DeviceController::saveCalibrationInfo() {

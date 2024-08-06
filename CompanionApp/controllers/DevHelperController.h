@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <QQmlEngine>
 
-#include "DevHelperModel.h"
+#include "../models/DevHelperModel.h"
 
 
 class DevHelperController : public QObject {

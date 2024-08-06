@@ -8,8 +8,8 @@ extern "C" {
 #include <hidapi.h>
 }
 
-#include "DeviceInfoModel.h"
-#include "DeviceCalibrationModel.h"
+#include "../models/DeviceInfoModel.h"
+#include "../models/DeviceCalibrationModel.h"
 
 Q_DECLARE_OPAQUE_POINTER(hid_device*)
 
@@ -51,6 +51,7 @@ private slots:
 private:
     void handleCalibration(const std::vector<int>& rawValues);
     void saveConnectedDevicePath(const QString& path);
+    void clearConnectedDevicePath();
     void saveCalibrationInfo();
     void readCalibrationInfo();
 

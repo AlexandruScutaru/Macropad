@@ -1,5 +1,6 @@
 #include "AudioOutputSwitcher.h"
-#include "WinApiWrapper.h"
+
+#include "os/windows/WinApiWrapper.h"
 
 #include <QDebug>
 

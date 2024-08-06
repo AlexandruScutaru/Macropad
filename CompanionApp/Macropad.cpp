@@ -1,12 +1,13 @@
 #include "Macropad.h"
-#include "TrayIcon.h"
-#include "AudioOutputSwitcher.h"
-#include "DevHelperController.h"
-#include "DeviceController.h"
-#include "NativeEventFilter.h"
-#include "PotentiometersReader.h"
-#include "WinApiWrapper.h"
-#include "DebugChecker.h"
+
+#include "audio/AudioOutputSwitcher.h"
+#include "controllers/DevHelperController.h"
+#include "controllers/DeviceController.h"
+#include "hid/PotentiometersReader.h"
+#include "misc/DebugChecker.h"
+#include "os/windows/NativeEventFilter.h"
+#include "os/windows/WinApiWrapper.h"
+#include "tray/TrayIcon.h"
 
 #include <QApplication>
 #include <QDebug>

@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Layouts
 import QtQuick.Controls.Basic 2.15
 
+import Controls 1.0
 
 Item {
     ColumnLayout {
@@ -22,12 +23,11 @@ Item {
         CButton {
             Layout.alignment: Qt.AlignHCenter
 
-            label: "Calibrate"
-            toolTipText: "Calibrate the sliders"
+            label: "Settings"
+            toolTipText: "Configure the device"
 
             onButtonClicked: {
-                controller.setIsCalibrating(true);
-                stack.push(calibrationView)
+                stack.push(settingsView)
             }
         }
 
@@ -37,7 +37,7 @@ Item {
     }
 
     Component {
-        id: calibrationView
-        DeviceCalibrationView {}
+        id: settingsView
+        DeviceSettingsView {}
     }
 }

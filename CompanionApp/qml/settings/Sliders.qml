@@ -2,23 +2,19 @@ import QtQuick 2.15
 import QtQuick.Layouts
 import QtQuick.Controls.Basic 2.15
 
+import Controls 1.0
 
 Item {
+    Component.onCompleted: {
+        controller.setIsCalibrating(true);
+    }
+
     ColumnLayout {
         anchors.fill: parent
-        spacing: 12
-
-        CText {
-            Layout.fillWidth: true
-            Layout.topMargin: 8
-            Layout.alignment: Qt.AlignTop
-
-            label: qsTr("Calibration view")
-            fontSize: 20
-            hAlign: Text.AlignHCenter
-        }
+        spacing: 8
 
         RowLayout {
+            Layout.topMargin: 16
             spacing: 8
 
             Repeater {
@@ -44,14 +40,13 @@ Item {
         CButton {
             id: finishButton
             Layout.alignment: Qt.AlignRight
-            Layout.topMargin: 16
+            Layout.topMargin: 8
 
             label: qsTr("Finish")
             toolTipText: qsTr("Finish calibration")
 
             onButtonClicked: {
                 controller.setIsCalibrating(false);
-                stack.pop();
             }
         }
     }

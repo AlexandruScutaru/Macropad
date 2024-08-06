@@ -4,13 +4,13 @@
 #include <QObject>
 #include <QQmlApplicationEngine>
 
-
 enum class HotKeys;
 
 class AudioOutputSwitcher;
 class DeviceController;
 class PotentiometersReader;
 class TrayIcon;
+
 
 class Macropad : public QObject {
     Q_OBJECT

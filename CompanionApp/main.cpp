@@ -4,8 +4,9 @@
 #include <QQuickStyle>
 #include <QIcon>
 
-#include "DebugChecker.h"
 #include "Macropad.h"
+
+#include "misc/DebugChecker.h"
 
 static constexpr auto SHOW_WINDOW_QML_FUNC_NAME = "windowShowRequested";
 
@@ -14,6 +15,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon(":/resources/app_icon.png"));
     QQmlApplicationEngine engine;
+    engine.addImportPath("/controls");
     QQuickStyle::setStyle("basic");
 
     QApplication::setOrganizationName("Macropad");
