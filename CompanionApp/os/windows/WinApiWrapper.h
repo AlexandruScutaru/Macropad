@@ -13,12 +13,6 @@
 template<typename T>
 using winapi_unique_ptr = std::unique_ptr<T, std::function<void(T*)>>;
 
-enum class HotKeys {
-    CYCLE_AUDIO_OUTPUTS = 0,
-
-    UKNOWN
-};
-
 struct DeviceInfo {
     int index = 0;
     std::string description;
@@ -30,6 +24,10 @@ struct OutputDevices {
     std::vector<DeviceInfo> endpoints;
 };
 
+namespace Hotkeys {
+    enum class Actions;
+}
+
 
 class WinApiWrapper {
 public:
@@ -37,8 +35,9 @@ public:
     static bool SetDefaultOutputDevice(const std::string& id);
     static void SetSessionVolume(const std::string& name, int volume);
 
-    static bool RegisterGlobalShortcut(HotKeys hotKey);
-    static HotKeys ParseHotKeyMessageParam(long long lParam);
+    static void ClearGlobalHotkeys();
+    static bool RegisterGlobalHotkey(int id, int key);
+    static int ParseHotkeyMessageParam(long long lParam);
 
 private:
     WinApiWrapper() {};
@@ -48,12 +47,5 @@ private:
     static void FindAudioSessionByName(const std::string& name, const std::function<void(ISimpleAudioVolume*)>& predicate);
     static std::string GetDefaultOutputDeviceId(IMMDeviceEnumerator* enumerator);
     static std::string GetOutputDeviceName(IMMDevice* device);
-
-    struct HotKeyInfo {
-        unsigned int mod = 0;
-        unsigned int key = 0;
-    };
-
-    static const std::vector<HotKeyInfo> mHotKeys;
 
 };

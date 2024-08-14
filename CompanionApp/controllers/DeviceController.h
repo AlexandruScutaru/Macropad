@@ -8,8 +8,9 @@ extern "C" {
 #include <hidapi.h>
 }
 
-#include "../models/DeviceInfoModel.h"
-#include "../models/DeviceCalibrationModel.h"
+#include "controllers/HotkeysController.h"
+#include "models/DeviceInfoModel.h"
+#include "models/DeviceCalibrationModel.h"
 
 Q_DECLARE_OPAQUE_POINTER(hid_device*)
 
@@ -33,6 +34,7 @@ public:
 
     Q_INVOKABLE DeviceInfoModel* getDeviceInfoModel();
     Q_INVOKABLE DeviceCalibrationModel* getDeviceCalibrationModel();
+    Q_INVOKABLE HotkeysController* getHotkeysController();
 
     Q_INVOKABLE void search(const QString& vid, const QString& pid);
     Q_INVOKABLE void openDevice(const QString& path);
@@ -44,6 +46,8 @@ signals:
     void deviceConnected();
     void noDeviceSaved();
     void slidersChanged(const std::vector<int>& values);
+    void hotkeyTriggered(int key);
+    void hotkeyActionTriggered(Hotkeys::Actions action);
 
 private slots:
     void onPotentiometersUpdated(const std::vector<int>& values);
@@ -61,6 +65,7 @@ private:
 
     QPointer<DeviceInfoModel> mDeviceInfoModel{ nullptr };
     QPointer<DeviceCalibrationModel> mDeviceCalibrationModel{ nullptr };
+    QPointer<HotkeysController> mHotkeysController{ nullptr };
 
     QPointer<PotentiometersReader> mPotentiometersReader{ nullptr };
     HidHelper* mHidHelper{ nullptr };

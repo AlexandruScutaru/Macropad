@@ -4,7 +4,9 @@
 #include <QObject>
 #include <QQmlApplicationEngine>
 
-enum class HotKeys;
+namespace Hotkeys {
+    enum class Actions;
+}
 
 class AudioOutputSwitcher;
 class DeviceController;
@@ -30,7 +32,7 @@ public slots:
     void saveWindowSize(int w, int h);
 
 private slots:
-    void onHotKeyTriggered(HotKeys hotKey);
+    void onHotkeyActionTriggered(Hotkeys::Actions action);
 
 private:
     QObject* const getMainWindowObject();
@@ -38,7 +40,7 @@ private:
     void initTrayIcon();
     void initDevHelperView(const QObject* const qmlWindow);
     void initDeviceView(const QObject* const qmlWindow);
-    void initHotkey();
+    void initHotkeysFilter();
 
     QQmlApplicationEngine& mQmlEngine;
 

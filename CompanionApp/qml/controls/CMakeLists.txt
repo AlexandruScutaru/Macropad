@@ -17,6 +17,7 @@ qt_add_qml_module(${MODULE_NAME}
     QML_FILES
         CButton.qml
         CIconButton.qml
+        CKeyBinder.qml
         CSlider.qml
         CTabButton.qml
         CText.qml

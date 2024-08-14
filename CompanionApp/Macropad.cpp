@@ -3,6 +3,7 @@
 #include "audio/AudioOutputSwitcher.h"
 #include "controllers/DevHelperController.h"
 #include "controllers/DeviceController.h"
+#include "controllers/HotkeyActions.h"
 #include "hid/PotentiometersReader.h"
 #include "misc/DebugChecker.h"
 #include "os/windows/NativeEventFilter.h"
@@ -38,7 +39,7 @@ void Macropad::onInitialized(bool isDebug) {
     mDeviceController = new DeviceController(mPotentiometersReader, this);
 
     initTrayIcon();
-    initHotkey();
+    initHotkeysFilter();
 
     if (isDebug) {
         initDevHelperView(qmlWindow);
@@ -75,9 +76,13 @@ void Macropad::saveWindowSize(int w, int h) {
     settings.setValue("windowState/height", h);
 }
 
-void Macropad::onHotKeyTriggered(HotKeys hotKey) {
-    if (hotKey == HotKeys::CYCLE_AUDIO_OUTPUTS) {
-        mAudioOutputSwitcher->onSwitchOutputRequested();
+void Macropad::onHotkeyActionTriggered(Hotkeys::Actions action) {
+    switch (action) {
+        case Hotkeys::Actions::CYCLE_AUDIO_OUTPUTS:
+            mAudioOutputSwitcher->onSwitchOutputRequested();
+            return;
+        default:
+            return;
     }
 }
 
@@ -116,10 +121,9 @@ void Macropad::initDeviceView(const QObject* const qmlWindow) {
     }
 }
 
-void Macropad::initHotkey() {
-    WinApiWrapper::RegisterGlobalShortcut(HotKeys::CYCLE_AUDIO_OUTPUTS);
-
+void Macropad::initHotkeysFilter() {
     auto nativeEventFilter = new NativeEventFilter(this);
-    QObject::connect(nativeEventFilter, &NativeEventFilter::hotKeyTriggered, this, &Macropad::onHotKeyTriggered);
+    QObject::connect(nativeEventFilter, &NativeEventFilter::hotkeyTriggered, mDeviceController, &DeviceController::hotkeyTriggered);
+    QObject::connect(mDeviceController, &DeviceController::hotkeyActionTriggered, this, &Macropad::onHotkeyActionTriggered);
     qApp->installNativeEventFilter(static_cast<QAbstractNativeEventFilter*>(nativeEventFilter));
 }

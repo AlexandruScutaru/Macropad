@@ -58,7 +58,7 @@ Item {
                 }
 
                 onCurrentIndexChanged: {
-                    connectButton.disabled = false;
+                    connectButton.enabled = true;
                 }
 
                 ScrollBar.vertical: ScrollBar {
@@ -83,7 +83,7 @@ Item {
 
             label: "Connect"
             toolTipText: "Connect to the selected device"
-            disabled: true
+            enabled: false
 
             onButtonClicked: {
                 controller.openDevice(listView.getSelectedDevicePath());

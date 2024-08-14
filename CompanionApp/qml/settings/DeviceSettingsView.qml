@@ -10,7 +10,7 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        spacing: 20
+        spacing: 8
 
         Item {
             Layout.fillHeight: true
@@ -97,8 +97,7 @@ Item {
                     id: settingsStack
 
                     anchors.fill: parent
-                    anchors.margins: 8
-                    anchors.leftMargin: 16
+                    anchors.margins: 12
 
                     clip: true
                     initialItem: settingsEntriesModel.get(0).viewSource

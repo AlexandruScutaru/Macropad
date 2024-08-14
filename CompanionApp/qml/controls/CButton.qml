@@ -8,16 +8,14 @@ Button {
     signal buttonClicked
     property string label
     property string toolTipText
-    property bool disabled: false
 
     leftPadding: 10
     rightPadding: 10
 
     text: label
-    enabled: !disabled
 
     function getBgColor() {
-        if (button.disabled) return "#3e443b";
+        if (!button.enabled) return "#3e443b";
         if (button.down) return "#4e5946";
         if (button.hovered) return "#485441";
         return "#3e4a36";

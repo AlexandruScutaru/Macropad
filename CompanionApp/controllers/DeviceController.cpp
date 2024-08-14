@@ -12,6 +12,7 @@ DeviceController::DeviceController(PotentiometersReader* potentiometersReader, Q
     , mPotentiometersReader(potentiometersReader)
     , mDeviceInfoModel(new DeviceInfoModel(this))
     , mDeviceCalibrationModel(new DeviceCalibrationModel(this))
+    , mHotkeysController(new HotkeysController(this))
     , mPotentiometersInfo(std::vector<PotentiometerInfo>(4))
 {
     qDebug() << "DeviceController::DeviceController";
@@ -20,6 +21,9 @@ DeviceController::DeviceController(PotentiometersReader* potentiometersReader, Q
     mHidInitted = mHidHelper->init();
 
     readCalibrationInfo();
+
+    QObject::connect(this, &DeviceController::hotkeyTriggered, mHotkeysController, &HotkeysController::onHotKeyTriggered);
+    QObject::connect(mHotkeysController, &HotkeysController::hotkeyActionTriggered, this, &DeviceController::hotkeyActionTriggered);
 
     QObject::connect(this, &DeviceController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
     QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, this, &DeviceController::onPotentiometersUpdated);
@@ -35,6 +39,10 @@ DeviceInfoModel* DeviceController::getDeviceInfoModel() {
 
 DeviceCalibrationModel* DeviceController::getDeviceCalibrationModel() {
     return mDeviceCalibrationModel;
+}
+
+HotkeysController* DeviceController::getHotkeysController() {
+    return mHotkeysController;
 }
 
 void DeviceController::search(const QString& vid, const QString& pid) {

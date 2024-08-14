@@ -49,6 +49,7 @@ set_source_files_properties(qml/Main.qml PROPERTIES QT_RESOURCE_ALIAS Main.qml)
 qt_add_qml_module(appMacropadCompanion
     URI MacropadCompanion
     VERSION 1.0
+
     QML_FILES
         qml/DevHelperView.qml
         qml/DeviceCalibrationView.qml
@@ -65,6 +66,7 @@ qt_add_qml_module(appMacropadCompanion
         qml/settings/Device.qml
 
         qml/Main.qml
+
     SOURCES
         audio/AudioOutputSwitcher.cpp
         audio/AudioOutputSwitcher.h
@@ -73,6 +75,10 @@ qt_add_qml_module(appMacropadCompanion
         controllers/DevHelperController.h
         controllers/DeviceController.cpp
         controllers/DeviceController.h
+        controllers/HotkeyActions.cpp
+        controllers/HotkeyActions.h
+        controllers/HotkeysController.cpp
+        controllers/HotkeysController.h
 
         misc/DebugChecker.h
 
@@ -82,6 +88,8 @@ qt_add_qml_module(appMacropadCompanion
         models/DeviceCalibrationModel.h
         models/DeviceInfoModel.cpp
         models/DeviceInfoModel.h
+        models/HotkeyActionsModel.cpp
+        models/HotkeyActionsModel.h
 
         hid/HidCommunicationThread.cpp
         hid/HidCommunicationThread.h

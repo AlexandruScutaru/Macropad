@@ -1,5 +1,6 @@
 #include "WinApiWrapper.h"
 #include "IPolicyConfig.h"
+#include "controllers/HotkeyActions.h"
 
 #include <audioclient.h>
 #include <Functiondiscoverykeys_devpkey.h>
@@ -322,35 +323,30 @@ std::string WinApiWrapper::GetOutputDeviceName(IMMDevice* device) {
     return name;
 }
 
+void WinApiWrapper::ClearGlobalHotkeys() {
+    const auto count = static_cast<unsigned int>(Hotkeys::Actions::ACTIONS_COUNT);
+    for (auto i = 0; i < count; i++) {
+        if (!UnregisterHotKey(NULL, i)) {
+            auto res = GetLastError();
+            auto hres = HRESULT_FROM_WIN32(res);
+            qWarning() << "couldn't unregister hotkey action: " << i << " last error: " << res << " hresult: " << hres;
+        }
+    }
+}
 
-bool WinApiWrapper::RegisterGlobalShortcut(HotKeys hotKey) {
-    qDebug() << "WinApiWrapper::RegisterGlobalShortcut";
-
-    const auto hotKeyInfo = mHotKeys[static_cast<unsigned int>(hotKey)];
-    if (!RegisterHotKey(NULL, 0, hotKeyInfo.mod, hotKeyInfo.key))
+bool WinApiWrapper::RegisterGlobalHotkey(int id, int key) {
+    auto windowsKeyVal = VK_F13 + (key - Qt::Key_F13);
+    if (!RegisterHotKey(NULL, id, 0, windowsKeyVal))
     {
         auto res = GetLastError();
         auto hres = HRESULT_FROM_WIN32(res);
-        qWarning() << "couldn't register hotkey ALT+CTRL+M" << " last error: " << res << " hresult: " << hres;
+        qWarning() << "couldn't register hotkey: " << windowsKeyVal << " last error: " << res << " hresult: " << hres;
         return false;
     }
 
     return true;
 }
 
-HotKeys WinApiWrapper::ParseHotKeyMessageParam(long long lParam) {
-    auto highWord = HIWORD(lParam);
-    auto lowWord = LOWORD(lParam);
-
-    for (auto i = 0; i < mHotKeys.size(); i++) {
-        if (lowWord == mHotKeys[i].mod && highWord == mHotKeys[i].key) {
-            return static_cast<HotKeys>(i);
-        }
-    }
-
-    return HotKeys::UKNOWN;
+int WinApiWrapper::ParseHotkeyMessageParam(long long lParam) {
+    return (VK_F13 - HIWORD(lParam)) + Qt::Key_F13;
 }
-
-const std::vector<WinApiWrapper::HotKeyInfo> WinApiWrapper::mHotKeys = {
-    { 0, VK_F13 }, // CYCLE_AUDIO_OUTPUTS
-};
