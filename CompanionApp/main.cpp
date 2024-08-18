@@ -4,6 +4,7 @@
 #include <QQuickStyle>
 #include <QIcon>
 
+#include "Config.h"
 #include "Macropad.h"
 
 #include "misc/DebugChecker.h"
@@ -21,7 +22,8 @@ int main(int argc, char *argv[]) {
     QApplication::setOrganizationName("Macropad");
     QApplication::setApplicationName("Companion");
 
-    auto macropad = new Macropad(engine, qApp);
+    auto config = new Config(qApp);
+    auto macropad = new Macropad(engine, config, qApp);
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed,

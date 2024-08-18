@@ -1,9 +1,10 @@
 #include "Macropad.h"
 
 #include "audio/AudioOutputSwitcher.h"
+#include "Config.h"
 #include "controllers/DevHelperController.h"
 #include "controllers/DeviceController.h"
-#include "controllers/HotkeyActions.h"
+#include "controllers/Settings/HotkeyActions.h"
 #include "hid/PotentiometersReader.h"
 #include "misc/DebugChecker.h"
 #include "os/windows/NativeEventFilter.h"
@@ -14,17 +15,19 @@
 #include <QDebug>
 #include <QQmlComponent>
 #include <QQuickItem>
-#include <QSettings>
 
 static constexpr auto DEV_HELPER_QML_CONTAINER_NAME = "devHelperViewContainer";
 static constexpr auto DEVICE_QML_CONTAINER_NAME = "deviceViewContainer";
 
 
-Macropad::Macropad(QQmlApplicationEngine& engine, QObject* parent)
+Macropad::Macropad(QQmlApplicationEngine& engine, Config* config, QObject* parent)
     : QObject(parent)
     , mQmlEngine(engine)
+    , mConfig(config)
 {
     qDebug() << "Macropad::Macropad";
+
+    assert(mConfig && "Ivalid config");
 }
 
 Macropad::~Macropad() {
@@ -36,7 +39,7 @@ void Macropad::onInitialized(bool isDebug) {
 
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
-    mDeviceController = new DeviceController(mPotentiometersReader, this);
+    mDeviceController = new DeviceController(mPotentiometersReader, mConfig, this);
 
     initTrayIcon();
     initHotkeysFilter();
@@ -49,8 +52,7 @@ void Macropad::onInitialized(bool isDebug) {
 }
 
 void Macropad::saveDevHelperExpandState(bool isExpanded) {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    settings.setValue("windowState/devHelperState", isExpanded);
+    mConfig->saveDevHelperState(isExpanded);
 }
 
 bool Macropad::devHelperExpandState() {
@@ -58,25 +60,20 @@ bool Macropad::devHelperExpandState() {
         return false;
     }
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    return settings.value("windowState/devHelperState", false).toBool();
+    return mConfig->devHelperState();
 }
 
 QSize Macropad::windowSize() {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    auto w = settings.value("windowState/width", 640).toInt();
-    auto h = settings.value("windowState/height", 380).toInt();
-
-    return QSize(w, h);
+    return mConfig->windowSize();
 }
 
 void Macropad::saveWindowSize(int w, int h) {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    settings.setValue("windowState/width", w);
-    settings.setValue("windowState/height", h);
+    mConfig->saveWindowSize({ w, h });
 }
 
-void Macropad::onHotkeyActionTriggered(Hotkeys::Actions action) {
+void Macropad::onHotkeyTriggered(int key) {
+    const auto action = mConfig->keyToHotkeyAction(key);
+
     switch (action) {
         case Hotkeys::Actions::CYCLE_AUDIO_OUTPUTS:
             mAudioOutputSwitcher->onSwitchOutputRequested();
@@ -123,7 +120,6 @@ void Macropad::initDeviceView(const QObject* const qmlWindow) {
 
 void Macropad::initHotkeysFilter() {
     auto nativeEventFilter = new NativeEventFilter(this);
-    QObject::connect(nativeEventFilter, &NativeEventFilter::hotkeyTriggered, mDeviceController, &DeviceController::hotkeyTriggered);
-    QObject::connect(mDeviceController, &DeviceController::hotkeyActionTriggered, this, &Macropad::onHotkeyActionTriggered);
+    QObject::connect(nativeEventFilter, &NativeEventFilter::hotkeyTriggered, this, &Macropad::onHotkeyTriggered);
     qApp->installNativeEventFilter(static_cast<QAbstractNativeEventFilter*>(nativeEventFilter));
 }

@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 
-class DeviceCalibrationModel : public QAbstractListModel {
+class SlidersSettingsModel : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int count READ getCount NOTIFY countChanged)
 public:
@@ -20,11 +20,13 @@ public:
         ValueRole
     };
 
-    explicit DeviceCalibrationModel(QObject* parent = nullptr);
-    ~DeviceCalibrationModel();
+    explicit SlidersSettingsModel(QObject* parent = nullptr);
+    ~SlidersSettingsModel();
 
     void reset();
     void setData(const std::vector<Row>& data);
+    void updateRow(size_t idx, const Row& row);
+    void updateData(const std::vector<Row>& data);
 
     int getCount() const;
 

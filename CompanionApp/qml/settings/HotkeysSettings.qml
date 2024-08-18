@@ -6,10 +6,12 @@ import Controls 1.0
 import MacropadCompanion 1.0
 
 Item {
-    property HotkeysController hotkeysController: null
+    HotkeysSettingsController {
+        id: hotkeysController
+    }
 
     Component.onCompleted: {
-        hotkeysController = controller.getHotkeysController();
+        hotkeysController.init(controller.getConfig());
 
         // in order to remap hotkeys, they need to be temporarily unregistered
         // the OS will prevent registered hotkeys to be processed by normal qt event system

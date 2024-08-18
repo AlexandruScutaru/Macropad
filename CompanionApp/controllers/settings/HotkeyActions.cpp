@@ -1,4 +1,4 @@
-#include "HotkeyActions.h"
+#include "controllers/settings/HotkeyActions.h"
 
 
 QString Hotkeys::GetActionNameFromEnum(Actions action) {

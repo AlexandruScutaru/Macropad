@@ -35,16 +35,16 @@ set_source_files_properties(qml/DeviceCalibrationView.qml         PROPERTIES QT_
 set_source_files_properties(qml/DeviceDashboardView.qml           PROPERTIES QT_RESOURCE_ALIAS DeviceDashboardView.qml)
 set_source_files_properties(qml/DeviceStackView.qml               PROPERTIES QT_RESOURCE_ALIAS DeviceStackView.qml)
 
-set_source_files_properties(qml/connecting/DeviceConnectView.qml  PROPERTIES QT_RESOURCE_ALIAS connecting/DeviceConnectView.qml)
-set_source_files_properties(qml/connecting/DeviceListDelegate.qml PROPERTIES QT_RESOURCE_ALIAS connecting/DeviceListDelegate.qml)
-set_source_files_properties(qml/connecting/DeviceSearchHeader.qml PROPERTIES QT_RESOURCE_ALIAS connecting/DeviceSearchHeader.qml)
+set_source_files_properties(qml/connecting/DeviceConnectView.qml  PROPERTIES QT_RESOURCE_ALIAS DeviceConnectView.qml)
+set_source_files_properties(qml/connecting/DeviceListDelegate.qml PROPERTIES QT_RESOURCE_ALIAS DeviceListDelegate.qml)
+set_source_files_properties(qml/connecting/DeviceSearchHeader.qml PROPERTIES QT_RESOURCE_ALIAS DeviceSearchHeader.qml)
 
-set_source_files_properties(qml/settings/DeviceSettingsView.qml   PROPERTIES QT_RESOURCE_ALIAS settings/DeviceSettingsView.qml)
-set_source_files_properties(qml/settings/Hotkeys.qml              PROPERTIES QT_RESOURCE_ALIAS settings/Hotkeys.qml)
-set_source_files_properties(qml/settings/Sliders.qml              PROPERTIES QT_RESOURCE_ALIAS settings/Sliders.qml)
-set_source_files_properties(qml/settings/Device.qml               PROPERTIES QT_RESOURCE_ALIAS settings/Device.qml)
+set_source_files_properties(qml/settings/DeviceSettings.qml       PROPERTIES QT_RESOURCE_ALIAS DeviceSettings.qml)
+set_source_files_properties(qml/settings/HotkeysSettings.qml      PROPERTIES QT_RESOURCE_ALIAS HotkeysSettings.qml)
+set_source_files_properties(qml/settings/SettingsView.qml         PROPERTIES QT_RESOURCE_ALIAS SettingsView.qml)
+set_source_files_properties(qml/settings/SlidersSettings.qml      PROPERTIES QT_RESOURCE_ALIAS SlidersSettings.qml)
 
-set_source_files_properties(qml/Main.qml PROPERTIES QT_RESOURCE_ALIAS Main.qml)
+set_source_files_properties(qml/Main.qml                          PROPERTIES QT_RESOURCE_ALIAS Main.qml)
 
 qt_add_qml_module(appMacropadCompanion
     URI MacropadCompanion
@@ -60,10 +60,10 @@ qt_add_qml_module(appMacropadCompanion
         qml/connecting/DeviceListDelegate.qml
         qml/connecting/DeviceSearchHeader.qml
 
-        qml/settings/DeviceSettingsView.qml
-        qml/settings/Hotkeys.qml
-        qml/settings/Sliders.qml
-        qml/settings/Device.qml
+        qml/settings/DeviceSettings.qml
+        qml/settings/HotkeysSettings.qml
+        qml/settings/SettingsView.qml
+        qml/settings/SlidersSettings.qml
 
         qml/Main.qml
 
@@ -75,21 +75,25 @@ qt_add_qml_module(appMacropadCompanion
         controllers/DevHelperController.h
         controllers/DeviceController.cpp
         controllers/DeviceController.h
-        controllers/HotkeyActions.cpp
-        controllers/HotkeyActions.h
-        controllers/HotkeysController.cpp
-        controllers/HotkeysController.h
+        controllers/settings/DeviceSettingsController.cpp
+        controllers/settings/DeviceSettingsController.h
+        controllers/settings/HotkeyActions.cpp
+        controllers/settings/HotkeyActions.h
+        controllers/settings/HotkeysSettingsController.cpp
+        controllers/settings/HotkeysSettingsController.h
+        controllers/settings/SlidersSettingsController.cpp
+        controllers/settings/SlidersSettingsController.h
 
         misc/DebugChecker.h
 
         models/DevHelperModel.cpp
         models/DevHelperModel.h
-        models/DeviceCalibrationModel.cpp
-        models/DeviceCalibrationModel.h
         models/DeviceInfoModel.cpp
         models/DeviceInfoModel.h
-        models/HotkeyActionsModel.cpp
-        models/HotkeyActionsModel.h
+        models/settings/HotkeysSettingsModel.cpp
+        models/settings/HotkeysSettingsModel.h
+        models/settings/SlidersSettingsModel.cpp
+        models/settings/SlidersSettingsModel.h
 
         hid/HidCommunicationThread.cpp
         hid/HidCommunicationThread.h
@@ -101,15 +105,18 @@ qt_add_qml_module(appMacropadCompanion
         tray/TrayIcon.cpp
         tray/TrayIcon.h
 
+        Config.cpp
+        Config.h
         Macropad.cpp
         Macropad.h
 )
 
 # unfortunately I have to add this to include path
-# by using QML_ELEMENT, qt6 cmake will try yo automatically register the type
+# by using QML_ELEMENT, qt6 cmake will try to automatically register the type
 # and the class in question needs to be accessible via include path without prefixes
 target_include_directories(appMacropadCompanion PUBLIC
     controllers
+    controllers/settings
 )
 
 if (WIN32)

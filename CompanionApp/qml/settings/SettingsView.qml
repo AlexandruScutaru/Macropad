@@ -26,7 +26,7 @@ Item {
                         Layout.alignment: Qt.AlignHCenter
 
                         iconName: "qrc:///resources/back_arrow_icon.png"
-                        toolTipText: "Go back"
+                        toolTipText: qsTr("Go back")
                         buttonSize: 32
 
                         onButtonClicked: {
@@ -129,7 +129,7 @@ Item {
     ListModel {
         id: settingsEntriesModel
 
-        ListElement { name: "Hotkeys"; viewSource: "/qt/qml/MacropadCompanion/settings/Hotkeys.qml" }
-        ListElement { name: "Sliders"; viewSource: "/qt/qml/MacropadCompanion/settings/Sliders.qml" }
-        ListElement { name: "Device"; viewSource:  "/qt/qml/MacropadCompanion/settings/Device.qml" }
+        ListElement { name: "Device";  viewSource: "/qt/qml/MacropadCompanion/DeviceSettings.qml" }
+        ListElement { name: "Hotkeys"; viewSource: "/qt/qml/MacropadCompanion/HotkeysSettings.qml" }
+        ListElement { name: "Sliders"; viewSource: "/qt/qml/MacropadCompanion/SlidersSettings.qml" }
     }}

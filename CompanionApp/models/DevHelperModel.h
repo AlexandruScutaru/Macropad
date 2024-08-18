@@ -23,6 +23,8 @@ public:
 
     void reset();
     void setData(const std::vector<Row>& data);
+    void updateRow(size_t idx, const Row& row);
+    void updateData(const std::vector<Row>& data);
 
     int getCount() const;
 

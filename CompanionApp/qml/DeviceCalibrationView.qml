@@ -23,7 +23,7 @@ Item {
             spacing: 8
 
             Repeater {
-                model: controller.getDeviceCalibrationModel()
+                model: controller.getSlidersSettingsModel()
 
                 CVerticalProgressBar {
                     Layout.fillHeight: true

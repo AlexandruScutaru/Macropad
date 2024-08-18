@@ -28,8 +28,6 @@ void DevHelperController::onSliderMoved(int sliderId, int value) {
 }
 
 void DevHelperController::onSlidersUpdated(const std::vector<int>& values) {
-    mModel->reset();
-
     std::vector<DevHelperModel::Row> model;
     model.reserve(values.size());
 
@@ -40,5 +38,5 @@ void DevHelperController::onSlidersUpdated(const std::vector<int>& values) {
         model.push_back(row);
     }
 
-    mModel->setData(model);
+    mModel->updateData(model);
 }

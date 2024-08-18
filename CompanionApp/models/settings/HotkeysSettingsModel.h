@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 
-class HotkeyActionsModel : public QAbstractListModel {
+class HotkeysSettingsModel : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int count READ getCount NOTIFY countChanged)
 public:
@@ -19,8 +19,8 @@ public:
         KeyRole
     };
 
-    HotkeyActionsModel(QObject* parent = nullptr);
-    ~HotkeyActionsModel();
+    HotkeysSettingsModel(QObject* parent = nullptr);
+    ~HotkeysSettingsModel();
 
     void reset();
     void setData(const std::vector<Row>& data);

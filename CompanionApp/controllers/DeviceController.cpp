@@ -1,4 +1,7 @@
 #include "DeviceController.h"
+#include "Config.h"
+
+#include "os/windows/WinApiWrapper.h"
 #include "../hid/HidHelper.h"
 #include "../hid/PotentiometersReader.h"
 
@@ -7,26 +10,27 @@
 #include <QSettings>
 
 
-DeviceController::DeviceController(PotentiometersReader* potentiometersReader, QObject* parent)
+DeviceController::DeviceController(PotentiometersReader* potentiometersReader, Config* config, QObject* parent)
     : QObject(parent)
-    , mPotentiometersReader(potentiometersReader)
+    , mConfig(config)
     , mDeviceInfoModel(new DeviceInfoModel(this))
-    , mDeviceCalibrationModel(new DeviceCalibrationModel(this))
-    , mHotkeysController(new HotkeysController(this))
-    , mPotentiometersInfo(std::vector<PotentiometerInfo>(4))
+    , mPotentiometersReader(potentiometersReader)
 {
     qDebug() << "DeviceController::DeviceController";
+
+    assert(mConfig && "Invalid config");
 
     mHidHelper = new HidHelper(this);
     mHidInitted = mHidHelper->init();
 
-    readCalibrationInfo();
-
-    QObject::connect(this, &DeviceController::hotkeyTriggered, mHotkeysController, &HotkeysController::onHotKeyTriggered);
-    QObject::connect(mHotkeysController, &HotkeysController::hotkeyActionTriggered, this, &DeviceController::hotkeyActionTriggered);
-
     QObject::connect(this, &DeviceController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
-    QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, this, &DeviceController::onPotentiometersUpdated);
+    QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, this, &DeviceController::onPotentiometersChanged);
+
+    for (const auto& [action, key]: mConfig->hotkeyActionMap()) {
+        if (key != Qt::Key_unknown) {
+            WinApiWrapper::RegisterGlobalHotkey(static_cast<int>(action), key);
+        }
+    }
 }
 
 DeviceController::~DeviceController() {
@@ -37,12 +41,12 @@ DeviceInfoModel* DeviceController::getDeviceInfoModel() {
     return mDeviceInfoModel;
 }
 
-DeviceCalibrationModel* DeviceController::getDeviceCalibrationModel() {
-    return mDeviceCalibrationModel;
+Config* DeviceController::getConfig() {
+    return mConfig;
 }
 
-HotkeysController* DeviceController::getHotkeysController() {
-    return mHotkeysController;
+void DeviceController::setIsCalibrating(bool isCalibrating) {
+    mIsCalibrating = isCalibrating;
 }
 
 void DeviceController::search(const QString& vid, const QString& pid) {
@@ -71,100 +75,20 @@ void DeviceController::search(const QString& vid, const QString& pid) {
 
 void DeviceController::openDevice(const QString& path) {
     if (auto device = mHidHelper->openDevice(path.toStdString()); device) {
-        saveConnectedDevicePath(path);
-
+        mConfig->saveLastDevicePath(path);
         emit deviceOpened(device);
         emit deviceConnected();
         return;
     }
 
-    clearConnectedDevicePath();
+    mConfig->clearLastDevicePath();
     emit noDeviceSaved();
-}
-
-void DeviceController::saveConnectedDevicePath(const QString& path) {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    settings.setValue("device/lastDevicePath", path);
-}
-
-void DeviceController::clearConnectedDevicePath() {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    settings.remove("device/lastDevicePath");
-}
-
-void DeviceController::saveCalibrationInfo() {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    settings.beginGroup("device");
-    settings.beginWriteArray("sliders");
-    for (int i = 0; i < mPotentiometersInfo.size(); i++) {
-        settings.setArrayIndex(i);
-        settings.setValue("min", mPotentiometersInfo[i].min);
-        settings.setValue("max", mPotentiometersInfo[i].max);
-    }
-    settings.endArray();
-    settings.endGroup();
-}
-
-void DeviceController::readCalibrationInfo() {
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-    settings.beginGroup("device");
-
-    auto size = settings.beginReadArray("sliders");
-    mPotentiometersInfo.clear();
-    mPotentiometersInfo.resize(size);
-    for (int i = 0; i < size; i++) {
-        settings.setArrayIndex(i);
-        auto min = settings.value("min", 0).toInt();
-        auto max = settings.value("max", 1023).toInt();
-        mPotentiometersInfo[i].min = min;
-        mPotentiometersInfo[i].max = max;
-    }
-    settings.endArray();
-    settings.endGroup();
-}
-
-void DeviceController::onPotentiometersUpdated(const std::vector<int>& values) {
-    if (values.size() != mPotentiometersInfo.size()) {
-        mPotentiometersInfo = std::vector<PotentiometerInfo>(values.size());
-    }
-
-    for (int i = 0; i < mPotentiometersInfo.size(); i++) {
-        mPotentiometersInfo[i].value = values[i];
-    }
-
-    if (mIsCalibrating) {
-        handleCalibration(values);
-    } else {
-        std::vector<int> normalizedValues;
-        normalizedValues.reserve(mPotentiometersInfo.size());
-        std::transform(mPotentiometersInfo.begin(), mPotentiometersInfo.end(), std::back_inserter(normalizedValues), [](const auto& pot) {
-            return std::clamp(static_cast<int>((pot.value - pot.min) / static_cast<double>(pot.max - pot.min) * 100), 0, 100);
-        });
-
-        emit slidersChanged(normalizedValues);
-    }
-}
-
-void DeviceController::setIsCalibrating(bool isCalibrating) {
-    mIsCalibrating = isCalibrating;
-
-    if (mIsCalibrating) {
-        std::vector<int> currentValues(mPotentiometersInfo.size());
-        for (int i = 0; i < mPotentiometersInfo.size(); i++) {
-            mPotentiometersInfo[i].min = 1023;
-            mPotentiometersInfo[i].max = 0;
-            currentValues[i] = mPotentiometersInfo[i].value;
-        }
-        handleCalibration(currentValues);
-    } else {
-        saveCalibrationInfo();
-    }
 }
 
 void DeviceController::openLastDevice() {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
-    if (const auto path = settings.value("device/lastDevicePath", "").toString(); !path.isEmpty()) {
+    if (const auto path = mConfig->lastDevicePath(); !path.isEmpty()) {
         openDevice(path);
         return;
     }
@@ -172,24 +96,23 @@ void DeviceController::openLastDevice() {
     emit noDeviceSaved();
 }
 
-void DeviceController::handleCalibration(const std::vector<int>& values) {
-    mDeviceCalibrationModel->reset();
-    std::vector<DeviceCalibrationModel::Row> model;
-    model.reserve(mPotentiometersInfo.size());
+void DeviceController::onPotentiometersChanged(const std::vector<int>& values) {
+    emit potentiometersChanged(values);
 
-    for (int i = 0; i < mPotentiometersInfo.size(); i++) {
-        if (values[i] >= 0 && values[i] < mPotentiometersInfo[i].min) mPotentiometersInfo[i].min = values[i];
-        if (values[i] >= 0 && values[i] > mPotentiometersInfo[i].max) mPotentiometersInfo[i].max = values[i];
+    if (!mIsCalibrating) {
+        const auto potentiometersInfo = mConfig->potentiometersInfo();
 
-        DeviceCalibrationModel::Row row;
-        row[DeviceCalibrationModel::IdRole] = i;
-        row[DeviceCalibrationModel::MinRole] = mPotentiometersInfo[i].min;
-        row[DeviceCalibrationModel::MaxRole] = mPotentiometersInfo[i].max;
-        row[DeviceCalibrationModel::ValueRole] = mPotentiometersInfo[i].value;
-        model.push_back(row);
+        if (potentiometersInfo.size() != values.size()) {
+            return;
+        }
+
+        std::vector<int> normalizedValues(potentiometersInfo.size());
+        for(auto i = 0; i < potentiometersInfo.size(); i++) {
+            normalizedValues[i] = std::clamp(static_cast<int>((values[i] - potentiometersInfo[i].min) / static_cast<double>(potentiometersInfo[i].max - potentiometersInfo[i].min) * 100), 0, 100);
+        }
+
+        emit slidersChanged(normalizedValues);
     }
-
-    mDeviceCalibrationModel->setData(model);
 }
 
 int DeviceController::convertToInt(const QString& hexStr) {

@@ -3,10 +3,23 @@ import QtQuick.Layouts
 import QtQuick.Controls.Basic 2.15
 
 import Controls 1.0
+import MacropadCompanion 1.0
+
 
 Item {
+    SlidersSettingsController {
+        id:  slidersController
+    }
+
     Component.onCompleted: {
-        controller.setIsCalibrating(true);
+        slidersController.init(controller.getConfig());
+    }
+
+    Connections {
+        target: controller
+        function onPotentiometersChanged(values) {
+            slidersController.onPotentiometersChanged(values)
+        }
     }
 
     ColumnLayout {
@@ -18,7 +31,7 @@ Item {
             spacing: 8
 
             Repeater {
-                model: controller.getDeviceCalibrationModel()
+                model: slidersController.getModel()
 
                 CVerticalProgressBar {
                     Layout.fillHeight: true
@@ -38,15 +51,16 @@ Item {
         }
 
         CButton {
-            id: finishButton
+            id: calibrationButton
             Layout.alignment: Qt.AlignRight
             Layout.topMargin: 8
 
-            label: qsTr("Finish")
-            toolTipText: qsTr("Finish calibration")
+            label: slidersController.isCalibrating ? qsTr("Finish") : qsTr("Calibrate")
+            toolTipText: slidersController.isCalibrating ? qsTr("Finish calibration") : qsTr("Start calibration")
 
             onButtonClicked: {
-                controller.setIsCalibrating(false);
+                slidersController.setIsCalibrating(!slidersController.isCalibrating);
+                controller.setIsCalibrating(slidersController.isCalibrating);
             }
         }
     }

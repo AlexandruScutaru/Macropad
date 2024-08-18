@@ -1,20 +1,20 @@
-#include "DeviceCalibrationModel.h"
+#include "HotkeysSettingsModel.h"
 
 #include <QDebug>
 
 
-DeviceCalibrationModel::DeviceCalibrationModel(QObject* parent)
+HotkeysSettingsModel::HotkeysSettingsModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    qDebug() << "DeviceCalibrationModel::DeviceCalibrationModel";
+    qDebug() << "HotkeysSettingsModel::HotkeysSettingsModel";
 }
 
-DeviceCalibrationModel::~DeviceCalibrationModel() {
-    qDebug() << "DeviceCalibrationModel::~DeviceCalibrationModel";
+HotkeysSettingsModel::~HotkeysSettingsModel() {
+    qDebug() << "HotkeysSettingsModel::~HotkeysSettingsModel";
 }
 
 
-void DeviceCalibrationModel::reset() {
+void HotkeysSettingsModel::reset() {
     beginResetModel();
     mData.clear();
     endResetModel();
@@ -22,7 +22,7 @@ void DeviceCalibrationModel::reset() {
     emit countChanged(getCount());
 }
 
-void DeviceCalibrationModel::setData(const std::vector<Row>& data) {
+void HotkeysSettingsModel::setData(const std::vector<Row>& data) {
     if (!data.size()) {
         return;
     }
@@ -34,25 +34,24 @@ void DeviceCalibrationModel::setData(const std::vector<Row>& data) {
     emit countChanged(getCount());
 }
 
-int DeviceCalibrationModel::getCount() const {
+int HotkeysSettingsModel::getCount() const {
     return static_cast<int>(mData.size());
 }
 
-QHash<int, QByteArray> DeviceCalibrationModel::roleNames() const {
+QHash<int, QByteArray> HotkeysSettingsModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[IdRole] = "id";
-    roles[MinRole] = "min";
-    roles[MaxRole] = "max";
-    roles[ValueRole] = "value";
+    roles[NameRole] = "name";
+    roles[KeyRole] = "key";
     return roles;
 }
 
-int DeviceCalibrationModel::rowCount(const QModelIndex& parent) const {
+int HotkeysSettingsModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
     return getCount();
 }
 
-QVariant DeviceCalibrationModel::data(const QModelIndex& index, int role) const {
+QVariant HotkeysSettingsModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         return {};
     }
@@ -67,6 +66,6 @@ QVariant DeviceCalibrationModel::data(const QModelIndex& index, int role) const 
         return it->second;
     }
 
-    qWarning() << "DeviceCalibrationModel: role " << role << " no found";
+    qWarning() << "HotkeysSettingsModel: role " << role << " not found";
     return {};
 }

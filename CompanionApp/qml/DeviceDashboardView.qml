@@ -38,6 +38,6 @@ Item {
 
     Component {
         id: settingsView
-        DeviceSettingsView {}
+        SettingsView {}
     }
 }

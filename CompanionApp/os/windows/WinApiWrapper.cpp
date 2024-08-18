@@ -1,6 +1,6 @@
 #include "WinApiWrapper.h"
 #include "IPolicyConfig.h"
-#include "controllers/HotkeyActions.h"
+#include "controllers/settings/HotkeyActions.h"
 
 #include <audioclient.h>
 #include <Functiondiscoverykeys_devpkey.h>

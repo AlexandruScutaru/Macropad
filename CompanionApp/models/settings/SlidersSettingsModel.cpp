@@ -1,20 +1,20 @@
-#include "DevHelperModel.h"
+#include "SlidersSettingsModel.h"
 
 #include <QDebug>
 
 
-DevHelperModel::DevHelperModel(QObject* parent)
+SlidersSettingsModel::SlidersSettingsModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    qDebug() << "DevHelperModel::DevHelperModel";
+    qDebug() << "SlidersSettingsModel::SlidersSettingsModel";
 }
 
-DevHelperModel::~DevHelperModel() {
-    qDebug() << "DevHelperModel::~DevHelperModel";
+SlidersSettingsModel::~SlidersSettingsModel() {
+    qDebug() << "SlidersSettingsModel::~SlidersSettingsModel";
 }
 
 
-void DevHelperModel::reset() {
+void SlidersSettingsModel::reset() {
     beginResetModel();
     mData.clear();
     endResetModel();
@@ -22,7 +22,7 @@ void DevHelperModel::reset() {
     emit countChanged(getCount());
 }
 
-void DevHelperModel::setData(const std::vector<Row>& data) {
+void SlidersSettingsModel::setData(const std::vector<Row>& data) {
     if (!data.size()) {
         return;
     }
@@ -34,9 +34,9 @@ void DevHelperModel::setData(const std::vector<Row>& data) {
     emit countChanged(getCount());
 }
 
-void DevHelperModel::updateRow(size_t idx, const Row& row) {
+void SlidersSettingsModel::updateRow(size_t idx, const Row& row) {
     if (idx >= mData.size()) {
-        qDebug() << "DevHelperModel: index greater than model data size";
+        qDebug() << "SlidersSettingsModel: index greater than model data size";
         return;
     }
 
@@ -45,7 +45,7 @@ void DevHelperModel::updateRow(size_t idx, const Row& row) {
     emit dataChanged(modelIndex, modelIndex);
 }
 
-void DevHelperModel::updateData(const std::vector<Row>& data) {
+void SlidersSettingsModel::updateData(const std::vector<Row>& data) {
     if (mData.size() != data.size()) {
         setData(data);
         return;
@@ -62,29 +62,34 @@ void DevHelperModel::updateData(const std::vector<Row>& data) {
     };
 
     for (auto i = 0; i < mData.size(); i++) {
-        if (!checkEquality(DevHelperModel::ValueRole, mData[i], data[i])) {
+        if (!checkEquality(SlidersSettingsModel::ValueRole, mData[i], data[i]) ||
+            !checkEquality(SlidersSettingsModel::MinRole,   mData[i], data[i]) ||
+            !checkEquality(SlidersSettingsModel::MaxRole,   mData[i], data[i]))
+        {
             updateRow(i, data[i]);
         }
     }
 }
 
-int DevHelperModel::getCount() const {
+int SlidersSettingsModel::getCount() const {
     return static_cast<int>(mData.size());
 }
 
-QHash<int, QByteArray> DevHelperModel::roleNames() const {
+QHash<int, QByteArray> SlidersSettingsModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[IdRole] = "id";
+    roles[MinRole] = "min";
+    roles[MaxRole] = "max";
     roles[ValueRole] = "value";
     return roles;
 }
 
-int DevHelperModel::rowCount(const QModelIndex& parent) const {
+int SlidersSettingsModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
     return getCount();
 }
 
-QVariant DevHelperModel::data(const QModelIndex& index, int role) const {
+QVariant SlidersSettingsModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         return {};
     }
@@ -99,6 +104,6 @@ QVariant DevHelperModel::data(const QModelIndex& index, int role) const {
         return it->second;
     }
 
-    qWarning() << "DevHelperModel: role " << role << " no found";
+    qWarning() << "SlidersSettingsModel: role " << role << " no found";
     return {};
 }
