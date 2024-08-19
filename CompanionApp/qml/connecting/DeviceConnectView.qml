@@ -24,7 +24,7 @@ Item {
             Layout.topMargin: 16
 
             onSearchClicked: (vid, pid) => {
-                controller.search(vid, pid);
+                mainController.search(vid, pid);
             }
         }
 
@@ -50,7 +50,7 @@ Item {
                 focus: true
                 spacing: 4
 
-                model: controller.getDeviceInfoModel()
+                model: mainController.getDeviceInfoModel()
                 delegate: DeviceListDelegate {}
 
                 function getSelectedDevicePath() {
@@ -86,7 +86,7 @@ Item {
             enabled: false
 
             onButtonClicked: {
-                controller.openDevice(listView.getSelectedDevicePath());
+                mainController.openDevice(listView.getSelectedDevicePath());
             }
         }
     }

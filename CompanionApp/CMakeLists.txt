@@ -30,8 +30,6 @@ qt_add_executable(appMacropadCompanion
 
 qt_policy(SET QTP0001 NEW)
 
-set_source_files_properties(qml/DevHelperView.qml                 PROPERTIES QT_RESOURCE_ALIAS DevHelperView.qml)
-set_source_files_properties(qml/DeviceCalibrationView.qml         PROPERTIES QT_RESOURCE_ALIAS DeviceCalibrationView.qml)
 set_source_files_properties(qml/DeviceDashboardView.qml           PROPERTIES QT_RESOURCE_ALIAS DeviceDashboardView.qml)
 set_source_files_properties(qml/DeviceStackView.qml               PROPERTIES QT_RESOURCE_ALIAS DeviceStackView.qml)
 
@@ -51,8 +49,6 @@ qt_add_qml_module(appMacropadCompanion
     VERSION 1.0
 
     QML_FILES
-        qml/DevHelperView.qml
-        qml/DeviceCalibrationView.qml
         qml/DeviceDashboardView.qml
         qml/DeviceStackView.qml
 
@@ -71,10 +67,8 @@ qt_add_qml_module(appMacropadCompanion
         audio/AudioOutputSwitcher.cpp
         audio/AudioOutputSwitcher.h
 
-        controllers/DevHelperController.cpp
-        controllers/DevHelperController.h
-        controllers/DeviceController.cpp
-        controllers/DeviceController.h
+        controllers/MainController.cpp
+        controllers/MainController.h
         controllers/settings/DeviceSettingsController.cpp
         controllers/settings/DeviceSettingsController.h
         controllers/settings/HotkeyActions.cpp
@@ -86,10 +80,10 @@ qt_add_qml_module(appMacropadCompanion
 
         misc/DebugChecker.h
 
-        models/DevHelperModel.cpp
-        models/DevHelperModel.h
         models/DeviceInfoModel.cpp
         models/DeviceInfoModel.h
+        models/SlidersModel.cpp
+        models/SlidersModel.h
         models/settings/HotkeysSettingsModel.cpp
         models/settings/HotkeysSettingsModel.h
         models/settings/SlidersSettingsModel.cpp

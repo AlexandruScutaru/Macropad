@@ -30,7 +30,8 @@ Item {
                         buttonSize: 32
 
                         onButtonClicked: {
-                            stack.pop()
+                            stack.pop();
+                            settingsFloatingButtonOverlay.visible = true;
                         }
                     }
 

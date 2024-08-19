@@ -23,7 +23,7 @@ Item {
             spacing: 8
 
             Repeater {
-                model: controller.getSlidersSettingsModel()
+                model: mainController.getSlidersSettingsModel()
 
                 CVerticalProgressBar {
                     Layout.fillHeight: true
@@ -51,7 +51,7 @@ Item {
             toolTipText: qsTr("Finish calibration")
 
             onButtonClicked: {
-                controller.setIsCalibrating(false);
+                mainController.setIsCalibrating(false);
             }
         }
     }

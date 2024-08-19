@@ -2,8 +2,7 @@
 
 #include "audio/AudioOutputSwitcher.h"
 #include "Config.h"
-#include "controllers/DevHelperController.h"
-#include "controllers/DeviceController.h"
+#include "controllers/MainController.h"
 #include "controllers/Settings/HotkeyActions.h"
 #include "hid/PotentiometersReader.h"
 #include "misc/DebugChecker.h"
@@ -16,8 +15,7 @@
 #include <QQmlComponent>
 #include <QQuickItem>
 
-static constexpr auto DEV_HELPER_QML_CONTAINER_NAME = "devHelperViewContainer";
-static constexpr auto DEVICE_QML_CONTAINER_NAME = "deviceViewContainer";
+static constexpr auto DEVICE_QML_CONTAINER_NAME = "deviceStackViewContainer";
 
 
 Macropad::Macropad(QQmlApplicationEngine& engine, Config* config, QObject* parent)
@@ -39,15 +37,12 @@ void Macropad::onInitialized(bool isDebug) {
 
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
-    mDeviceController = new DeviceController(mPotentiometersReader, mConfig, this);
+    mMainController = new MainController(mPotentiometersReader, mConfig, this);
+
+    QObject::connect(mMainController, &MainController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
     initTrayIcon();
     initHotkeysFilter();
-
-    if (isDebug) {
-        initDevHelperView(qmlWindow);
-    }
-
     initDeviceView(qmlWindow);
 }
 
@@ -96,23 +91,10 @@ void Macropad::initTrayIcon() {
     QObject::connect(trayIcon, &TrayIcon::quitActionTriggered, qApp, &QApplication::quit);
 }
 
-void Macropad::initDevHelperView(const QObject* const qmlWindow) {
-    if (auto devHelperViewContainer = qmlWindow->findChild<QObject*>(DEV_HELPER_QML_CONTAINER_NAME); devHelperViewContainer) {
-        auto devHelperController = new DevHelperController(this);
-        QObject::connect(mDeviceController, &DeviceController::slidersChanged, devHelperController, &DevHelperController::onSlidersUpdated);
-        QObject::connect(devHelperController, &DevHelperController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
-
-        QQmlComponent devView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/DevHelperView.qml"));
-        auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DevHelperController*>(devHelperController) }});
-        auto item = qobject_cast<QQuickItem*>(component);
-        item->setParentItem(qobject_cast<QQuickItem*>(devHelperViewContainer));
-    }
-}
-
 void Macropad::initDeviceView(const QObject* const qmlWindow) {
     if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(DEVICE_QML_CONTAINER_NAME); deviceViewContainer) {
         QQmlComponent devView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/DeviceStackView.qml"));
-        auto component = devView.createWithInitialProperties(QVariantMap{{ "controller", QVariant::fromValue<DeviceController*>(mDeviceController) }});
+        auto component = devView.createWithInitialProperties(QVariantMap{{ "mainController", QVariant::fromValue<MainController*>(mMainController) }});
         auto item = qobject_cast<QQuickItem*>(component);
         item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
     }

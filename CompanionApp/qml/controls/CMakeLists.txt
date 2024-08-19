@@ -23,5 +23,6 @@ qt_add_qml_module(${MODULE_NAME}
         CText.qml
         CTextField.qml
         CVerticalProgressBar.qml
+        CVerticalSlider.qml
     SOURCES
 )

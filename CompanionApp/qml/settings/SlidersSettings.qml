@@ -12,11 +12,11 @@ Item {
     }
 
     Component.onCompleted: {
-        slidersController.init(controller.getConfig());
+        slidersController.init(mainController.getConfig());
     }
 
     Connections {
-        target: controller
+        target: mainController
         function onPotentiometersChanged(values) {
             slidersController.onPotentiometersChanged(values)
         }
@@ -60,7 +60,7 @@ Item {
 
             onButtonClicked: {
                 slidersController.setIsCalibrating(!slidersController.isCalibrating);
-                controller.setIsCalibrating(slidersController.isCalibrating);
+                mainController.setIsCalibrating(slidersController.isCalibrating);
             }
         }
     }

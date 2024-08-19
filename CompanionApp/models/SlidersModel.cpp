@@ -1,20 +1,20 @@
-#include "DevHelperModel.h"
+#include "SlidersModel.h"
 
 #include <QDebug>
 
 
-DevHelperModel::DevHelperModel(QObject* parent)
+SlidersModel::SlidersModel(QObject* parent)
     : QAbstractListModel(parent)
 {
-    qDebug() << "DevHelperModel::DevHelperModel";
+    qDebug() << "SlidersModel::SlidersModel";
 }
 
-DevHelperModel::~DevHelperModel() {
-    qDebug() << "DevHelperModel::~DevHelperModel";
+SlidersModel::~SlidersModel() {
+    qDebug() << "SlidersModel::~SlidersModel";
 }
 
 
-void DevHelperModel::reset() {
+void SlidersModel::reset() {
     beginResetModel();
     mData.clear();
     endResetModel();
@@ -22,7 +22,7 @@ void DevHelperModel::reset() {
     emit countChanged(getCount());
 }
 
-void DevHelperModel::setData(const std::vector<Row>& data) {
+void SlidersModel::setData(const std::vector<Row>& data) {
     if (!data.size()) {
         return;
     }
@@ -34,9 +34,9 @@ void DevHelperModel::setData(const std::vector<Row>& data) {
     emit countChanged(getCount());
 }
 
-void DevHelperModel::updateRow(size_t idx, const Row& row) {
+void SlidersModel::updateRow(size_t idx, const Row& row) {
     if (idx >= mData.size()) {
-        qDebug() << "DevHelperModel: index greater than model data size";
+        qDebug() << "SlidersModel: index greater than model data size";
         return;
     }
 
@@ -45,7 +45,7 @@ void DevHelperModel::updateRow(size_t idx, const Row& row) {
     emit dataChanged(modelIndex, modelIndex);
 }
 
-void DevHelperModel::updateData(const std::vector<Row>& data) {
+void SlidersModel::updateData(const std::vector<Row>& data) {
     if (mData.size() != data.size()) {
         setData(data);
         return;
@@ -62,29 +62,29 @@ void DevHelperModel::updateData(const std::vector<Row>& data) {
     };
 
     for (auto i = 0; i < mData.size(); i++) {
-        if (!checkEquality(DevHelperModel::ValueRole, mData[i], data[i])) {
+        if (!checkEquality(SlidersModel::ValueRole, mData[i], data[i])) {
             updateRow(i, data[i]);
         }
     }
 }
 
-int DevHelperModel::getCount() const {
+int SlidersModel::getCount() const {
     return static_cast<int>(mData.size());
 }
 
-QHash<int, QByteArray> DevHelperModel::roleNames() const {
+QHash<int, QByteArray> SlidersModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[IdRole] = "id";
     roles[ValueRole] = "value";
     return roles;
 }
 
-int DevHelperModel::rowCount(const QModelIndex& parent) const {
+int SlidersModel::rowCount(const QModelIndex& parent) const {
     Q_UNUSED(parent);
     return getCount();
 }
 
-QVariant DevHelperModel::data(const QModelIndex& index, int role) const {
+QVariant SlidersModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid()) {
         return {};
     }
@@ -99,6 +99,6 @@ QVariant DevHelperModel::data(const QModelIndex& index, int role) const {
         return it->second;
     }
 
-    qWarning() << "DevHelperModel: role " << role << " no found";
+    qWarning() << "SlidersModel: role " << role << " not found";
     return {};
 }

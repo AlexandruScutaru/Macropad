@@ -1,13 +1,12 @@
 #pragma once
 
 #include <QAbstractListModel>
-#include <QString>
 
 #include <vector>
 #include <unordered_map>
 
 
-class DevHelperModel : public QAbstractListModel {
+class SlidersModel : public QAbstractListModel {
     Q_OBJECT
     Q_PROPERTY(int count READ getCount NOTIFY countChanged)
 public:
@@ -18,8 +17,8 @@ public:
         ValueRole
     };
 
-    explicit DevHelperModel(QObject* parent = nullptr);
-    ~DevHelperModel();
+    explicit SlidersModel(QObject* parent = nullptr);
+    ~SlidersModel();
 
     void reset();
     void setData(const std::vector<Row>& data);

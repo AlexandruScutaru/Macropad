@@ -12,7 +12,7 @@ Item {
     }
 
     Component.onCompleted: {
-        deviceController.init(controller.getConfig());
+        deviceController.init(mainController.getConfig());
     }
 
     ColumnLayout {

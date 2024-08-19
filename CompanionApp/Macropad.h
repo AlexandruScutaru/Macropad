@@ -10,7 +10,7 @@ namespace Hotkeys {
 
 class AudioOutputSwitcher;
 class Config;
-class DeviceController;
+class MainController;
 class PotentiometersReader;
 class TrayIcon;
 
@@ -39,7 +39,6 @@ private:
     QObject* const getMainWindowObject();
 
     void initTrayIcon();
-    void initDevHelperView(const QObject* const qmlWindow);
     void initDeviceView(const QObject* const qmlWindow);
     void initHotkeysFilter();
 
@@ -48,7 +47,7 @@ private:
     AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
     Config* mConfig{ nullptr };
     PotentiometersReader* mPotentiometersReader{ nullptr };
-    DeviceController* mDeviceController{nullptr};
+    MainController* mMainController{nullptr};
 
     TrayIcon* mTrayIcon{ nullptr };
 

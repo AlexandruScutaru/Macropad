@@ -9,7 +9,7 @@ Item {
     anchors.fill: parent
     anchors.margins: 16
 
-    required property DeviceController controller
+    required property MainController mainController
 
     StackView {
         id: stack
@@ -19,11 +19,11 @@ Item {
         clip: true
 
         Component.onCompleted: {
-            controller.openLastDevice();
+            mainController.openLastDevice();
         }
 
         Connections {
-            target: controller
+            target: mainController
             function onDeviceConnected() {
                 stack.replace(dashboardView);
             }

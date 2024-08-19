@@ -11,7 +11,7 @@ Item {
     }
 
     Component.onCompleted: {
-        hotkeysController.init(controller.getConfig());
+        hotkeysController.init(mainController.getConfig());
 
         // in order to remap hotkeys, they need to be temporarily unregistered
         // the OS will prevent registered hotkeys to be processed by normal qt event system
