@@ -74,7 +74,7 @@ Item {
         parent: Overlay.overlay
 
         x: 16
-        y: parent.height - height - 16
+        y: parent && openSettingsButtonButton ? parent.height - openSettingsButtonButton.height - 16 : 0
 
         width: openSettingsButtonButton.width
         height: openSettingsButtonButton.height
@@ -95,6 +95,8 @@ Item {
 
             onButtonClicked: {
                 settingsFloatingButtonOverlay.visible = false;
+                stack.pushEnter = animEnterLeftToRight;
+                stack.pushExit = animExitLeftToRight;
                 stack.push(settingsView);
             }
         }

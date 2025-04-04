@@ -30,6 +30,8 @@ Item {
                         buttonSize: 32
 
                         onButtonClicked: {
+                            stack.popExit = animExitRightToLeft;
+                            stack.popEnter = animEnterRightToLeft;
                             stack.pop();
                             settingsFloatingButtonOverlay.visible = true;
                         }
@@ -108,8 +110,8 @@ Item {
                             property: "y"
                             from: settingsStack.height
                             to: 0
-                            duration: 300
-                            easing.type: Easing.OutCubic
+                            duration: 250
+                            easing.type: Easing.InQuad
                         }
                     }
 
@@ -118,8 +120,8 @@ Item {
                             property: "y"
                             from: 0
                             to: -settingsStack.height
-                            duration: 300
-                            easing.type: Easing.OutCubic
+                            duration: 250
+                            easing.type: Easing.OutQuad
                         }
                     }
                 }

@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         Qt::QueuedConnection
     );
 
-    engine.rootContext()->setContextProperty("isDebugInstance", IS_DEBUG);
+    engine.rootContext()->setContextProperty("isDebugInstance", QVariant(IS_DEBUG));
     engine.rootContext()->setContextProperty("MacroPad", macropad);
     engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
 

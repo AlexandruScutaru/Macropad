@@ -42,5 +42,49 @@ Item {
             id: dashboardView
             DeviceDashboardView {}
         }
+
+        Transition {
+            id: animEnterLeftToRight
+            PropertyAnimation {
+                property: "x"
+                from: -stack.width
+                to: 0
+                duration: 250
+                easing.type: Easing.InQuad
+            }
+        }
+
+        Transition {
+            id: animExitLeftToRight
+            PropertyAnimation {
+                property: "x"
+                from: 0
+                to: stack.width
+                duration: 250
+                easing.type: Easing.OutQuad
+            }
+        }
+
+        Transition {
+            id: animEnterRightToLeft
+            PropertyAnimation {
+                property: "x"
+                from: stack.width
+                to: 0
+                duration: 250
+                easing.type: Easing.InQuad
+            }
+        }
+
+        Transition {
+            id: animExitRightToLeft
+            PropertyAnimation {
+                property: "x"
+                from: 0
+                to: -stack.width
+                duration: 250
+                easing.type: Easing.OutQuad
+            }
+        }
     }
 }

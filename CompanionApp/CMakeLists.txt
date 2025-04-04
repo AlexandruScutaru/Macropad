@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.16)
 
 project(MacropadCompanion VERSION 0.1 LANGUAGES CXX)
 
-if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set(CMAKE_INSTALL_PREFIX ${BUILD_DIRECTORY}/output/ CACHE PATH "Custom Macropad install directory" FORCE)
-endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
