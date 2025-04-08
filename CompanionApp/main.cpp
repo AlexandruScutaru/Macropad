@@ -4,6 +4,9 @@
 #include <QQuickStyle>
 #include <QIcon>
 
+#include <QtQml/QQmlExtensionPlugin>
+Q_IMPORT_QML_PLUGIN(ControlsPlugin)
+
 #include "Config.h"
 #include "Macropad.h"
 
@@ -16,7 +19,6 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon(":/resources/app_icon.png"));
     QQmlApplicationEngine engine;
-    engine.addImportPath("/controls");
     QQuickStyle::setStyle("basic");
 
     QApplication::setOrganizationName("Macropad");

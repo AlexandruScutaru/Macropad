@@ -1,7 +1,5 @@
 import QtQuick 2.15
 import QtQuick.Controls.Basic 2.15
-import Qt5Compat.GraphicalEffects
-
 
 Button {
     id: button

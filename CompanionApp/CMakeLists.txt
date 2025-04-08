@@ -1,12 +1,21 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 
-project(MacropadCompanion VERSION 0.1 LANGUAGES CXX)
-
+project(Macropad VERSION 0.0.1 LANGUAGES CXX)
+set(TARGET_NAME "MacropadCompanion")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS Quick)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+
+set(QT_QML_GENERATE_QMLLS_INI ON)
+set(QMLLS_NO_CMAKE_CALLS TRUE)
+
+set(QT_DIR $ENV{QTDIR})
+set(CMAKE_PREFIX_PATH ${QT_DIR})
+
+find_package(Qt6 REQUIRED COMPONENTS Quick)
 find_package(Qt6 REQUIRED COMPONENTS Qml)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS Core)
@@ -21,7 +30,7 @@ qt_standard_project_setup()
 
 add_subdirectory(qml/controls)
 
-qt_add_executable(appMacropadCompanion
+qt_add_executable(${TARGET_NAME}
     main.cpp
 )
 
@@ -41,7 +50,7 @@ set_source_files_properties(qml/settings/SlidersSettings.qml      PROPERTIES QT_
 
 set_source_files_properties(qml/Main.qml                          PROPERTIES QT_RESOURCE_ALIAS Main.qml)
 
-qt_add_qml_module(appMacropadCompanion
+qt_add_qml_module(${TARGET_NAME}
     URI MacropadCompanion
     VERSION 1.0
 
@@ -105,13 +114,13 @@ qt_add_qml_module(appMacropadCompanion
 # unfortunately I have to add this to include path
 # by using QML_ELEMENT, qt6 cmake will try to automatically register the type
 # and the class in question needs to be accessible via include path without prefixes
-target_include_directories(appMacropadCompanion PUBLIC
+target_include_directories(${TARGET_NAME} PUBLIC
     controllers
     controllers/settings
 )
 
 if (WIN32)
-    target_sources(appMacropadCompanion PUBLIC
+    target_sources(${TARGET_NAME} PUBLIC
         os/windows/IPolicyConfig.h
         os/windows/NativeEventFilter.cpp
         os/windows/NativeEventFilter.h
@@ -121,14 +130,14 @@ if (WIN32)
 endif()
 
 if (LINUX)
-    target_sources(appMacropadCompanion PUBLIC
+    target_sources(${TARGET_NAME} PUBLIC
     )
 endif()
 
 file(GLOB_RECURSE QML_SRC "*.qml")
 source_group("QML Files" FILES ${QML_SRC})
 
-qt_add_resources(appMacropadCompanion "resources"
+qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
         resources/app_icon.png
@@ -139,26 +148,41 @@ qt_add_resources(appMacropadCompanion "resources"
         resources/sliders_icon.png
 )
 
-set_target_properties(appMacropadCompanion PROPERTIES
+set_target_properties(${TARGET_NAME} PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(appMacropadCompanion PRIVATE Qt6::Quick)
-target_link_libraries(appMacropadCompanion PRIVATE Qt6::QuickControls2)
-target_link_libraries(appMacropadCompanion PRIVATE Qt6::Widgets)
+target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Quick)
+target_link_libraries(${TARGET_NAME} PRIVATE Qt6::QuickControls2)
+target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Widgets)
 
-target_link_libraries(appMacropadCompanion PRIVATE HIDAPI::hidapi)
-target_link_libraries(appMacropadCompanion PRIVATE User32)
+target_link_libraries(${TARGET_NAME} PRIVATE Controlsplugin)
+
+target_link_libraries(${TARGET_NAME} PRIVATE HIDAPI::hidapi)
+target_link_libraries(${TARGET_NAME} PRIVATE User32)
+
+set(BUILD_DIR ${PROJECT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE})
+
+# post build action to copy dependencies in order to be able to debug from VSCode
+if(WIN32)
+    add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+        COMMAND ${QT_DIR}/bin/windeployqt.exe --qmldir ${PROJECT_SOURCE_DIR}/qml ${BUILD_DIR}/${TARGET_NAME}.exe
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${TARGET_NAME}> $<TARGET_FILE_DIR:${TARGET_NAME}> COMMAND_EXPAND_LISTS
+    )
+endif()
+
+set(DEPLOY_DIR ${BUILD_DIR}/deploy)
+set(CMAKE_INSTALL_PREFIX ${DEPLOY_DIR})
 
 include(GNUInstallDirs)
-install(TARGETS appMacropadCompanion
+install(TARGETS ${TARGET_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
 install(IMPORTED_RUNTIME_ARTIFACTS HIDAPI::hidapi)
 
-qt_generate_deploy_qml_app_script(TARGET appMacropadCompanion
+qt_generate_deploy_qml_app_script(TARGET ${TARGET_NAME}
     OUTPUT_SCRIPT deploy_script
 )
 install(SCRIPT ${deploy_script})

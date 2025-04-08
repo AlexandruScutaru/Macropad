@@ -93,8 +93,13 @@ void Macropad::initTrayIcon() {
 
 void Macropad::initDeviceView(const QObject* const qmlWindow) {
     if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(DEVICE_QML_CONTAINER_NAME); deviceViewContainer) {
-        QQmlComponent devView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/DeviceStackView.qml"));
-        auto component = devView.createWithInitialProperties(QVariantMap{{ "mainController", QVariant::fromValue<MainController*>(mMainController) }});
+        QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/DeviceStackView.qml"));
+        if (deviceView.isError() || deviceView.isNull()) {
+            qDebug() << "Cannot create DeviceStackView.qml";
+            return;
+        }
+
+        auto component = deviceView.createWithInitialProperties(QVariantMap{{ "mainController", QVariant::fromValue<MainController*>(mMainController) }});
         auto item = qobject_cast<QQuickItem*>(component);
         item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
     }

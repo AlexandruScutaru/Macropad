@@ -4,7 +4,6 @@ import QtQuick.Controls.Basic 2.15
 
 import Controls 1.0
 
-
 Item {
     ColumnLayout {
         anchors.fill: parent

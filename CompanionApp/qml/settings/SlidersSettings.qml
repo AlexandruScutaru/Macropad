@@ -1,10 +1,8 @@
 import QtQuick 2.15
 import QtQuick.Layouts
-import QtQuick.Controls.Basic 2.15
 
 import Controls 1.0
 import MacropadCompanion 1.0
-
 
 Item {
     SlidersSettingsController {
