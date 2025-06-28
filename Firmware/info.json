@@ -1,0 +1,71 @@
+{
+    "keyboard_name": "Macropad",
+    "maintainer": "AlexS",
+    "manufacturer": "AlexS",
+    "url": "",
+
+    "board": "Macropad",
+    "bootloader": "caterina",
+    "development_board": "promicro",
+    "processor": "atmega32u4",
+    "bootloader_instructions": "Unplug USB cable, hold encoder switch down while plugging USB back in, release the encoder switch after one second",
+
+    "features": {
+        "bootmagic": true,
+        "command": false,
+        "console": false,
+        "encoder": true,
+        "extrakey": true,
+        "layers": true,
+        "mousekey": false,
+        "nkro": true
+    },
+
+    "tapping" : {
+        "term": 200,
+        "term_per_key": true
+    },
+
+    "bootmagic": {
+        "enabled": true,
+        "matrix": [0, 0]
+    },
+
+    "encoder": {
+        "rotary": [
+            {
+                "pin_a": "D0",
+                "pin_b": "D1",
+                "resolution": 2
+            }
+        ]
+    },
+
+    "layouts": {
+        "LAYOUT_ortho_3x3": {
+            "layout": [
+                {"matrix": [0, 0], "x": 0, "y": 0},
+                {"matrix": [0, 1], "x": 1, "y": 0},
+                {"matrix": [0, 2], "x": 2, "y": 0},
+                {"matrix": [1, 0], "x": 0, "y": 1},
+                {"matrix": [1, 1], "x": 1, "y": 1},
+                {"matrix": [1, 2], "x": 2, "y": 1},
+                {"matrix": [2, 0], "x": 0, "y": 2},
+                {"matrix": [2, 1], "x": 1, "y": 2},
+                {"matrix": [2, 2], "x": 2, "y": 2}
+            ]
+        }
+    },
+
+    "diode_direction": "COL2ROW",
+    "matrix_pins": {
+        "cols": ["B1", "F7", "F6"],
+        "rows": ["B2", "B3", "B6"]
+    },
+
+    "usb": {
+        "device_version": "0.0.1",
+        "vid": "0xFEED",
+        "pid": "0xB00B"
+    }
+}
