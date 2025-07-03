@@ -1,8 +1,8 @@
 {
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
-    "cmake.generator": "Ninja",
-    "cmake.buildDirectory": "${workspaceFolder}/build/${buildType}",
+    "cmake.useCMakePresets": "always",
+    "cmake.options.statusBarVisibility": "visible",
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.associations": {
         "qapplication": "cpp",

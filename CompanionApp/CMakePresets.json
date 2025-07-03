@@ -1,0 +1,105 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "description": "Sets Ninja generator, build and install dirs",
+            "generator": "Ninja",
+            "binaryDir": "build/${presetName}",
+            "installDir": "build/${presetName}/deploy"
+        },
+        {
+            "name": "debug",
+            "hidden": true,
+            "description": "Debug build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "release",
+            "hidden": true,
+            "description": "Release build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "win64",
+            "hidden": true,
+            "description": "Windows x64 architecture",
+            "architecture":{
+                "value": "x64",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "msvc",
+            "hidden": true,
+            "description": "Windows MSVC Compiler",
+            "toolset": {
+                "strategy": "external",
+                "value": "host=x64"
+            },
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "cl"
+            }
+        },
+        {
+            "name": "win-x64-debug",
+            "displayName": "Win64 Debug",
+            "description": "Windows x64 MSVC Debug build",
+            "inherits": [
+                "base",
+                "win64",
+                "debug",
+                "msvc"
+            ],
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "win-x64-release",
+            "displayName": "Win64 Release",
+            "description": "Windows x64 MSVC Release build",
+            "inherits": [
+                "base",
+                "win64",
+                "release",
+                "msvc"
+            ],
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "MacropadCompanion-debug",
+            "displayName": "Macropad Companion Debug build",
+            "configurePreset": "win-x64-debug",
+            "configuration": "Debug",
+            "targets": ["MacropadCompanion"]
+        },
+        {
+            "name": "MacropadCompanion-release",
+            "displayName": "Macropad Companion Release build",
+            "configurePreset": "win-x64-release",
+            "configuration": "Release",
+            "targets": ["MacropadCompanion"]
+        },
+        {
+            "name": "deploy",
+            "displayName": "Macropad Companion Deployment",
+            "configurePreset": "win-x64-release",
+            "configuration": "Release",
+            "targets": ["install"]
+        }
+    ]
+}

@@ -1,0 +1,19 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "CompanionApp"
+        },
+        {
+            "path": "Firmware"
+        }
+    ],
+    "settings": {
+        "files.exclude": {
+            "CompanionApp": true,
+            "Firmware": true
+        }
+    }
+}
