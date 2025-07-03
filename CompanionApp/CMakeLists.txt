@@ -119,21 +119,6 @@ target_include_directories(${TARGET_NAME} PUBLIC
     controllers/settings
 )
 
-if (WIN32)
-    target_sources(${TARGET_NAME} PUBLIC
-        os/windows/IPolicyConfig.h
-        os/windows/NativeEventFilter.cpp
-        os/windows/NativeEventFilter.h
-        os/windows/WinApiWrapper.cpp
-        os/windows/WinApiWrapper.h
-    )
-endif()
-
-if (LINUX)
-    target_sources(${TARGET_NAME} PUBLIC
-    )
-endif()
-
 file(GLOB_RECURSE QML_SRC "*.qml")
 source_group("QML Files" FILES ${QML_SRC})
 
@@ -148,10 +133,6 @@ qt_add_resources(${TARGET_NAME} "resources"
         resources/sliders_icon.png
 )
 
-set_target_properties(${TARGET_NAME} PROPERTIES
-    WIN32_EXECUTABLE TRUE
-)
-
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Quick)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::QuickControls2)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Widgets)
@@ -159,20 +140,32 @@ target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Widgets)
 target_link_libraries(${TARGET_NAME} PRIVATE Controlsplugin)
 
 target_link_libraries(${TARGET_NAME} PRIVATE HIDAPI::hidapi)
-target_link_libraries(${TARGET_NAME} PRIVATE User32)
 
-set(BUILD_DIR ${PROJECT_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE})
-
-# post build action to copy dependencies in order to be able to debug from VSCode
+# platform specific configurations
 if(WIN32)
+    target_sources(${TARGET_NAME} PUBLIC
+        os/windows/IPolicyConfig.h
+        os/windows/NativeEventFilter.cpp
+        os/windows/NativeEventFilter.h
+        os/windows/WinApiWrapper.cpp
+        os/windows/WinApiWrapper.h
+    )
+
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        WIN32_EXECUTABLE TRUE
+    )
+
+    target_link_libraries(${TARGET_NAME} PRIVATE User32)
+
+    # post build action to copy dependencies in order to be able to debug from VSCode
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
-        COMMAND ${QT_DIR}/bin/windeployqt.exe --qmldir ${PROJECT_SOURCE_DIR}/qml ${BUILD_DIR}/${TARGET_NAME}.exe
+        COMMAND ${QT_DIR}/bin/windeployqt.exe --qmldir ${PROJECT_SOURCE_DIR}/qml ${CMAKE_BINARY_DIR}/${TARGET_NAME}.exe
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${TARGET_NAME}> $<TARGET_FILE_DIR:${TARGET_NAME}> COMMAND_EXPAND_LISTS
     )
+elseif (LINUX)
+    target_sources(${TARGET_NAME} PUBLIC
+    )
 endif()
-
-set(DEPLOY_DIR ${BUILD_DIR}/deploy)
-set(CMAKE_INSTALL_PREFIX ${DEPLOY_DIR})
 
 include(GNUInstallDirs)
 install(TARGETS ${TARGET_NAME}
