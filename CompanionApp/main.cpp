@@ -7,12 +7,16 @@
 #include <QtQml/QQmlExtensionPlugin>
 Q_IMPORT_QML_PLUGIN(ControlsPlugin)
 
-#include "Config.h"
+#include "AppSettings.h"
 #include "Macropad.h"
 
 #include "misc/DebugChecker.h"
 
+#include <algorithm>
+
 static constexpr auto SHOW_WINDOW_QML_FUNC_NAME = "windowShowRequested";
+
+bool isArgumentPresent(char** begin, char** end, const std::string& argument);
 
 
 int main(int argc, char *argv[]) {
@@ -24,8 +28,8 @@ int main(int argc, char *argv[]) {
     QApplication::setOrganizationName("Macropad");
     QApplication::setApplicationName("Companion");
 
-    auto config = new Config(qApp);
-    auto macropad = new Macropad(engine, config, qApp);
+    auto appSettings = new AppSettings(qApp);
+    auto macropad = new Macropad(engine, appSettings, qApp);
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed,
@@ -38,7 +42,7 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated,
-        &app, [&engine, macropad](QObject* obj, const QUrl& url) {
+        &app, [&engine, macropad, argv, argc](QObject* obj, const QUrl& url) {
             if (!obj) {
                 qDebug() << "QQmlApplicationEngine created object is null (for some reason) for " << url;
                 QCoreApplication::exit(-2);
@@ -49,7 +53,12 @@ int main(int argc, char *argv[]) {
             }
             const auto qmlWindow = engine.rootObjects().constFirst();
 
-            macropad->onInitialized(IS_DEBUG);
+            const std::string skipPhysicalDeviceArgName = "--skipPhysicalDevice";
+            qDebug() << "Argument " << QString::fromStdString(skipPhysicalDeviceArgName) << ": " << isArgumentPresent(argv, argv + argc, skipPhysicalDeviceArgName);
+            macropad->onInitialized({
+                .isDebug = IS_DEBUG,
+                .isSkipPhysicalDevice = isArgumentPresent(argv, argv + argc, skipPhysicalDeviceArgName)
+            });
             QObject::connect(macropad, &Macropad::showWindowRequested, qApp, [winPtr = QPointer(qmlWindow)]() {
                 if (!winPtr) {
                     return;
@@ -66,4 +75,8 @@ int main(int argc, char *argv[]) {
     engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
 
     return app.exec();
+}
+
+bool isArgumentPresent(char** begin, char** end, const std::string& argument) {
+    return std::find(begin, end, argument) != end;
 }

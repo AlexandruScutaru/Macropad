@@ -16,15 +16,15 @@ DeviceSettingsController::~DeviceSettingsController() {
 }
 
 
-void DeviceSettingsController::init(Config* config) {
-    mConfig = config;
-    mDevicePath = mConfig->lastDevicePath();
+void DeviceSettingsController::init(AppSettings* appSettings) {
+    mAppSettings = appSettings;
+    mDevicePath = mAppSettings->lastDevicePath();
     emit devicePathChanged(mDevicePath);
 }
 
 void DeviceSettingsController::forgetDeviceClicked() {
-    mConfig->clearLastDevicePath();
-    mDevicePath = mConfig->lastDevicePath();
+    mAppSettings->clearLastDevicePath();
+    mDevicePath = mAppSettings->lastDevicePath();
     emit devicePathChanged(mDevicePath);
 }
 

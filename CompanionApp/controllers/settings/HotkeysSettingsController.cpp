@@ -24,10 +24,10 @@ HotkeysSettingsController::~HotkeysSettingsController() {
 }
 
 
-void HotkeysSettingsController::init(Config* config) {
-    mConfig = config;
+void HotkeysSettingsController::init(AppSettings* appSettings) {
+    mAppSettings = appSettings;
 
-    for (const auto& [action, key]: mConfig->hotkeyActionMap()) {
+    for (const auto& [action, key]: mAppSettings->hotkeyActionMap()) {
         mCurrentActionsMap[action] = key;
     }
 
@@ -43,7 +43,7 @@ void HotkeysSettingsController::unregisterHotkeys() {
 }
 
 void HotkeysSettingsController::restoreHotkeys() {
-    for (const auto& [action, key]: mConfig->hotkeyActionMap()) {
+    for (const auto& [action, key]: mAppSettings->hotkeyActionMap()) {
         if (key == Qt::Key_unknown) {
             continue;
         }
@@ -54,7 +54,7 @@ void HotkeysSettingsController::restoreHotkeys() {
 }
 
 void HotkeysSettingsController::saveChanges() {
-    mConfig->saveHotkeyActionMap(mCurrentActionsMap);
+    mAppSettings->saveHotkeyActionMap(mCurrentActionsMap);
 
     mHasPendingChanges = false;
     emit hasPendingChangesChanged(mHasPendingChanges);
@@ -65,7 +65,7 @@ bool HotkeysSettingsController::getHasPendingChanges() {
 }
 
 void HotkeysSettingsController::setActionKeyMapping(int actionVal, int key) {
-    const auto savedActionsMap = mConfig->hotkeyActionMap();
+    const auto savedActionsMap = mAppSettings->hotkeyActionMap();
     mCurrentActionsMap[static_cast<Hotkeys::Actions>(actionVal)] = key;
 
     bool areEqual = std::equal(savedActionsMap.begin(), savedActionsMap.end(), mCurrentActionsMap.begin());

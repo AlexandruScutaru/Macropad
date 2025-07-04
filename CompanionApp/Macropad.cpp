@@ -1,7 +1,7 @@
 #include "Macropad.h"
 
 #include "audio/AudioOutputSwitcher.h"
-#include "Config.h"
+#include "AppSettings.h"
 #include "controllers/MainController.h"
 #include "controllers/Settings/HotkeyActions.h"
 #include "hid/PotentiometersReader.h"
@@ -18,26 +18,27 @@
 static constexpr auto DEVICE_QML_CONTAINER_NAME = "deviceStackViewContainer";
 
 
-Macropad::Macropad(QQmlApplicationEngine& engine, Config* config, QObject* parent)
+Macropad::Macropad(QQmlApplicationEngine& engine, AppSettings* appSettings, QObject* parent)
     : QObject(parent)
     , mQmlEngine(engine)
-    , mConfig(config)
+    , mAppSettings(appSettings)
 {
     qDebug() << "Macropad::Macropad";
 
-    assert(mConfig && "Ivalid config");
+    assert(mAppSettings && "Invalid appSettings");
 }
 
 Macropad::~Macropad() {
     qDebug() << "Macropad::~Macropad";
 }
 
-void Macropad::onInitialized(bool isDebug) {
-    const auto qmlWindow = getMainWindowObject();
+void Macropad::onInitialized(const MacropadConfig& config) {
+    mConfig = config;
 
+    const auto qmlWindow = getMainWindowObject();
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
-    mMainController = new MainController(mPotentiometersReader, mConfig, this);
+    mMainController = new MainController(mPotentiometersReader, mAppSettings, mConfig.isSkipPhysicalDevice, this);
 
     QObject::connect(mMainController, &MainController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
@@ -46,28 +47,16 @@ void Macropad::onInitialized(bool isDebug) {
     initDeviceView(qmlWindow);
 }
 
-void Macropad::saveDevHelperExpandState(bool isExpanded) {
-    mConfig->saveDevHelperState(isExpanded);
-}
-
-bool Macropad::devHelperExpandState() {
-    if (!IS_DEBUG) {
-        return false;
-    }
-
-    return mConfig->devHelperState();
-}
-
 QSize Macropad::windowSize() {
-    return mConfig->windowSize();
+    return mAppSettings->windowSize();
 }
 
 void Macropad::saveWindowSize(int w, int h) {
-    mConfig->saveWindowSize({ w, h });
+    mAppSettings->saveWindowSize({ w, h });
 }
 
 void Macropad::onHotkeyTriggered(int key) {
-    const auto action = mConfig->keyToHotkeyAction(key);
+    const auto action = mAppSettings->keyToHotkeyAction(key);
 
     switch (action) {
         case Hotkeys::Actions::CYCLE_AUDIO_OUTPUTS:

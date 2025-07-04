@@ -22,13 +22,13 @@ using HotkeyActionMap = std::unordered_map<Hotkeys::Actions, int>;
 using Potentiometers =  std::vector<PotentiometerInfo>;
 
 
-class Config : public QObject {
+class AppSettings : public QObject {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Not intended to be created from QML directly")
 public:
-    explicit Config(QObject* parent = nullptr);
-    ~Config();
+    explicit AppSettings(QObject* parent = nullptr);
+    ~AppSettings();
 
     QSize windowSize();
     void saveWindowSize(const QSize& size);
