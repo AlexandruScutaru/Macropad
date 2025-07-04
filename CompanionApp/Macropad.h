@@ -9,26 +9,28 @@ namespace Hotkeys {
 }
 
 class AudioOutputSwitcher;
-class Config;
+class AppSettings;
 class MainController;
 class PotentiometersReader;
 class TrayIcon;
 
+struct MacropadConfig {
+    bool isDebug = false;
+    bool isSkipPhysicalDevice = false;
+};
 
 class Macropad : public QObject {
     Q_OBJECT
 public:
-    explicit Macropad(QQmlApplicationEngine& engine, Config* config, QObject* parent = nullptr);
+    explicit Macropad(QQmlApplicationEngine& engine, AppSettings* appSettings, QObject* parent = nullptr);
     ~Macropad();
 
-    void onInitialized(bool isDebug);
+    void onInitialized(const MacropadConfig& config);
 
 signals:
     void showWindowRequested();
 
 public slots:
-    bool devHelperExpandState();
-    void saveDevHelperExpandState(bool isExpanded);
     QSize windowSize();
     void saveWindowSize(int w, int h);
 
@@ -44,8 +46,9 @@ private:
 
     QQmlApplicationEngine& mQmlEngine;
 
+    MacropadConfig mConfig;
+    AppSettings* mAppSettings{ nullptr };
     AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
-    Config* mConfig{ nullptr };
     PotentiometersReader* mPotentiometersReader{ nullptr };
     MainController* mMainController{nullptr};
 

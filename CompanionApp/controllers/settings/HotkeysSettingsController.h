@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Config.h"
+#include "AppSettings.h"
 #include "models/settings/HotkeysSettingsModel.h"
 
 #include <QObject>
@@ -17,7 +17,7 @@ public:
     explicit HotkeysSettingsController(QObject *parent = nullptr);
     ~HotkeysSettingsController();
 
-    Q_INVOKABLE void init(Config* config);
+    Q_INVOKABLE void init(AppSettings* appSettings);
     Q_INVOKABLE HotkeysSettingsModel* getModel();
 
     Q_INVOKABLE void unregisterHotkeys();
@@ -35,7 +35,7 @@ private:
     void updateModel();
 
     bool mHasPendingChanges{ false };
-    QPointer<Config> mConfig{ nullptr };
+    QPointer<AppSettings> mAppSettings{ nullptr };
     HotkeyActionMap mCurrentActionsMap;
     QPointer<HotkeysSettingsModel> mModel{ nullptr };
 

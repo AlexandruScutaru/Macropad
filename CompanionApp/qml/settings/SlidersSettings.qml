@@ -10,7 +10,7 @@ Item {
     }
 
     Component.onCompleted: {
-        slidersController.init(mainController.getConfig());
+        slidersController.init(mainController.getAppSettings());
     }
 
     Connections {

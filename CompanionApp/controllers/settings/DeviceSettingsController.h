@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Config.h"
+#include "AppSettings.h"
 
 #include <QObject>
 #include <QPointer>
@@ -16,7 +16,7 @@ public:
     explicit DeviceSettingsController(QObject *parent = nullptr);
     ~DeviceSettingsController();
 
-    Q_INVOKABLE void init(Config* config);
+    Q_INVOKABLE void init(AppSettings* appSettings);
     Q_INVOKABLE void forgetDeviceClicked();
 
     QString getDevicePath();
@@ -27,7 +27,7 @@ signals:
     void devicePathChanged(QString devicePath);
 
 private:
-    QPointer<Config> mConfig{ nullptr };
+    QPointer<AppSettings> mAppSettings{ nullptr };
     QString mDevicePath{ "device/path" };
 
 };

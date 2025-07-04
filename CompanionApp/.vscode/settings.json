@@ -2,10 +2,5 @@
     "cmake.configureOnEdit": false,
     "cmake.configureOnOpen": false,
     "cmake.useCMakePresets": "always",
-    "cmake.options.statusBarVisibility": "visible",
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
-    "files.associations": {
-        "qapplication": "cpp",
-        "qquickstyle": "cpp"
-    }
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }

@@ -1,4 +1,4 @@
-#include "Config.h"
+#include "AppSettings.h"
 
 #include "controllers/settings/HotkeyActions.h"
 
@@ -23,10 +23,10 @@ static constexpr auto MIN = "min";
 static constexpr auto MAX = "max";
 
 
-Config::Config(QObject* parent)
+AppSettings::AppSettings(QObject* parent)
     : QObject(parent)
 {
-    qDebug() << "Config::Config";
+    qDebug() << "AppSettings::AppSettings";
 
     readWindowState();
     readDeviceConnectionData();
@@ -34,21 +34,21 @@ Config::Config(QObject* parent)
     readPotentiometersInfo();
 }
 
-Config::~Config() {
-    qDebug() << "Config::~Config";
+AppSettings::~AppSettings() {
+    qDebug() << "AppSettings::~AppSettings";
 }
 
 
-std::unique_ptr<QSettings> Config::getSettings() {
+std::unique_ptr<QSettings> AppSettings::getSettings() {
     return std::make_unique<QSettings>(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 }
 
 
-QSize Config::windowSize() {
+QSize AppSettings::windowSize() {
     return mWindowSize;
 }
 
-void Config::saveWindowSize(const QSize& size) {
+void AppSettings::saveWindowSize(const QSize& size) {
     mWindowSize = size;
 
     auto settings = getSettings();
@@ -56,39 +56,39 @@ void Config::saveWindowSize(const QSize& size) {
     settings->setValue(WINDOWSTATE_HEIGHT, size.height());
 }
 
-bool Config::devHelperState() {
+bool AppSettings::devHelperState() {
     return mDevHelperState;
 }
 
-void Config::saveDevHelperState(bool state) {
+void AppSettings::saveDevHelperState(bool state) {
     mDevHelperState = state;
 
     auto settings = getSettings();
     settings->setValue(WINDOWSTATE_DEVHELPER_STATE, state);
 }
 
-QString Config::lastDevicePath() {
+QString AppSettings::lastDevicePath() {
     return mLastDevicePath;
 }
 
-void Config::saveLastDevicePath(const QString& path) {
+void AppSettings::saveLastDevicePath(const QString& path) {
     mLastDevicePath = path;
 
     auto settings = getSettings();
     settings->setValue(DEVICE_LAST_DEVICE_PATH, path);
 }
 
-void Config::clearLastDevicePath() {
+void AppSettings::clearLastDevicePath() {
     mLastDevicePath = "";
     auto settings = getSettings();
     settings->remove(DEVICE_LAST_DEVICE_PATH);
 }
 
-HotkeyActionMap Config::hotkeyActionMap() {
+HotkeyActionMap AppSettings::hotkeyActionMap() {
     return mHotkeyActionMap;
 }
 
-void Config::saveHotkeyActionMap(const HotkeyActionMap& hotkeyActionMap) {
+void AppSettings::saveHotkeyActionMap(const HotkeyActionMap& hotkeyActionMap) {
     mHotkeyActionMap = hotkeyActionMap;
 
     auto settings = getSettings();
@@ -108,7 +108,7 @@ void Config::saveHotkeyActionMap(const HotkeyActionMap& hotkeyActionMap) {
     settings->endGroup();
 }
 
-Hotkeys::Actions Config::keyToHotkeyAction(int key) {
+Hotkeys::Actions AppSettings::keyToHotkeyAction(int key) {
     const auto it = std::find_if(mHotkeyActionMap.begin(), mHotkeyActionMap.end(), [key](const auto& entry) {
         return entry.second == key;
     });
@@ -120,11 +120,11 @@ Hotkeys::Actions Config::keyToHotkeyAction(int key) {
     return Hotkeys::Actions::UNKNOWN;
 }
 
-Potentiometers Config::potentiometersInfo() {
+Potentiometers AppSettings::potentiometersInfo() {
     return mPotentiometersInfo;
 }
 
-void Config::savePotentiometersInfo(const Potentiometers& potentiometers) {
+void AppSettings::savePotentiometersInfo(const Potentiometers& potentiometers) {
     mPotentiometersInfo = potentiometers;
 
     auto settings = getSettings();
@@ -139,7 +139,7 @@ void Config::savePotentiometersInfo(const Potentiometers& potentiometers) {
     settings->endGroup();
 }
 
-void Config::readWindowState() {
+void AppSettings::readWindowState() {
     auto settings = getSettings();
 
     auto w = settings->value(WINDOWSTATE_WIDTH, 640).toInt();
@@ -149,12 +149,12 @@ void Config::readWindowState() {
     mDevHelperState = settings->value(WINDOWSTATE_DEVHELPER_STATE, false).toBool();
 }
 
-void Config::readDeviceConnectionData() {
+void AppSettings::readDeviceConnectionData() {
     auto settings = getSettings();
     mLastDevicePath = settings->value(DEVICE_LAST_DEVICE_PATH, "").toString();
 }
 
-void Config::readHotkeyActions() {
+void AppSettings::readHotkeyActions() {
     auto settings = getSettings();
 
     settings->beginGroup(HOTKEYS);
@@ -178,7 +178,7 @@ void Config::readHotkeyActions() {
     settings->endGroup();
 }
 
-void Config::readPotentiometersInfo() {
+void AppSettings::readPotentiometersInfo() {
     auto settings = getSettings();
 
     settings->beginGroup(DEVICE);

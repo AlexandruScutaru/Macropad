@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Config.h"
+#include "AppSettings.h"
 #include "models/settings/SlidersSettingsModel.h"
 
 #include <QObject>
@@ -18,7 +18,7 @@ public:
     explicit SlidersSettingsController(QObject *parent = nullptr);
     ~SlidersSettingsController();
 
-    Q_INVOKABLE void init(Config* config);
+    Q_INVOKABLE void init(AppSettings* appSettings);
     Q_INVOKABLE SlidersSettingsModel* getModel();
     Q_INVOKABLE void setIsCalibrating(bool isCalibrating);
 
@@ -35,7 +35,7 @@ private:
     void updateModel();
     void handleCalibration(const std::vector<int>& rawValues);
 
-    QPointer<Config> mConfig{ nullptr };
+    QPointer<AppSettings> mAppSettings{ nullptr };
     QPointer<SlidersSettingsModel> mModel{ nullptr };
 
     std::vector<PotentiometerInfo> mPotentiometersInfo;

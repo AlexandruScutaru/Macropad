@@ -21,10 +21,10 @@ SlidersSettingsController::~SlidersSettingsController() {
     qDebug() << "SlidersSettingsController::~SlidersSettingsController";
 }
 
-void SlidersSettingsController::init(Config* config) {
-    mConfig = config;
+void SlidersSettingsController::init(AppSettings* appSettings) {
+    mAppSettings = appSettings;
 
-    mPotentiometersInfo = mConfig->potentiometersInfo();
+    mPotentiometersInfo = mAppSettings->potentiometersInfo();
     mCurrentValues = std::vector<int>(mPotentiometersInfo.size());
     updateModel();
 }
@@ -45,7 +45,7 @@ void SlidersSettingsController::setIsCalibrating(bool isCalibrating) {
             mPotentiometersInfo[i].max = 0;
         }
     } else {
-        mConfig->savePotentiometersInfo(mPotentiometersInfo);
+        mAppSettings->savePotentiometersInfo(mPotentiometersInfo);
     }
 }
 

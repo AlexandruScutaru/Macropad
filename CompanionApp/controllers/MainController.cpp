@@ -1,5 +1,5 @@
 #include "MainController.h"
-#include "Config.h"
+#include "AppSettings.h"
 
 #include "os/windows/WinApiWrapper.h"
 #include "../hid/HidHelper.h"
@@ -10,16 +10,17 @@
 #include <QSettings>
 
 
-MainController::MainController(PotentiometersReader* potentiometersReader, Config* config, QObject* parent)
+MainController::MainController(PotentiometersReader* potentiometersReader, AppSettings* appSettings, bool skipPhysicalDevice, QObject* parent)
     : QObject(parent)
-    , mConfig(config)
+    , mAppSettings(appSettings)
     , mDeviceInfoModel(new DeviceInfoModel(this))
     , mSlidersModel(new SlidersModel(this))
     , mPotentiometersReader(potentiometersReader)
+    , mSkipPhysicalDevice(skipPhysicalDevice)
 {
     qDebug() << "MainController::MainController";
 
-    assert(mConfig && "Invalid config");
+    assert(mAppSettings && "Invalid appSettings");
 
     mHidHelper = new HidHelper(this);
     mHidInitted = mHidHelper->init();
@@ -27,7 +28,7 @@ MainController::MainController(PotentiometersReader* potentiometersReader, Confi
     QObject::connect(this, &MainController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
     QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, this, &MainController::onPotentiometersChanged);
 
-    for (const auto& [action, key]: mConfig->hotkeyActionMap()) {
+    for (const auto& [action, key]: mAppSettings->hotkeyActionMap()) {
         if (key != Qt::Key_unknown) {
             WinApiWrapper::RegisterGlobalHotkey(static_cast<int>(action), key);
         }
@@ -39,8 +40,8 @@ MainController::~MainController() {
 }
 
 
-Config* MainController::getConfig() {
-    return mConfig;
+AppSettings* MainController::getAppSettings() {
+    return mAppSettings;
 }
 
 DeviceInfoModel* MainController::getDeviceInfoModel() {
@@ -52,6 +53,10 @@ SlidersModel* MainController::getSlidersModel() {
 }
 
 void MainController::search(const QString& vid, const QString& pid) {
+    if (mSkipPhysicalDevice) {
+        return;
+    }
+
     const auto info = mHidHelper->enumerateDevices(convertToInt(vid), convertToInt(pid));
 
     mDeviceInfoModel->reset();
@@ -76,21 +81,31 @@ void MainController::search(const QString& vid, const QString& pid) {
 }
 
 void MainController::openDevice(const QString& path) {
+    if (mSkipPhysicalDevice) {
+        return;
+    }
+
     if (auto device = mHidHelper->openDevice(path.toStdString()); device) {
-        mConfig->saveLastDevicePath(path);
+        mAppSettings->saveLastDevicePath(path);
         emit deviceOpened(device);
         emit deviceConnected();
         return;
     }
 
-    mConfig->clearLastDevicePath();
+    mAppSettings->clearLastDevicePath();
     emit noDeviceSaved();
 }
 
 void MainController::openLastDevice() {
+    if (mSkipPhysicalDevice) {
+        emit deviceConnected();
+        onPotentiometersChanged({ 20, 20, 20, 20 });
+        return;
+    }
+
     QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
 
-    if (const auto path = mConfig->lastDevicePath(); !path.isEmpty()) {
+    if (const auto path = mAppSettings->lastDevicePath(); !path.isEmpty()) {
         openDevice(path);
         return;
     }
@@ -114,7 +129,7 @@ void MainController::onPotentiometersChanged(const std::vector<int>& values) {
     emit potentiometersChanged(values);
 
     if (!mIsCalibrating) {
-        const auto potentiometersInfo = mConfig->potentiometersInfo();
+        const auto potentiometersInfo = mAppSettings->potentiometersInfo();
 
         if (potentiometersInfo.size() != values.size()) {
             return;

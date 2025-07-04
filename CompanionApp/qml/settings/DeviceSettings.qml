@@ -10,7 +10,7 @@ Item {
     }
 
     Component.onCompleted: {
-        deviceController.init(mainController.getConfig());
+        deviceController.init(mainController.getAppSettings());
     }
 
     ColumnLayout {

@@ -105,8 +105,8 @@ qt_add_qml_module(${TARGET_NAME}
         tray/TrayIcon.cpp
         tray/TrayIcon.h
 
-        Config.cpp
-        Config.h
+        AppSettings.cpp
+        AppSettings.h
         Macropad.cpp
         Macropad.h
 )
