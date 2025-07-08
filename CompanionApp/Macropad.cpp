@@ -3,11 +3,9 @@
 #include "audio/AudioOutputSwitcher.h"
 #include "AppSettings.h"
 #include "controllers/MainController.h"
-#include "controllers/Settings/HotkeyActions.h"
+#include "controllers/settings/HotkeyActions.h"
 #include "hid/PotentiometersReader.h"
 #include "misc/DebugChecker.h"
-#include "os/windows/NativeEventFilter.h"
-#include "os/windows/WinApiWrapper.h"
 #include "tray/TrayIcon.h"
 
 #include <QApplication>
@@ -43,7 +41,6 @@ void Macropad::onInitialized(const MacropadConfig& config) {
     QObject::connect(mMainController, &MainController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
     initTrayIcon();
-    initHotkeysFilter();
     initDeviceView(qmlWindow);
 }
 
@@ -53,18 +50,6 @@ QSize Macropad::windowSize() {
 
 void Macropad::saveWindowSize(int w, int h) {
     mAppSettings->saveWindowSize({ w, h });
-}
-
-void Macropad::onHotkeyTriggered(int key) {
-    const auto action = mAppSettings->keyToHotkeyAction(key);
-
-    switch (action) {
-        case Hotkeys::Actions::CYCLE_AUDIO_OUTPUTS:
-            mAudioOutputSwitcher->onSwitchOutputRequested();
-            return;
-        default:
-            return;
-    }
 }
 
 QObject* const Macropad::getMainWindowObject() {
@@ -92,10 +77,4 @@ void Macropad::initDeviceView(const QObject* const qmlWindow) {
         auto item = qobject_cast<QQuickItem*>(component);
         item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
     }
-}
-
-void Macropad::initHotkeysFilter() {
-    auto nativeEventFilter = new NativeEventFilter(this);
-    QObject::connect(nativeEventFilter, &NativeEventFilter::hotkeyTriggered, this, &Macropad::onHotkeyTriggered);
-    qApp->installNativeEventFilter(static_cast<QAbstractNativeEventFilter*>(nativeEventFilter));
 }

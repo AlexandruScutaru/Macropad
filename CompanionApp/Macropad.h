@@ -34,15 +34,11 @@ public slots:
     QSize windowSize();
     void saveWindowSize(int w, int h);
 
-private slots:
-    void onHotkeyTriggered(int key);
-
 private:
     QObject* const getMainWindowObject();
 
     void initTrayIcon();
     void initDeviceView(const QObject* const qmlWindow);
-    void initHotkeysFilter();
 
     QQmlApplicationEngine& mQmlEngine;
 

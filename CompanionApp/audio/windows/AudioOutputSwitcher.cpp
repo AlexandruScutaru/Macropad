@@ -1,4 +1,4 @@
-#include "AudioOutputSwitcher.h"
+#include "../AudioOutputSwitcher.h"
 
 #include "os/windows/WinApiWrapper.h"
 

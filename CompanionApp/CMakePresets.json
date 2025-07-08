@@ -4,7 +4,7 @@
         {
             "name": "base",
             "hidden": true,
-            "description": "Sets Ninja generator, build and install dirs",
+            "description": "Sets Ninja generator and build and install dirs",
             "generator": "Ninja",
             "binaryDir": "build/${presetName}",
             "installDir": "build/${presetName}/deploy"
@@ -32,6 +32,21 @@
             "architecture":{
                 "value": "x64",
                 "strategy": "external"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "linux",
+            "hidden": true,
+            "description": "Linux x64 architecture",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
             }
         },
         {
@@ -47,6 +62,14 @@
             }
         },
         {
+            "name": "g++",
+            "hidden": true,
+            "description": "Linux g++ Compiler",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++"
+            }
+        },
+        {
             "name": "win-x64-debug",
             "displayName": "Win64 Debug",
             "description": "Windows x64 MSVC Debug build",
@@ -55,12 +78,7 @@
                 "win64",
                 "debug",
                 "msvc"
-            ],
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
+            ]
         },
         {
             "name": "win-x64-release",
@@ -71,33 +89,71 @@
                 "win64",
                 "release",
                 "msvc"
-            ],
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
+            ]
+        },
+        {
+            "name": "linux-debug",
+            "displayName": "Linux Debug",
+            "description": "Linux Debug build",
+            "inherits": [
+                "base",
+                "linux",
+                "debug",
+                "g++"
+            ]
+        },
+        {
+            "name": "linux-release",
+            "displayName": "Linux Release",
+            "description": "Linux Release build",
+            "inherits": [
+                "base",
+                "linux",
+                "release",
+                "g++"
+            ]
         }
     ],
     "buildPresets": [
         {
-            "name": "MacropadCompanion-debug",
-            "displayName": "Macropad Companion Debug build",
+            "name": "macropad-win64-debug",
+            "displayName": "Macropad Companion Win64 Debug",
             "configurePreset": "win-x64-debug",
             "configuration": "Debug",
-            "targets": ["MacropadCompanion"]
+            "targets": ["Companion"]
         },
         {
-            "name": "MacropadCompanion-release",
-            "displayName": "Macropad Companion Release build",
+            "name": "macropad-win64-release",
+            "displayName": "Macropad Companion Wind64 Release",
             "configurePreset": "win-x64-release",
             "configuration": "Release",
-            "targets": ["MacropadCompanion"]
+            "targets": ["Companion"]
         },
         {
-            "name": "deploy",
-            "displayName": "Macropad Companion Deployment",
+            "name": "win64-deploy",
+            "displayName": "Macropad Companion Wind64 Deployment",
             "configurePreset": "win-x64-release",
+            "configuration": "Release",
+            "targets": ["install"]
+        },
+        {
+            "name": "macropad-linux-debug",
+            "displayName": "Macropad Companion Linux Debug",
+            "configurePreset": "linux-debug",
+            "configuration": "Debug",
+            "targets": ["Companion"]
+        },
+        {
+            "name": "macropad-linux-release",
+            "displayName": "Macropad Companion Linux Release",
+            "configurePreset": "linux-release",
+            "configuration": "Release",
+            "targets": ["Companion"]
+        },
+        {
+            "name": "linux-deploy",
+            "displayName": "Macropad Companion Linux Deployment",
+            "configurePreset": "linux-release",
             "configuration": "Release",
             "targets": ["install"]
         }

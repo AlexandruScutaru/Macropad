@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 project(Macropad VERSION 0.0.1 LANGUAGES CXX)
-set(TARGET_NAME "MacropadCompanion")
+set(TARGET_NAME "Companion")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -20,11 +20,6 @@ find_package(Qt6 REQUIRED COMPONENTS Qml)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
-
-set(HIDAPI_DIR ./deps/hidapi/cmake)
-find_package(HIDAPI REQUIRED)
-set(HIDAPI_INCLUDE ./deps/hidapi/include)
-include_directories(HIDAPI ${HIDAPI_INCLUDE})
 
 qt_standard_project_setup()
 
@@ -70,7 +65,6 @@ qt_add_qml_module(${TARGET_NAME}
         qml/Main.qml
 
     SOURCES
-        audio/AudioOutputSwitcher.cpp
         audio/AudioOutputSwitcher.h
 
         controllers/MainController.cpp
@@ -139,11 +133,15 @@ target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Widgets)
 
 target_link_libraries(${TARGET_NAME} PRIVATE Controlsplugin)
 
-target_link_libraries(${TARGET_NAME} PRIVATE HIDAPI::hidapi)
-
 # platform specific configurations
 if(WIN32)
+    find_package(HIDAPI REQUIRED)
+    set(HIDAPI_INCLUDE ./deps/hidapi/include)
+    include_directories(HIDAPI ${HIDAPI_INCLUDE})
+
     target_sources(${TARGET_NAME} PUBLIC
+        audio/windows/AudioOutputSwitcher.cpp
+
         os/windows/IPolicyConfig.h
         os/windows/NativeEventFilter.cpp
         os/windows/NativeEventFilter.h
@@ -156,15 +154,26 @@ if(WIN32)
     )
 
     target_link_libraries(${TARGET_NAME} PRIVATE User32)
+    target_link_libraries(${TARGET_NAME} PRIVATE HIDAPI::hidapi)
 
     # post build action to copy dependencies in order to be able to debug from VSCode
     add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
         COMMAND ${QT_DIR}/bin/windeployqt.exe --qmldir ${PROJECT_SOURCE_DIR}/qml ${CMAKE_BINARY_DIR}/${TARGET_NAME}.exe
         COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_RUNTIME_DLLS:${TARGET_NAME}> $<TARGET_FILE_DIR:${TARGET_NAME}> COMMAND_EXPAND_LISTS
     )
+
+    install(IMPORTED_RUNTIME_ARTIFACTS HIDAPI::hidapi)
 elseif (LINUX)
+    # sudo dnf install hidapi hidapi-devel
+    # on linux Qt6.9 needs WrapOpenGL (dnf install mesa-libGL-devel)
+
+    find_package(hidapi REQUIRED)
+
     target_sources(${TARGET_NAME} PUBLIC
+        audio/linux/AudioOutputSwitcher.cpp
     )
+
+    target_link_libraries(${TARGET_NAME} PRIVATE hidapi::hidapi)
 endif()
 
 include(GNUInstallDirs)
@@ -172,8 +181,6 @@ install(TARGETS ${TARGET_NAME}
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
-
-install(IMPORTED_RUNTIME_ARTIFACTS HIDAPI::hidapi)
 
 qt_generate_deploy_qml_app_script(TARGET ${TARGET_NAME}
     OUTPUT_SCRIPT deploy_script
