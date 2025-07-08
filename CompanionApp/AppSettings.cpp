@@ -22,6 +22,8 @@ static constexpr auto SLIDERS = "sliders";
 static constexpr auto MIN = "min";
 static constexpr auto MAX = "max";
 
+static constexpr auto NUM_POTENTIOMETERS = 4;
+
 
 AppSettings::AppSettings(QObject* parent)
     : QObject(parent)
@@ -195,4 +197,8 @@ void AppSettings::readPotentiometersInfo() {
     }
     settings->endArray();
     settings->endGroup();
+
+    if (mPotentiometersInfo.size() == 0) {
+        mPotentiometersInfo.resize(NUM_POTENTIOMETERS);
+    }
 }

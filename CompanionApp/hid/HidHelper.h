@@ -14,9 +14,9 @@ struct HidDeviceInfo {
     int pid{ 0 };
     int usagePage{ 0 };
     int usageId{ 0 };
-    std::string product;
-    std::string manufacturer;
-    std::string serial;
+    std::wstring product;
+    std::wstring manufacturer;
+    std::wstring serial;
     std::string path;
 };
 

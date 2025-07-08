@@ -1,13 +1,12 @@
 #include "HidHelper.h"
 
 #include <QDebug>
-#include <atlstr.h>
 
 #include <string>
 
 
-static std::string getHidError() {
-    return std::string(CW2A(hid_error(nullptr)));
+static auto getHidError() {
+    return QString::fromWCharArray(hid_error(nullptr));
 }
 
 
@@ -48,9 +47,9 @@ std::vector<HidDeviceInfo> HidHelper::enumerateDevices(int vid, int pid) {
             .pid = device->product_id,
             .usagePage = device->usage_page,
             .usageId = device->usage,
-            .product = std::string(CW2A(device->product_string)),
-            .manufacturer = std::string(CW2A(device->manufacturer_string)),
-            .serial = std::string(CW2A(device->serial_number)),
+            .product = std::wstring(device->product_string),
+            .manufacturer = std::wstring(device->manufacturer_string),
+            .serial = std::wstring(device->serial_number),
             .path = std::string(device->path)
         });
 

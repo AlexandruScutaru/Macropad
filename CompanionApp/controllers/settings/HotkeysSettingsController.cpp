@@ -1,6 +1,5 @@
 #include "controllers/settings/HotkeysSettingsController.h"
 #include "controllers/settings/HotkeyActions.h"
-#include "os/windows/WinApiWrapper.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -39,7 +38,6 @@ HotkeysSettingsModel* HotkeysSettingsController::getModel() {
 }
 
 void HotkeysSettingsController::unregisterHotkeys() {
-    WinApiWrapper::ClearGlobalHotkeys();
 }
 
 void HotkeysSettingsController::restoreHotkeys() {
@@ -49,7 +47,6 @@ void HotkeysSettingsController::restoreHotkeys() {
         }
 
         const auto actionVal = static_cast<int>(action);
-        WinApiWrapper::RegisterGlobalHotkey(actionVal, key);
     }
 }
 

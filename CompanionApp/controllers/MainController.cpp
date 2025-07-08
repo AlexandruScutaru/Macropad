@@ -1,7 +1,7 @@
 #include "MainController.h"
 #include "AppSettings.h"
 
-#include "os/windows/WinApiWrapper.h"
+//#include "os/windows/WinApiWrapper.h"
 #include "../hid/HidHelper.h"
 #include "../hid/PotentiometersReader.h"
 
@@ -30,7 +30,7 @@ MainController::MainController(PotentiometersReader* potentiometersReader, AppSe
 
     for (const auto& [action, key]: mAppSettings->hotkeyActionMap()) {
         if (key != Qt::Key_unknown) {
-            WinApiWrapper::RegisterGlobalHotkey(static_cast<int>(action), key);
+            //WinApiWrapper::RegisterGlobalHotkey(static_cast<int>(action), key);
         }
     }
 }
@@ -70,9 +70,9 @@ void MainController::search(const QString& vid, const QString& pid) {
         row[DeviceInfoModel::Pid] = QString("0x%1").arg(info[i].pid, 4, 16, QLatin1Char('0'));
         row[DeviceInfoModel::UsagePage] = QString("0x%1").arg(info[i].usagePage, 4, 16, QLatin1Char('0'));
         row[DeviceInfoModel::UsageId] = QString("0x%1").arg(info[i].usageId, 4, 16, QLatin1Char('0'));
-        row[DeviceInfoModel::Product] = QString::fromStdString(info[i].product);
-        row[DeviceInfoModel::Manufacturer] = QString::fromStdString(info[i].manufacturer);
-        row[DeviceInfoModel::Serial] = QString::fromStdString(info[i].serial);
+        row[DeviceInfoModel::Product] = QString::fromStdWString(info[i].product);
+        row[DeviceInfoModel::Manufacturer] = QString::fromStdWString(info[i].manufacturer);
+        row[DeviceInfoModel::Serial] = QString::fromStdWString(info[i].serial);
         row[DeviceInfoModel::Path] = QString::fromStdString(info[i].path);
         model.push_back(row);
     }
