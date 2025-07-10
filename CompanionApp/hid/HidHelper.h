@@ -1,6 +1,9 @@
 #pragma once
 
 #include <QObject>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QSharedPointer>
 
 #include <vector>
 
@@ -24,16 +27,24 @@ struct HidDeviceInfo {
 class HidHelper : public QObject {
     Q_OBJECT
 public:
-    explicit HidHelper(QObject* parent = nullptr);
+    explicit HidHelper(int vid, int pid, int usagePage, int usageId, QObject* parent = nullptr);
     ~HidHelper();
 
     bool init();
-    std::vector<HidDeviceInfo> enumerateDevices(int vid, int pid);
-    hid_device* openDevice(const std::string& path);
+    void openDevice();
 
+signals:
+    void deviceOpened(hid_device* device);
 
 private:
-    int mDevicesCount{ 0 };
+    int mVid{ 0 };
+    int mPid{ 0 };
+    int mUsagePage{ 0 };
+    int mUsageId{ 0 };
+
+    QFuture<hid_device*> mDeviceOpenFuture;
+    QSharedPointer<QFutureWatcher<hid_device*>> mDeviceOpenFutureWatcher;
+
     hid_device* mDevice{ nullptr };
 
 };

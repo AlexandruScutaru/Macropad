@@ -9,6 +9,11 @@
 #include <QDebug>
 #include <QSettings>
 
+static constexpr auto VID = 0xFEED;
+static constexpr auto PID = 0xB00B;
+static constexpr auto USAGE_PAGE = 0xFF60;
+static constexpr auto USAGE_ID = 0x61;
+
 
 MainController::MainController(PotentiometersReader* potentiometersReader, AppSettings* appSettings, bool skipPhysicalDevice, QObject* parent)
     : QObject(parent)
@@ -22,10 +27,10 @@ MainController::MainController(PotentiometersReader* potentiometersReader, AppSe
 
     assert(mAppSettings && "Invalid appSettings");
 
-    mHidHelper = new HidHelper(this);
+    mHidHelper = new HidHelper(VID, PID, USAGE_PAGE, USAGE_ID, this);
     mHidInitted = mHidHelper->init();
 
-    QObject::connect(this, &MainController::deviceOpened, mPotentiometersReader, &PotentiometersReader::startReading);
+    QObject::connect(mHidHelper, &HidHelper::deviceOpened, this, &MainController::onDeviceConnected);
     QObject::connect(mPotentiometersReader, &PotentiometersReader::potentiometersUpdated, this, &MainController::onPotentiometersChanged);
 
     for (const auto& [action, key]: mAppSettings->hotkeyActionMap()) {
@@ -52,65 +57,20 @@ SlidersModel* MainController::getSlidersModel() {
     return mSlidersModel;
 }
 
-void MainController::search(const QString& vid, const QString& pid) {
-    if (mSkipPhysicalDevice) {
-        return;
-    }
-
-    const auto info = mHidHelper->enumerateDevices(convertToInt(vid), convertToInt(pid));
-
-    mDeviceInfoModel->reset();
-
-    std::vector<DeviceInfoModel::Row> model;
-    model.reserve(info.size());
-
-    for(int i = 0; i < info.size(); i++) {
-        DeviceInfoModel::Row row;
-        row[DeviceInfoModel::Vid] = QString("0x%1").arg(info[i].vid, 4, 16, QLatin1Char('0'));
-        row[DeviceInfoModel::Pid] = QString("0x%1").arg(info[i].pid, 4, 16, QLatin1Char('0'));
-        row[DeviceInfoModel::UsagePage] = QString("0x%1").arg(info[i].usagePage, 4, 16, QLatin1Char('0'));
-        row[DeviceInfoModel::UsageId] = QString("0x%1").arg(info[i].usageId, 4, 16, QLatin1Char('0'));
-        row[DeviceInfoModel::Product] = QString::fromStdWString(info[i].product);
-        row[DeviceInfoModel::Manufacturer] = QString::fromStdWString(info[i].manufacturer);
-        row[DeviceInfoModel::Serial] = QString::fromStdWString(info[i].serial);
-        row[DeviceInfoModel::Path] = QString::fromStdString(info[i].path);
-        model.push_back(row);
-    }
-
-    mDeviceInfoModel->setData(model);
-}
-
-void MainController::openDevice(const QString& path) {
-    if (mSkipPhysicalDevice) {
-        return;
-    }
-
-    if (auto device = mHidHelper->openDevice(path.toStdString()); device) {
-        mAppSettings->saveLastDevicePath(path);
-        emit deviceOpened(device);
-        emit deviceConnected();
-        return;
-    }
-
-    mAppSettings->clearLastDevicePath();
-    emit noDeviceSaved();
-}
-
-void MainController::openLastDevice() {
+void MainController::connectToDevice() {
     if (mSkipPhysicalDevice) {
         emit deviceConnected();
         onPotentiometersChanged({ 20, 20, 20, 20 });
         return;
     }
 
-    QSettings settings(QSettings::IniFormat, QSettings::UserScope, qApp->organizationName(), qApp->applicationName());
-
-    if (const auto path = mAppSettings->lastDevicePath(); !path.isEmpty()) {
-        openDevice(path);
-        return;
+    if (mHidHelper) {
+        mHidHelper->openDevice();
     }
+}
 
-    emit noDeviceSaved();
+void MainController::setIsCalibrating(bool isCalibrating) {
+    mIsCalibrating = isCalibrating;
 }
 
 void MainController::onSwitchOutputClicked() {
@@ -121,8 +81,14 @@ void MainController::onSliderMoved(int sliderId, int value) {
     qDebug() << "Slider " << sliderId << " moved to " << value;
 }
 
-void MainController::setIsCalibrating(bool isCalibrating) {
-    mIsCalibrating = isCalibrating;
+void MainController::onDeviceConnected(hid_device* device) {
+    if (device) {
+        emit deviceConnected();
+        mPotentiometersReader->startReading(device);
+        return;
+    }
+
+    emit deviceNotFound();
 }
 
 void MainController::onPotentiometersChanged(const std::vector<int>& values) {
@@ -152,16 +118,4 @@ void MainController::onPotentiometersChanged(const std::vector<int>& values) {
 
         mSlidersModel->updateData(model);
     }
-}
-
-int MainController::convertToInt(const QString& hexStr) {
-    if (hexStr.isEmpty()) {
-        return 0;
-    }
-
-    bool res = false;
-    int value = hexStr.toInt(&res, 16);
-    assert(res && "couldn't convert hex str to int");
-
-    return value;
 }

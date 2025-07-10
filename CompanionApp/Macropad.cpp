@@ -13,7 +13,7 @@
 #include <QQmlComponent>
 #include <QQuickItem>
 
-static constexpr auto DEVICE_QML_CONTAINER_NAME = "deviceStackViewContainer";
+static constexpr auto QML_APP_CONTAINER_NAME = "appStackViewContainer";
 
 
 Macropad::Macropad(QQmlApplicationEngine& engine, AppSettings* appSettings, QObject* parent)
@@ -41,7 +41,7 @@ void Macropad::onInitialized(const MacropadConfig& config) {
     QObject::connect(mMainController, &MainController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
     initTrayIcon();
-    initDeviceView(qmlWindow);
+    initAppStackView(qmlWindow);
 }
 
 QSize Macropad::windowSize() {
@@ -65,11 +65,11 @@ void Macropad::initTrayIcon() {
     QObject::connect(trayIcon, &TrayIcon::quitActionTriggered, qApp, &QApplication::quit);
 }
 
-void Macropad::initDeviceView(const QObject* const qmlWindow) {
-    if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(DEVICE_QML_CONTAINER_NAME); deviceViewContainer) {
-        QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/DeviceStackView.qml"));
+void Macropad::initAppStackView(const QObject* const qmlWindow) {
+    if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(QML_APP_CONTAINER_NAME); deviceViewContainer) {
+        QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/AppStackView.qml"));
         if (deviceView.isError() || deviceView.isNull()) {
-            qDebug() << "Cannot create DeviceStackView.qml";
+            qDebug() << "Cannot create AppStackView.qml";
             return;
         }
 
