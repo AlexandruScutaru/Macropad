@@ -24,7 +24,7 @@ Item {
             Layout.topMargin: 16
 
             onSearchClicked: (vid, pid) => {
-                mainController.search(vid, pid);
+                //mainController.search(vid, pid);
             }
         }
 
@@ -86,7 +86,7 @@ Item {
             enabled: false
 
             onButtonClicked: {
-                mainController.openDevice(listView.getSelectedDevicePath());
+                //mainController.openDevice(listView.getSelectedDevicePath());
             }
         }
     }

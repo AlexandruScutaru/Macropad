@@ -20,6 +20,7 @@ find_package(Qt6 REQUIRED COMPONENTS Qml)
 find_package(Qt6 REQUIRED COMPONENTS QuickControls2)
 find_package(Qt6 REQUIRED COMPONENTS Core)
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Concurrent)
 
 qt_standard_project_setup()
 
@@ -31,8 +32,9 @@ qt_add_executable(${TARGET_NAME}
 
 qt_policy(SET QTP0001 NEW)
 
+set_source_files_properties(qml/AppStackView.qml                  PROPERTIES QT_RESOURCE_ALIAS AppStackView.qml)
+set_source_files_properties(qml/NotConnectedView.qml              PROPERTIES QT_RESOURCE_ALIAS NotConnectedView.qml)
 set_source_files_properties(qml/DeviceDashboardView.qml           PROPERTIES QT_RESOURCE_ALIAS DeviceDashboardView.qml)
-set_source_files_properties(qml/DeviceStackView.qml               PROPERTIES QT_RESOURCE_ALIAS DeviceStackView.qml)
 
 set_source_files_properties(qml/connecting/DeviceConnectView.qml  PROPERTIES QT_RESOURCE_ALIAS DeviceConnectView.qml)
 set_source_files_properties(qml/connecting/DeviceListDelegate.qml PROPERTIES QT_RESOURCE_ALIAS DeviceListDelegate.qml)
@@ -50,8 +52,9 @@ qt_add_qml_module(${TARGET_NAME}
     VERSION 1.0
 
     QML_FILES
+        qml/AppStackView.qml
+        qml/NotConnectedView.qml
         qml/DeviceDashboardView.qml
-        qml/DeviceStackView.qml
 
         qml/connecting/DeviceConnectView.qml
         qml/connecting/DeviceListDelegate.qml
@@ -125,11 +128,13 @@ qt_add_resources(${TARGET_NAME} "resources"
         resources/info_icon.png
         resources/search_icon.png
         resources/sliders_icon.png
+        resources/not_connected_animation.gif
 )
 
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Quick)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::QuickControls2)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Widgets)
+target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Concurrent)
 
 target_link_libraries(${TARGET_NAME} PRIVATE Controlsplugin)
 

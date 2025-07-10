@@ -16,6 +16,7 @@ qt_add_qml_module(${MODULE_NAME}
     URI ${MODULE_NAME}
     VERSION 1.0
     QML_FILES
+        CBusyIndicator.qml
         CButton.qml
         CIconButton.qml
         CKeyBinder.qml

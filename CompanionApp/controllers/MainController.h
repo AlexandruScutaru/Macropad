@@ -27,31 +27,26 @@ public:
     ~MainController();
 
     Q_INVOKABLE AppSettings* getAppSettings();
-
     Q_INVOKABLE DeviceInfoModel* getDeviceInfoModel();
     Q_INVOKABLE SlidersModel* getSlidersModel();
 
-    Q_INVOKABLE void search(const QString& vid, const QString& pid);
-    Q_INVOKABLE void openDevice(const QString& path);
-    Q_INVOKABLE void openLastDevice();
+    Q_INVOKABLE void connectToDevice();
+    Q_INVOKABLE void setIsCalibrating(bool isCalibrating);
 
     Q_INVOKABLE void onSwitchOutputClicked();
     Q_INVOKABLE void onSliderMoved(int sliderId, int value);
-    Q_INVOKABLE void setIsCalibrating(bool isCalibrating);
 
 signals:
-    void deviceOpened(hid_device* device);
     void deviceConnected();
-    void noDeviceSaved();
+    void deviceNotFound();
     void potentiometersChanged(const std::vector<int>& values);
     void switchOutputRequested();
 
 private slots:
+    void onDeviceConnected(hid_device* device);
     void onPotentiometersChanged(const std::vector<int>& values);
 
 private:
-    static int convertToInt(const QString& hexStr);
-
     QPointer<AppSettings> mAppSettings{ nullptr };
     QPointer<DeviceInfoModel> mDeviceInfoModel{ nullptr };
     QPointer<SlidersModel> mSlidersModel{ nullptr };

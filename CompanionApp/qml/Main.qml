@@ -36,9 +36,9 @@ ApplicationWindow {
     }
 
     Item {
-        id: deviceStackViewContainer
+        id: appStackViewContainer
 
         anchors.fill: parent
-        objectName: "deviceStackViewContainer"
+        objectName: "appStackViewContainer"
     }
 }

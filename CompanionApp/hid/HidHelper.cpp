@@ -1,6 +1,7 @@
 #include "HidHelper.h"
 
 #include <QDebug>
+#include <QtConcurrent>
 
 #include <string>
 
@@ -10,8 +11,9 @@ static auto getHidError() {
 }
 
 
-HidHelper::HidHelper(QObject* parent)
+HidHelper::HidHelper(int vid, int pid, int usagePage, int usageId, QObject* parent)
     : QObject(parent)
+    , mVid(vid), mPid(pid), mUsagePage(usagePage), mUsageId(usageId)
 {
     qDebug() << "HidHelper::HidHelper";
 }
@@ -36,42 +38,49 @@ bool HidHelper::init() {
     return true;
 }
 
-std::vector<HidDeviceInfo> HidHelper::enumerateDevices(int vid, int pid) {
-    std::vector<HidDeviceInfo> devicesInfo;
-
-    const auto devices = hid_enumerate(vid, pid);
-    auto device = devices;
-    while(device) {
-        devicesInfo.push_back({
-            .vid = device->vendor_id,
-            .pid = device->product_id,
-            .usagePage = device->usage_page,
-            .usageId = device->usage,
-            .product = std::wstring(device->product_string),
-            .manufacturer = std::wstring(device->manufacturer_string),
-            .serial = std::wstring(device->serial_number),
-            .path = std::string(device->path)
-        });
-
-        device = device->next;
-        mDevicesCount++;
+void HidHelper::openDevice() {
+    if (mDeviceOpenFuture.isRunning()) {
+        return;
     }
 
-    hid_free_enumeration(devices);
+    // I seem to get a memory leak around QFutureWatcher when calling this method multiple times
+    // so I use a QSharedPointer to manage the lifetime of the watcher
+    mDeviceOpenFutureWatcher = QSharedPointer<QFutureWatcher<hid_device*>>::create();
 
-    return devicesInfo;
-}
+    QObject::connect(mDeviceOpenFutureWatcher.data(), &QFutureWatcher<hid_device*>::finished, this, [this, pThis = QPointer(this)]() {
+        if (!pThis) {
+            return;
+        }
+        emit deviceOpened(mDeviceOpenFuture.result());
+    });
 
-hid_device* HidHelper::openDevice(const std::string& path) {
-    qDebug() << "Open device path: " << path;
+    mDeviceOpenFuture = QtConcurrent::run([](int pid, int vid, int usagePage, int usageId) -> hid_device* {
+        std::string devicePath = "";
 
-    mDevice = hid_open_path(path.c_str());
-     if (!mDevice) {
-         qWarning() << "Unable to open HID device! error: " << getHidError();
-         return nullptr;
-    }
+        const auto devices = hid_enumerate(vid, pid);
+        auto device = devices;
+        while (device) {
+            if (device->usage_page == usagePage && device->usage == usageId) {
+                devicePath = std::string(device->path);
+                break;
+            }
+            device = device->next;
+        }
 
-    hid_set_nonblocking(mDevice, 0);
+        hid_free_enumeration(devices);
 
-    return mDevice;
+        if (devicePath.empty()) {
+            return static_cast<hid_device*>(nullptr);
+        }
+
+        hid_device* hidDevice = hid_open_path(devicePath.c_str());
+        if (!hidDevice) {
+            return static_cast<hid_device*>(nullptr);
+        }
+
+        hid_set_nonblocking(hidDevice, 0);
+        return hidDevice;
+    }, mPid, mVid, mUsagePage, mUsageId);
+
+    mDeviceOpenFutureWatcher->setFuture(mDeviceOpenFuture);
 }

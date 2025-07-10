@@ -1,6 +1,9 @@
 import QtQuick 2.15
 import QtQuick.Controls.Basic 2.15
 
+import Controls 1.0
+
+
 Item {
     id: root
 
@@ -9,15 +12,28 @@ Item {
 
     required property MainController mainController
 
+    function tryAgainClicked() {
+        stack.clear();
+        stack.push(loadingView);
+        mainController.connectToDevice();
+    }
+
     StackView {
         id: stack
 
         anchors.fill: parent
-
         clip: true
+        initialItem: loadingView
+
+        pushEnter: animNone
+        popEnter: animNone
+        replaceEnter: animNone
+        pushExit: animNone
+        popExit: animNone
+        replaceExit: animNone
 
         Component.onCompleted: {
-            mainController.openLastDevice();
+            mainController.connectToDevice();
         }
 
         Connections {
@@ -26,19 +42,54 @@ Item {
                 stack.replace(dashboardView);
             }
 
-            function onNoDeviceSaved() {
-                stack.replace(connectView);
+            function onDeviceNotFound() {
+                stack.replace(notConnectedView);
             }
         }
 
         Component {
-            id: connectView
-            DeviceConnectView {}
+            id: loadingView
+            Item {
+                CBusyIndicator {
+                    anchors.centerIn: parent
+                    width: 64
+                    height: 64
+                }
+            }
+        }
+
+        Component {
+            id: notConnectedView
+            NotConnectedView {}
         }
 
         Component {
             id: dashboardView
             DeviceDashboardView {}
+        }
+
+        Transition {
+            id: animNone
+        }
+
+        Transition {
+            id: animFadeIn
+            PropertyAnimation {
+                property: "opacity"
+                from: 1
+                to: 0
+                duration: 100
+            }
+        }
+
+        Transition {
+            id: animFadeOut
+            PropertyAnimation {
+                property: "opacity"
+                from: 0
+                to: 1
+                duration: 100
+            }
         }
 
         Transition {
