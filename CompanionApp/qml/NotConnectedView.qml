@@ -1,9 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Layouts
-import QtQuick.Controls.Basic 2.15
 
 import Controls 1.0
-
 
 Item {
     id: notConnectedView
@@ -17,8 +15,8 @@ Item {
         }
 
         Rectangle {
-            width: 150
-            height: 150
+            Layout.preferredWidth: 150
+            Layout.preferredHeight: 150
             Layout.alignment: Qt.AlignHCenter
 
             color: "transparent"
@@ -46,7 +44,7 @@ Item {
 
             label: qsTr("Make sure the device is plugged into the computer.")
             fontSize: 14
-            color: "#80ffffff"
+            color: Theme.textSecondary
             hAlign: Text.AlignHCenter
         }
 
@@ -59,7 +57,7 @@ Item {
             toolTipText: qsTr("Retry device connection")
 
             onButtonClicked: {
-                root.tryAgainClicked();
+                appStackView.deviceConnectTryAgainClicked();
             }
         }
 

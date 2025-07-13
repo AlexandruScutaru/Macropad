@@ -1,0 +1,37 @@
+{
+    "themes": {
+        "dark": {
+            "text": {
+                "primary": "#d8e3ce",
+                "secondary": "#b1b1b1",
+                "disabled": "#909090"
+            },
+            "buttons": {
+                "primary": {
+                    "normal": "#3f4d36",
+                    "hovered": "#495242",
+                    "pressed": "#3c4536",
+                    "disabled": "#31372f"
+                },
+                "secondary": {
+                    "normal": "transparent",
+                    "hovered": "#474747",
+                    "pressed": "#393939",
+                    "disabled": "transparent"
+                }
+            },
+            "background": {
+                "primary": "#1e1e1e",
+                "secondary": "#252525",
+                "tertiary": "#353535"
+            },
+            "other": {
+                "accentPrimary": {
+                    "normal": "#3e4a36",
+                    "hovered": "#485441"
+                },
+                "error": "#b21a1a"
+            }
+        }
+    }
+}

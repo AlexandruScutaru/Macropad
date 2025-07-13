@@ -11,34 +11,37 @@ Slider {
 
     orientation: Qt.Vertical
 
+    width: 24
+    padding: 0
+
     from: start
     value: current
     to: end
 
     background: Rectangle {
-        x: slider.leftPadding + slider.availableWidth / 2 - width / 2
+        x: slider.leftPadding + slider.width / 2 - width / 2
         y: slider.topPadding
         implicitWidth: 2
-        implicitHeight: 200
+        implicitHeight: slider.height
         width: implicitWidth
-        height: slider.availableHeight
-        color: "#485441"
+        height: slider.height
+        color: Theme.accentPrimaryNormal
 
         Rectangle {
             width: 1
             height: slider.visualPosition * parent.height
             radius: 1
-            color: "#d9e7cb"
+            color: Theme.textPrimary
         }
     }
 
     handle: Rectangle {
-        x: slider.leftPadding + slider.availableWidth / 2 - width / 2
-        y: slider.topPadding + slider.visualPosition * (slider.availableHeight - height)
+        x: slider.leftPadding + slider.width / 2 - width / 2
+        y: slider.topPadding + slider.visualPosition * (slider.height - height)
         implicitWidth: 24
         implicitHeight: 24
         radius: 12
-        color: slider.hovered ? "#485441" : "#3e4a36"
+        color: slider.hovered ? Theme.accentPrimaryHovered : Theme.accentPrimaryNormal
     }
 
     onMoved: {

@@ -3,6 +3,9 @@
 #include <QApplication>
 #include <QObject>
 #include <QQmlApplicationEngine>
+#include <QPointer>
+
+#include "theming/Theme.h"
 
 namespace Hotkeys {
     enum class Actions;
@@ -17,7 +20,9 @@ class TrayIcon;
 struct MacropadConfig {
     bool isDebug = false;
     bool isSkipPhysicalDevice = false;
+    bool isPlayground = false;
 };
+
 
 class Macropad : public QObject {
     Q_OBJECT
@@ -26,23 +31,28 @@ public:
     ~Macropad();
 
     void onInitialized(const MacropadConfig& config);
+    Theme* getCurrentTheme();
 
 signals:
     void showWindowRequested();
+    void themeChanged(Theme* theme);
 
 public slots:
     QSize windowSize();
     void saveWindowSize(int w, int h);
+    void loadTheme(const QString& themeName);
 
 private:
     QObject* const getMainWindowObject();
 
     void initTrayIcon();
+    void initPlayground(const QObject* const qmlWindow);
     void initAppStackView(const QObject* const qmlWindow);
 
     QQmlApplicationEngine& mQmlEngine;
 
     MacropadConfig mConfig;
+    QPointer<Theme> mTheme{ nullptr };
     AppSettings* mAppSettings{ nullptr };
     AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
     PotentiometersReader* mPotentiometersReader{ nullptr };

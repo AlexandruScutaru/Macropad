@@ -32,40 +32,36 @@ qt_add_executable(${TARGET_NAME}
 
 qt_policy(SET QTP0001 NEW)
 
-set_source_files_properties(qml/AppStackView.qml                  PROPERTIES QT_RESOURCE_ALIAS AppStackView.qml)
-set_source_files_properties(qml/NotConnectedView.qml              PROPERTIES QT_RESOURCE_ALIAS NotConnectedView.qml)
-set_source_files_properties(qml/DeviceDashboardView.qml           PROPERTIES QT_RESOURCE_ALIAS DeviceDashboardView.qml)
+set(qml_plain_files
+    qml/Main.qml
+    qml/Playground.qml
+    qml/AppStackView.qml
+    qml/NotConnectedView.qml
+    qml/DeviceDashboardView.qml
+    qml/connecting/DeviceConnectView.qml
+    qml/connecting/DeviceListDelegate.qml
+    qml/connecting/DeviceSearchHeader.qml
+    qml/settings/DeviceSettings.qml
+    qml/settings/HotkeysSettings.qml
+    qml/settings/SettingsView.qml
+    qml/settings/SlidersSettings.qml
+)
 
-set_source_files_properties(qml/connecting/DeviceConnectView.qml  PROPERTIES QT_RESOURCE_ALIAS DeviceConnectView.qml)
-set_source_files_properties(qml/connecting/DeviceListDelegate.qml PROPERTIES QT_RESOURCE_ALIAS DeviceListDelegate.qml)
-set_source_files_properties(qml/connecting/DeviceSearchHeader.qml PROPERTIES QT_RESOURCE_ALIAS DeviceSearchHeader.qml)
+foreach(file_name ${qml_plain_files})
+    get_filename_component(alias "${file_name}" NAME)
+    set_source_files_properties(${file_name} PROPERTIES QT_RESOURCE_ALIAS ${alias})
+endforeach()
 
-set_source_files_properties(qml/settings/DeviceSettings.qml       PROPERTIES QT_RESOURCE_ALIAS DeviceSettings.qml)
-set_source_files_properties(qml/settings/HotkeysSettings.qml      PROPERTIES QT_RESOURCE_ALIAS HotkeysSettings.qml)
-set_source_files_properties(qml/settings/SettingsView.qml         PROPERTIES QT_RESOURCE_ALIAS SettingsView.qml)
-set_source_files_properties(qml/settings/SlidersSettings.qml      PROPERTIES QT_RESOURCE_ALIAS SlidersSettings.qml)
-
-set_source_files_properties(qml/Main.qml                          PROPERTIES QT_RESOURCE_ALIAS Main.qml)
+set(qml_singletons
+)
+set_source_files_properties(${qml_singletons} PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
 qt_add_qml_module(${TARGET_NAME}
     URI MacropadCompanion
     VERSION 1.0
 
     QML_FILES
-        qml/AppStackView.qml
-        qml/NotConnectedView.qml
-        qml/DeviceDashboardView.qml
-
-        qml/connecting/DeviceConnectView.qml
-        qml/connecting/DeviceListDelegate.qml
-        qml/connecting/DeviceSearchHeader.qml
-
-        qml/settings/DeviceSettings.qml
-        qml/settings/HotkeysSettings.qml
-        qml/settings/SettingsView.qml
-        qml/settings/SlidersSettings.qml
-
-        qml/Main.qml
+        ${qml_plain_files}
 
     SOURCES
         audio/AudioOutputSwitcher.h
@@ -81,6 +77,8 @@ qt_add_qml_module(${TARGET_NAME}
         controllers/settings/SlidersSettingsController.cpp
         controllers/settings/SlidersSettingsController.h
 
+        misc/CmdArgs.cpp
+        misc/CmdArgs.h
         misc/DebugChecker.h
 
         models/DeviceInfoModel.cpp
@@ -99,6 +97,10 @@ qt_add_qml_module(${TARGET_NAME}
         hid/PotentiometersReader.cpp
         hid/PotentiometersReader.h
 
+        theming/Theme.h
+        theming/ThemeLoader.cpp
+        theming/ThemeLoader.h
+
         tray/TrayIcon.cpp
         tray/TrayIcon.h
 
@@ -114,6 +116,7 @@ qt_add_qml_module(${TARGET_NAME}
 target_include_directories(${TARGET_NAME} PUBLIC
     controllers
     controllers/settings
+    theming
 )
 
 file(GLOB_RECURSE QML_SRC "*.qml")
@@ -129,6 +132,7 @@ qt_add_resources(${TARGET_NAME} "resources"
         resources/search_icon.png
         resources/sliders_icon.png
         resources/not_connected_animation.gif
+        resources/themes.json
 )
 
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Quick)

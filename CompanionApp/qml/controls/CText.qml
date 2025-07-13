@@ -5,7 +5,6 @@ Text {
     id: txt
 
     property string label
-    property string toolTipText
     property int fontSize: 12
     property int hAlign: Text.AlignLeft
     property int vAlign: Text.AlignVCenter
@@ -15,9 +14,9 @@ Text {
     verticalAlignment: vAlign
 
     text: label
-    color: "#d9e7cb"
+    color: Theme.textPrimary
     font.pointSize: fontSize
-    elide: Text.ElideRight
+    elide: wrap == Text.NoWrap ? Text.ElideRight : Text.ElideNone
     wrapMode: wrap
 
     Timer {
@@ -27,7 +26,7 @@ Text {
         repeat: false
 
         onTriggered: {
-            if (mouseArea.isHovered && toolTipText.length > 0) {
+            if (mouseArea.isHovered && txt.truncated) {
                 tooltip.visible = true;
             }
         }
@@ -42,7 +41,7 @@ Text {
         hoverEnabled: true
 
         onEntered: {
-            if (toolTipText.length === 0) {
+            if (txt.truncated === 0) {
                 return;
             }
 
@@ -57,7 +56,7 @@ Text {
 
     ToolTip {
         id: tooltip
-        text: toolTipText
+        text: txt.text
         visible: false
         delay: 0
     }

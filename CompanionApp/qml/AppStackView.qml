@@ -3,16 +3,15 @@ import QtQuick.Controls.Basic 2.15
 
 import Controls 1.0
 
-
 Item {
-    id: root
+    id: appStackView
 
     anchors.fill: parent
     anchors.margins: 16
 
     required property MainController mainController
 
-    function tryAgainClicked() {
+    function deviceConnectTryAgainClicked() {
         stack.clear();
         stack.push(loadingView);
         mainController.connectToDevice();
@@ -33,11 +32,11 @@ Item {
         replaceExit: animNone
 
         Component.onCompleted: {
-            mainController.connectToDevice();
+            appStackView.mainController.connectToDevice();
         }
 
         Connections {
-            target: mainController
+            target: appStackView.mainController
             function onDeviceConnected() {
                 stack.replace(dashboardView);
             }

@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Basic
 
+
 ApplicationWindow {
     id: mainWindow
 
@@ -10,7 +11,7 @@ ApplicationWindow {
     minimumHeight: 480
     visible: true
     title: qsTr("Macropad Companion")
-    color: "#222222"
+    color: Theme.backgroundPrimary;
 
     onWidthChanged: {
         MacroPad.saveWindowSize(width, height);
@@ -21,6 +22,7 @@ ApplicationWindow {
     }
 
     Component.onCompleted: {
+        color = Theme.backgroundPrimary;
         var size = MacroPad.windowSize();
         width = size.width;
         height = size.height;
