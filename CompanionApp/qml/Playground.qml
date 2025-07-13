@@ -88,15 +88,19 @@ Rectangle {
                         }
 
                         CIconButton {
-                            iconName: "qrc:///resources/sliders_icon.png"
-                            toolTipText: "Open settings"
-                            buttonSize: 32
+                            iconName: "qrc:///resources/expand_icon.svg"
                         }
 
                         CIconButton {
-                            iconName: "qrc:///resources/info_icon.png"
-                            toolTipText: "Information"
-                            buttonSize: 32
+                            iconName: "qrc:///resources/settings_icon.svg"
+                        }
+
+                        CIconButton {
+                            iconName: "qrc:///resources/sliders_icon.svg"
+                        }
+
+                        CIconButton {
+                            iconName: "qrc:///resources/keys_icon.svg"
                         }
 
                         Item {
@@ -127,6 +131,14 @@ Rectangle {
                     onButtonClicked: {
                         checked = !checked;
                     }
+                }
+
+                CTabButton {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+
+                    label: "Tab button with an icon"
+                    iconName: "qrc:///resources/keys_icon.svg"
                 }
 
                 CTabButton {

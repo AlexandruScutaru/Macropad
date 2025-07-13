@@ -18,6 +18,7 @@ qt_add_qml_module(${MODULE_NAME}
     QML_FILES
         CBusyIndicator.qml
         CButton.qml
+        CIcon.qml
         CIconButton.qml
         CKeyBinder.qml
         CSlider.qml
