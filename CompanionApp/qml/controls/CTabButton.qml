@@ -16,17 +16,17 @@ Button {
     text: label
 
     function getBgColor() {
-        if (!button.enabled) return "#2d2d2d";
-        if (button.down) return "#383838";
-        if (button.hovered) return "#484848";
-        if (button.checked) return "#3d3d3d";
-        return "transparent";
+        if (!button.enabled) return Theme.buttonSecondaryDisabled;
+        if (button.down) return Theme.buttonSecondaryPressed;
+        if (button.checked) return Theme.buttonSecondaryPressed;
+        if (button.hovered) return Theme.buttonSecondaryHovered;
+        return Theme.buttonSecondaryNormal;
     }
 
     contentItem: Text {
         text: button.text
         font: button.font
-        color: enabled ? "#d9e7cb" : "#80ffffff"
+        color: enabled ? Theme.textPrimary : Theme.textDisabled
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -35,7 +35,7 @@ Button {
     background: Rectangle {
         implicitWidth: 48
         implicitHeight: 32
-        color: getBgColor()
+        color: button.getBgColor()
         border.width: 0
         radius: 6
     }
@@ -47,7 +47,7 @@ Button {
 
     ToolTip {
         id: tooltip
-        text: toolTipText
+        text: button.toolTipText
         visible: button.hovered && button.enabled && !button.down && text.length > 0
         delay: 600
     }

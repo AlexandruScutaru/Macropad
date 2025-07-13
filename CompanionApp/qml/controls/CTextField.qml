@@ -6,33 +6,42 @@ TextField {
 
     signal inputAccepted(value: string)
     property string placeholder
+    property string toolTipText
+    property int fontSize: 14
 
     placeholderText: placeholder
-    placeholderTextColor: "#80ffffff"
+    placeholderTextColor: Theme.textSecondary
+    color: Theme.textPrimary
     cursorVisible: activeFocus
-    color: "#d9e7cb"
-    font.pointSize: 12
+    font.pointSize: fontSize
 
-    validator: RegularExpressionValidator { regularExpression: /[0-9A-Fa-f]{0}([0-9A-Fa-f]{4})?/ }
+    leftPadding: 12
+    rightPadding: 12
+
+    horizontalAlignment: TextInput.AlignHCenter
+
+    function isValid() {
+        return textField.acceptableInput || text.length === 0;
+    }
 
     background: Rectangle {
-        implicitWidth: 200
-        implicitHeight: 40
-        color: "transparent"
-        border.color: "red"
-        border.width: acceptableInput ? 0 : 1
+        implicitHeight: 32
+        color: Theme.backgroundTertiary
+        border.color: Theme.error
+        border.width: textField.isValid() ? 0 : 1
+        radius: height / 2
     }
 
     onAccepted: {
-        if (acceptableInput || text.length === 0) {
+        if (textField.isValid()) {
             textField.inputAccepted(text);
         }
     }
 
     ToolTip {
         id: invalidInput
-        text: "Input is not valid! Either leave the field empty or type a 4-digit hex number"
-        visible: !acceptableInput && textField.hovered
+        text: textField.toolTipText
+        visible: textField.toolTipText.length > 0 && textField.hovered && !textField.isValid()
         delay: 600
     }
 }

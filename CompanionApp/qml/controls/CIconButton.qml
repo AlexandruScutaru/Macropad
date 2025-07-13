@@ -9,28 +9,34 @@ Button {
     property string iconName
     property string toolTipText
     property int buttonSize: 32
-    property int iconPadding: 4
+    property int iconPadding: 5
+
+    function getBgColor() {
+        if (!button.enabled) return Theme.buttonSecondaryDisabled;
+        if (button.down) return Theme.buttonSecondaryPressed;
+        if (button.hovered) return Theme.buttonSecondaryHovered;
+        return Theme.buttonSecondaryNormal;
+    }
 
     Image {
         id: iconImage
         anchors.centerIn: parent
-        source: iconName
-        width: buttonSize - iconPadding * 2
-        height: buttonSize - iconPadding * 2
+        source: button.iconName
+        width: button.buttonSize - button.iconPadding * 2
+        height: button.buttonSize - button.iconPadding * 2
         mipmap: true
     }
 
     ColorOverlay {
         anchors.fill: iconImage
         source: iconImage
-        color: "#d9e7cb"
+        color: Theme.textPrimary
     }
 
     background: Rectangle {
-        implicitWidth: buttonSize
-        implicitHeight: buttonSize
-        color: button.down ? "#484848"
-                           : button.hovered ? "#4d4d4d" : "transparent"
+        implicitWidth: button.buttonSize
+        implicitHeight: button.buttonSize
+        color: button.getBgColor()
         border.width: 0
         radius: height / 2
     }
@@ -41,9 +47,8 @@ Button {
 
     ToolTip {
         id: tooltip
-        text: toolTipText
+        text: button.toolTipText
         visible: button.hovered && button.enabled && !button.down && text.length > 0
         delay: 600
     }
-
 }

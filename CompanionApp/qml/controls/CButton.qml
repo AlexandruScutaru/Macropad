@@ -8,22 +8,22 @@ Button {
     property string label
     property string toolTipText
 
-    leftPadding: 10
-    rightPadding: 10
+    leftPadding: 12
+    rightPadding: 12
 
     text: label
 
     function getBgColor() {
-        if (!button.enabled) return "#3e443b";
-        if (button.down) return "#4e5946";
-        if (button.hovered) return "#485441";
-        return "#3e4a36";
+        if (!button.enabled) return Theme.buttonPrimaryDisabled;
+        if (button.down) return Theme.buttonPrimaryPressed;
+        if (button.hovered) return Theme.buttonPrimaryHovered;
+        return Theme.buttonPrimaryNormal;
     }
 
     contentItem: Text {
         text: button.text
         font: button.font
-        color: enabled ? "#d9e7cb" : "#80ffffff"
+        color: enabled ? Theme.textPrimary : Theme.textDisabled
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -32,7 +32,7 @@ Button {
     background: Rectangle {
         implicitWidth: 48
         implicitHeight: 32
-        color: getBgColor()
+        color: button.getBgColor()
         border.width: 0
         radius: height / 2
     }
@@ -43,7 +43,7 @@ Button {
 
     ToolTip {
         id: tooltip
-        text: toolTipText
+        text: button.toolTipText
         visible: button.hovered && button.enabled && !button.down && text.length > 0
         delay: 600
     }
