@@ -37,7 +37,8 @@ set(qml_plain_files
     qml/Playground.qml
     qml/AppStackView.qml
     qml/NotConnectedView.qml
-    qml/DeviceDashboardView.qml
+    qml/DashboardView.qml
+    qml/components/NavigationBar.qml
     qml/connecting/DeviceConnectView.qml
     qml/connecting/DeviceListDelegate.qml
     qml/connecting/DeviceSearchHeader.qml
@@ -125,12 +126,17 @@ source_group("QML Files" FILES ${QML_SRC})
 qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
+        resources/collapse_icon.svg
+        resources/expand_icon.svg
+        resources/keys_icon.svg
+        resources/settings_icon.svg
+        resources/sliders_icon.svg
+
         resources/app_icon.png
         resources/back_arrow_icon.png
         resources/close_icon.png
         resources/info_icon.png
         resources/search_icon.png
-        resources/sliders_icon.png
         resources/not_connected_animation.gif
         resources/themes.json
 )

@@ -1,6 +1,5 @@
 import QtQuick 2.15
 import QtQuick.Controls.Basic 2.15
-import Qt5Compat.GraphicalEffects
 
 Button {
     id: button
@@ -8,8 +7,8 @@ Button {
     signal buttonClicked
     property string iconName
     property string toolTipText
-    property int buttonSize: 32
-    property int iconPadding: 5
+    property int buttonSize: 40
+    property int iconPadding: 12
 
     function getBgColor() {
         if (!button.enabled) return Theme.buttonSecondaryDisabled;
@@ -18,22 +17,16 @@ Button {
         return Theme.buttonSecondaryNormal;
     }
 
-    Image {
-        id: iconImage
+    CIcon {
         anchors.centerIn: parent
         source: button.iconName
-        width: button.buttonSize - button.iconPadding * 2
-        height: button.buttonSize - button.iconPadding * 2
-        mipmap: true
-    }
-
-    ColorOverlay {
-        anchors.fill: iconImage
-        source: iconImage
+        iconSize: button.buttonSize - button.iconPadding * 2
         color: Theme.textPrimary
     }
 
     background: Rectangle {
+        width: button.buttonSize
+        height: button.buttonSize
         implicitWidth: button.buttonSize
         implicitHeight: button.buttonSize
         color: button.getBgColor()

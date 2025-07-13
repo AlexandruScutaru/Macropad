@@ -6,10 +6,9 @@ import Controls 1.0
 Item {
     id: appStackView
 
-    anchors.fill: parent
-    anchors.margins: 16
-
     required property MainController mainController
+
+    anchors.fill: parent
 
     function deviceConnectTryAgainClicked() {
         stack.clear();
@@ -64,7 +63,7 @@ Item {
 
         Component {
             id: dashboardView
-            DeviceDashboardView {}
+            DashboardView {}
         }
 
         Transition {
