@@ -17,7 +17,7 @@ Item {
 
     property ListModel tabButtonsModel
     property string currentSelection
-    property bool expanded: true
+    property bool expanded: false
 
     implicitWidth: expanded ? expanded_width : collapsed_width
 
@@ -34,18 +34,36 @@ Item {
         navBar.tabSelected(tabButtonsModel.get(0).name);
     }
 
+    PropertyAnimation {
+        id: expandAnimation
+
+        target: navBar
+        property: "implicitWidth"
+        to: navBar.expanded ? navBar.collapsed_width : navBar.expanded_width
+        duration: 200
+        easing.type: Easing.InQuad
+
+        onFinished: {
+            navBar.expanded = !navBar.expanded;
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: navBar.margin
 
         CIconButton {
             Layout.bottomMargin: 8
-            Layout.alignment: navBar.expanded ? Qt.AlignRight : Qt.AlignHCenter
+            Layout.alignment: expandAnimation.running || navBar.expanded ? Qt.AlignRight : Qt.AlignHCenter
 
-            iconName: "qrc:///resources/%1.svg".arg(navBar.expanded ? "collapse_icon" : "expand_icon")
+            iconName: "qrc:///resources/expand_icon.svg"
             toolTipText: navBar.expanded ? qsTr("Collpase") : qsTr("Expand")
+            iconAnimationType: CIcon.AnimationType.Rotate
+            iconToggleAnimation: true
+            iconFlipIcon: navBar.expanded
+
             onButtonClicked: {
-                navBar.expanded = !navBar.expanded;
+                expandAnimation.running = true;
             }
         }
 
@@ -70,6 +88,7 @@ Item {
         CTabButton {
             required property string name
             required property string iconSource
+            required property int animation
 
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
@@ -78,7 +97,8 @@ Item {
             toolTipText: name
             iconName: iconSource
             checked: name === navBar.currentSelection
-            expanded: navBar.expanded
+            expanded: !expandAnimation.running && navBar.expanded
+            iconAnimationType: animation
 
             onButtonClicked: {
                 navBar.tabSelected(label);

@@ -8,12 +8,16 @@ Button {
     readonly property int horizontalMargin: 12
     readonly property int buttonHeight: 40
 
+    property alias iconAnimationType: icon.animationType
+    property alias iconToggleAnimation: icon.toggleAnimation
+    property alias iconFlipIcon: icon.flipIcon
+
     signal buttonClicked
     property string iconName
     property string label
     property string toolTipText
     property int fontSize: 14
-    property bool expanded: false
+    property bool expanded: true
 
     font.pointSize: fontSize
     text: label
@@ -45,6 +49,8 @@ Button {
             anchors.rightMargin: button.horizontalMargin - 2
 
             CIcon {
+                id: icon
+
                 property int size: button.buttonHeight - 2 * button.horizontalMargin
                 Layout.preferredWidth: size
                 Layout.preferredHeight: size
@@ -57,6 +63,9 @@ Button {
 
             Text {
                 Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                // Text glyphs seem visually lower than I'd like, for now leaving it like this
+                Layout.topMargin: -1
 
                 text: button.text
                 font: button.font
@@ -77,8 +86,23 @@ Button {
         radius: 6
     }
 
+    onPressed: {
+        if (!checked) {
+            icon.onPressed();
+        }
+    }
+
+    onReleased: {
+        if (!checked) {
+            icon.onReleased();
+        }
+    }
+
     onClicked: {
-        toggled
+        if (!checked) {
+            icon.onClicked();
+        }
+
         button.buttonClicked();
     }
 

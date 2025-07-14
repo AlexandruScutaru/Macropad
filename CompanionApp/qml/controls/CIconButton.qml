@@ -4,20 +4,19 @@ import QtQuick.Controls.Basic 2.15
 Button {
     id: button
 
+    property alias iconAnimationType: icon.animationType
+    property alias iconToggleAnimation: icon.toggleAnimation
+    property alias iconFlipIcon: icon.flipIcon
+
     signal buttonClicked
     property string iconName
     property string toolTipText
     property int buttonSize: 40
     property int iconPadding: 12
 
-    function getBgColor() {
-        if (!button.enabled) return Theme.buttonSecondaryDisabled;
-        if (button.down) return Theme.buttonSecondaryPressed;
-        if (button.hovered) return Theme.buttonSecondaryHovered;
-        return Theme.buttonSecondaryNormal;
-    }
-
     CIcon {
+        id: icon
+
         anchors.centerIn: parent
         source: button.iconName
         iconSize: button.buttonSize - button.iconPadding * 2
@@ -34,8 +33,24 @@ Button {
         radius: height / 2
     }
 
+    onPressed: {
+        icon.onPressed();
+    }
+
+    onReleased: {
+        icon.onReleased();
+    }
+
     onClicked: {
+        icon.onClicked();
         button.buttonClicked();
+    }
+
+    function getBgColor() {
+        if (!button.enabled) return Theme.buttonSecondaryDisabled;
+        if (button.down) return Theme.buttonSecondaryPressed;
+        if (button.hovered) return Theme.buttonSecondaryHovered;
+        return Theme.buttonSecondaryNormal;
     }
 
     ToolTip {

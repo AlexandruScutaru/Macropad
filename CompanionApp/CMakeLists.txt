@@ -126,7 +126,6 @@ source_group("QML Files" FILES ${QML_SRC})
 qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
-        resources/collapse_icon.svg
         resources/expand_icon.svg
         resources/keys_icon.svg
         resources/settings_icon.svg

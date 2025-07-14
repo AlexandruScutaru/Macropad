@@ -27,10 +27,10 @@ Item {
                 ListModel {
                     id: navBarModel
 
-                    ListElement { type: "button"; name: qsTr("Keypad"); iconSource: "qrc:///resources/keys_icon.svg" }
-                    ListElement { type: "button"; name: qsTr("Sliders"); iconSource: "qrc:///resources/sliders_icon.svg" }
+                    ListElement { type: "button"; name: qsTr("Keypad"); iconSource: "qrc:///resources/keys_icon.svg"; animation: CIcon.AnimationType.None }
+                    ListElement { type: "button"; name: qsTr("Sliders"); iconSource: "qrc:///resources/sliders_icon.svg"; animation: CIcon.AnimationType.None }
                     ListElement { type: "spacer" }
-                    ListElement { type: "button"; name: qsTr("Settings"); iconSource: "qrc:///resources/settings_icon.svg" }
+                    ListElement { type: "button"; name: qsTr("Settings"); iconSource: "qrc:///resources/settings_icon.svg"; animation: CIcon.AnimationType.Rotate }
                 }
             }
         }

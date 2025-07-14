@@ -89,14 +89,18 @@ Rectangle {
 
                         CIconButton {
                             iconName: "qrc:///resources/expand_icon.svg"
+                            iconAnimationType: CIcon.AnimationType.Rotate
+                            iconToggleAnimation: true
                         }
 
                         CIconButton {
                             iconName: "qrc:///resources/settings_icon.svg"
+                            iconAnimationType: CIcon.AnimationType.Rotate
                         }
 
                         CIconButton {
                             iconName: "qrc:///resources/sliders_icon.svg"
+                            iconAnimationType: CIcon.AnimationType.Scale
                         }
 
                         CIconButton {
@@ -137,7 +141,16 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
 
-                    label: "Tab button with an icon"
+                    label: "Tab button with animated icon"
+                    iconName: "qrc:///resources/keys_icon.svg"
+                    iconAnimationType: CIcon.AnimationType.Rotate
+                }
+
+                CTabButton {
+                    Layout.fillWidth: true
+                    Layout.alignment: Qt.AlignHCenter
+
+                    label: "Tab button with static icon"
                     iconName: "qrc:///resources/keys_icon.svg"
                 }
 
