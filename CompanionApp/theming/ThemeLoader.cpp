@@ -8,8 +8,8 @@
 #include <QDebug>
 
 
-Theme* ThemeLoader::LoadTheme(const QString& uri, const QString& name) {
-    const auto theme = new Theme();
+Theme* ThemeLoader::LoadTheme(const QString& uri, ThemeVariant variant) {
+    const auto theme = new Theme(variant);
 
     QFile file(uri);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -41,9 +41,10 @@ Theme* ThemeLoader::LoadTheme(const QString& uri, const QString& name) {
         return theme;
     }
 
-    const auto themeData = themesData[name];
+    const auto themeName = ThemeNameFromVariant(variant);
+    const auto themeData = themesData[themeName];
     if (!themeData.isObject()) {
-        qDebug() << "theme '" << name << "' is not an object";
+        qDebug() << "theme '" << themeName << "' is not an object";
         return theme;
     }
 
@@ -93,4 +94,12 @@ void ThemeLoader::SetColor(const QJsonValue& json, const QString& name, Theme* t
     if (const auto& color = json[name]; color.isString()) {
         ((*theme).*setter)(color.toString());
     }
+}
+
+QString ThemeLoader::ThemeNameFromVariant(ThemeVariant variant) {
+    switch (variant) {
+        case ThemeVariant::Dark: return "dark";
+        default: "";
+    };
+    return "";
 }

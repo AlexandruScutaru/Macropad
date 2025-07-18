@@ -23,6 +23,9 @@
     PROP_NOTIFY(name);\
     PROP_MEMBER(name, value);
 
+enum class ThemeVariant {
+    Dark = 0
+};
 
 class Theme : public QObject {
     Q_OBJECT
@@ -51,13 +54,19 @@ class Theme : public QObject {
     COLOR_PROPERTY(error, "#b21a1a");
     COLOR_PROPERTY(border, "#646464");
 
+    ThemeVariant mVariant{ ThemeVariant::Dark };
+
 public:
-    explicit Theme(QObject* parent = nullptr) : QObject(parent) {
+    explicit Theme(ThemeVariant variant, QObject* parent = nullptr)
+        : mVariant(variant)
+        , QObject(parent) {
         qDebug() << "Theme::Theme";
     }
 
     ~Theme() {
         qDebug() << "Theme::~Theme";
     }
+
+    ThemeVariant getVariant() const { return mVariant; }
 
 };
