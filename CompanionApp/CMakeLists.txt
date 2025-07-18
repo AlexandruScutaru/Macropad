@@ -37,15 +37,11 @@ set(qml_plain_files
     qml/Playground.qml
     qml/AppStackView.qml
     qml/NotConnectedView.qml
-    qml/DashboardView.qml
+    qml/KeypadView.qml
+    qml/SlidersView.qml
+    qml/SettingsView.qml
     qml/components/NavigationBar.qml
-    qml/connecting/DeviceConnectView.qml
-    qml/connecting/DeviceListDelegate.qml
-    qml/connecting/DeviceSearchHeader.qml
-    qml/settings/DeviceSettings.qml
-    qml/settings/HotkeysSettings.qml
-    qml/settings/SettingsView.qml
-    qml/settings/SlidersSettings.qml
+    qml/components/NavigationBarModel.qml
 )
 
 foreach(file_name ${qml_plain_files})

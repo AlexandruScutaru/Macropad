@@ -27,9 +27,9 @@
 class Theme : public QObject {
     Q_OBJECT
 
-    COLOR_PROPERTY(textPrimary, "#d8e3ce");
-    COLOR_PROPERTY(textSecondary, "#b1b1b1");
-    COLOR_PROPERTY(textDisabled, "#909090");
+    COLOR_PROPERTY(textPrimary, "#e1ecd6");
+    COLOR_PROPERTY(textSecondary, "#afafaf");
+    COLOR_PROPERTY(textDisabled, "#919191");
 
     COLOR_PROPERTY(buttonPrimaryNormal, "#3f4d36");
     COLOR_PROPERTY(buttonPrimaryHovered, "#495242");
@@ -44,10 +44,12 @@ class Theme : public QObject {
     COLOR_PROPERTY(backgroundPrimary, "#1e1e1e");
     COLOR_PROPERTY(backgroundSecondary, "#252525");
     COLOR_PROPERTY(backgroundTertiary, "#353535");
+    COLOR_PROPERTY(backgroundBackdrop, "#60000000");
 
-    COLOR_PROPERTY(accentPrimaryNormal, "#3e4a36");
-    COLOR_PROPERTY(accentPrimaryHovered, "#485441");
+    COLOR_PROPERTY(accentPrimaryNormal, "#414e39");
+    COLOR_PROPERTY(accentPrimaryHovered, "#526049");
     COLOR_PROPERTY(error, "#b21a1a");
+    COLOR_PROPERTY(border, "#646464");
 
 public:
     explicit Theme(QObject* parent = nullptr) : QObject(parent) {

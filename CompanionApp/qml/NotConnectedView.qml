@@ -1,7 +1,7 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
 
-import Controls 1.0
+import Controls
 
 Item {
     id: notConnectedView

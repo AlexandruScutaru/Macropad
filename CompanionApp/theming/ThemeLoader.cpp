@@ -73,6 +73,7 @@ Theme* ThemeLoader::LoadTheme(const QString& uri, const QString& name) {
         SetColor(background, "primary", theme, &Theme::set_backgroundPrimary);
         SetColor(background, "secondary", theme, &Theme::set_backgroundSecondary);
         SetColor(background, "tertiary", theme, &Theme::set_backgroundTertiary);
+        SetColor(background, "backdrop", theme, &Theme::set_backgroundBackdrop);
     }
 
     if (const auto& other = themeData["other"]; other.isObject()) {
@@ -82,6 +83,7 @@ Theme* ThemeLoader::LoadTheme(const QString& uri, const QString& name) {
         }
 
         SetColor(other, "error", theme, &Theme::set_error);
+        SetColor(other, "border", theme, &Theme::set_border);
     }
 
     return theme;
