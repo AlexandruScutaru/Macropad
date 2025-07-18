@@ -50,7 +50,8 @@ void Macropad::onInitialized(const MacropadConfig& config) {
 
     QObject::connect(mMainController, &MainController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
-    loadTheme("dark");
+    // TODO: get theme from saved settings
+    loadTheme(ThemeVariant::Dark);
     initTrayIcon();
 
     if (mConfig.isPlayground) {
@@ -60,7 +61,12 @@ void Macropad::onInitialized(const MacropadConfig& config) {
     }
 }
 
-Theme* Macropad::getCurrentTheme() {
+Theme* Macropad::getTheme() {
+    // load default which is Dark at this stage
+    if (!mTheme) {
+        loadTheme(ThemeVariant::Dark);
+    }
+
     return mTheme.data();
 }
 
@@ -78,12 +84,12 @@ QObject* const Macropad::getMainWindowObject() {
     return qmlWindow;
 }
 
-void Macropad::loadTheme(const QString& themeName) {
+void Macropad::loadTheme(ThemeVariant variant) {
     if (mTheme) {
         mTheme->deleteLater();
     }
 
-    mTheme = QPointer(ThemeLoader::LoadTheme(THEMES_URI, themeName));
+    mTheme = QPointer(ThemeLoader::LoadTheme(THEMES_URI, variant));
     emit themeChanged(mTheme.data());
 }
 

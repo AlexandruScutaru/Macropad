@@ -31,7 +31,7 @@ public:
     ~Macropad();
 
     void onInitialized(const MacropadConfig& config);
-    Theme* getCurrentTheme();
+    Theme* getTheme();
 
 signals:
     void showWindowRequested();
@@ -40,7 +40,7 @@ signals:
 public slots:
     QSize windowSize();
     void saveWindowSize(int w, int h);
-    void loadTheme(const QString& themeName);
+    void loadTheme(ThemeVariant variant);
 
 private:
     QObject* const getMainWindowObject();

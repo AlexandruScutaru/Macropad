@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
     );
 
     engine.rootContext()->setContextProperty("MacroPad", macropad);
-    engine.rootContext()->setContextProperty("Theme", macropad->getCurrentTheme());
+    engine.rootContext()->setContextProperty("Theme", macropad->getTheme());
     engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
 
     return app.exec();
