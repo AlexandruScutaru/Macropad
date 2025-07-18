@@ -1,11 +1,11 @@
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
-import QtQuick.Controls.Basic 2.15
+import QtQuick.Controls.Basic
 
 Button {
     id: button
 
-    readonly property int horizontalMargin: 12
+    readonly property int marginSize: 10
     readonly property int buttonHeight: 40
 
     property alias iconAnimationType: icon.animationType
@@ -40,20 +40,22 @@ Button {
     }
 
     contentItem: Item {
+        anchors.fill: parent
         anchors.margins: 0
 
         RowLayout {
-            spacing: 12
             anchors.fill: parent
-            anchors.leftMargin: button.horizontalMargin - 2
-            anchors.rightMargin: button.horizontalMargin - 2
+            spacing: button.marginSize
+            anchors.leftMargin: button.marginSize
+            anchors.rightMargin: button.marginSize
 
             CIcon {
                 id: icon
 
-                property int size: button.buttonHeight - 2 * button.horizontalMargin
+                property int size: button.buttonHeight - 2 * button.marginSize
                 Layout.preferredWidth: size
                 Layout.preferredHeight: size
+                Layout.alignment: Qt.AlignLeft
 
                 source: button.iconName
                 iconSize: size
@@ -87,22 +89,19 @@ Button {
     }
 
     onPressed: {
-        if (!checked) {
-            icon.onPressed();
-        }
+        icon.onPressed();
     }
 
     onReleased: {
-        if (!checked) {
-            icon.onReleased();
-        }
+        icon.onReleased();
+    }
+
+    onCanceled: {
+        icon.onReleased();
     }
 
     onClicked: {
-        if (!checked) {
-            icon.onClicked();
-        }
-
+        icon.onClicked();
         button.buttonClicked();
     }
 

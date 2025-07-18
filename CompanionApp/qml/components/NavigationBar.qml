@@ -1,17 +1,17 @@
 pragma ComponentBehavior: Bound
 
-import QtQuick 2.15
+import QtQuick
 import QtQuick.Layouts
 import QtQml.Models
 
-import Controls 1.0
+import Controls
 
 Item {
     id: navBar
 
     signal navTabButtonClicked(name: string)
 
-    readonly property int expanded_width: 160
+    readonly property int expanded_width: 180
     readonly property int collapsed_width: 56
     readonly property int margin: 8
 
@@ -21,17 +21,14 @@ Item {
 
     implicitWidth: expanded ? expanded_width : collapsed_width
 
-    function tabSelected (tabName: string) {
-        navBar.currentSelection = tabName;
-        navBar.navTabButtonClicked(tabName);
-    }
-
     Component.onCompleted: {
         if (tabButtonsModel.count == 0) {
             return;
         }
 
-        navBar.tabSelected(tabButtonsModel.get(0).name);
+        const tabName = tabButtonsModel.get(0).name;
+        navBar.currentSelection = tabName;
+        navBar.navTabButtonClicked(tabName);
     }
 
     PropertyAnimation {
@@ -54,7 +51,7 @@ Item {
 
         CIconButton {
             Layout.bottomMargin: 8
-            Layout.alignment: expandAnimation.running || navBar.expanded ? Qt.AlignRight : Qt.AlignHCenter
+            Layout.alignment: expandAnimation.running || navBar.expanded ? Qt.AlignRight | Qt.AlignTop : Qt.AlignHCenter | Qt.AlignTop
 
             iconName: "qrc:///resources/expand_icon.svg"
             toolTipText: navBar.expanded ? qsTr("Collpase") : qsTr("Expand")
@@ -87,6 +84,8 @@ Item {
 
         CTabButton {
             required property string name
+            required property bool tabEnabled
+            required property bool tabCheckable
             required property string iconSource
             required property int animation
 
@@ -96,12 +95,16 @@ Item {
             label: name
             toolTipText: name
             iconName: iconSource
-            checked: name === navBar.currentSelection
+            checked: tabCheckable && name === navBar.currentSelection
             expanded: !expandAnimation.running && navBar.expanded
             iconAnimationType: animation
+            enabled: tabEnabled
 
             onButtonClicked: {
-                navBar.tabSelected(label);
+                if (tabCheckable) {
+                    navBar.currentSelection = label;
+                }
+                navBar.navTabButtonClicked(label);
             }
         }
     }

@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 
-import QtQuick 2.15
-import QtQuick.Controls.Basic 2.15
+import QtQuick
+import QtQuick.Controls.Basic
 
 BusyIndicator {
     id: busyIndicator

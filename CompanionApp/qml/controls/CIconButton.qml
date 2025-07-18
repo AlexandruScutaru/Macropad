@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls.Basic 2.15
+import QtQuick
+import QtQuick.Controls.Basic
 
 Button {
     id: button
@@ -12,7 +12,7 @@ Button {
     property string iconName
     property string toolTipText
     property int buttonSize: 40
-    property int iconPadding: 12
+    property int iconPadding: 10
 
     CIcon {
         id: icon
@@ -38,6 +38,10 @@ Button {
     }
 
     onReleased: {
+        icon.onReleased();
+    }
+
+    onCanceled: {
         icon.onReleased();
     }
 

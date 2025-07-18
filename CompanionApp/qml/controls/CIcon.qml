@@ -1,4 +1,4 @@
-import QtQuick 2.15
+import QtQuick
 import Qt5Compat.GraphicalEffects
 
 Item {
@@ -24,15 +24,8 @@ Item {
     width: iconWidth
     height: iconHeight
 
-    property alias iconAngle: rotation.angle
     property int initialAngle: { initialAngle = (icon.flipIcon ? 180 : 0) }
-
-    transform: Rotation {
-        id: rotation
-        origin.x: icon.width / 2;
-        origin.y: icon.height / 2;
-        angle: icon.initialAngle
-    }
+    rotation: initialAngle
 
     Component.onCompleted: {
         isAnimationForward = !flipIcon;
@@ -55,7 +48,7 @@ Item {
         id: scaleAnimation
         target: icon
         property: "scale"
-        duration: 200
+        duration: 100
         easing.type: Easing.InQuad
     }
 
@@ -101,13 +94,13 @@ Item {
                 return;
             case CIcon.AnimationType.Scale:
                 scaleAnimation.stop();
+                scaleAnimation.from = icon.scale;
                 scaleAnimation.to = 0.9;
                 scaleAnimation.start();
                 break;
             case CIcon.AnimationType.Rotate:
                 rotateAnimation.stop();
-                icon.iconAngle = 0;
-                rotateAnimation.from = 0;
+                rotateAnimation.from = icon.rotation;
                 rotateAnimation.to = 180;
                 rotateAnimation.start();
                 break;
@@ -120,13 +113,13 @@ Item {
                 return;
             case CIcon.AnimationType.Scale:
                 scaleAnimation.stop();
+                scaleAnimation.from = icon.scale;
                 scaleAnimation.to = 1.0;
                 scaleAnimation.start();
                 break;
             case CIcon.AnimationType.Rotate:
                 rotateAnimation.stop();
-                icon.iconAngle = 0;
-                rotateAnimation.from = 180;
+                rotateAnimation.from = icon.rotation;
                 rotateAnimation.to = 0;
                 rotateAnimation.start();
                 break;
