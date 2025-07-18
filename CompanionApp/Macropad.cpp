@@ -32,15 +32,17 @@ Macropad::~Macropad() {
     qDebug() << "Macropad::~Macropad";
 
     if (mTheme) {
-        mTheme->deleteLater();
+        delete mTheme;
+        mTheme = nullptr;
     }
 }
 
 void Macropad::onInitialized(const MacropadConfig& config) {
     mConfig = config;
+    initTrayIcon();
 
-    if (mConfig.isDebug && mConfig.isPlayground) {
-        mConfig.isSkipPhysicalDevice = true;
+    if (mConfig.isPlayground) {
+        return;
     }
 
     const auto qmlWindow = getMainWindowObject();
@@ -52,13 +54,7 @@ void Macropad::onInitialized(const MacropadConfig& config) {
 
     // TODO: get theme from saved settings
     loadTheme(ThemeVariant::Dark);
-    initTrayIcon();
-
-    if (mConfig.isPlayground) {
-        initPlayground(qmlWindow);
-    } else {
-        initAppStackView(qmlWindow);
-    }
+    initAppStackView(qmlWindow);
 }
 
 Theme* Macropad::getTheme() {
@@ -98,20 +94,6 @@ void Macropad::initTrayIcon() {
     QObject::connect(trayIcon, &TrayIcon::activated, this, &Macropad::showWindowRequested);
     QObject::connect(trayIcon, &TrayIcon::showActionTriggered, this, &Macropad::showWindowRequested);
     QObject::connect(trayIcon, &TrayIcon::quitActionTriggered, qApp, &QApplication::quit);
-}
-
-void Macropad::initPlayground(const QObject* const qmlWindow) {
-    if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(QML_APP_CONTAINER_NAME); deviceViewContainer) {
-        QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/Playground.qml"));
-        if (deviceView.isError() || deviceView.isNull()) {
-            qDebug() << "Cannot create Playground.qml";
-            return;
-        }
-
-        auto component = deviceView.create();
-        auto item = qobject_cast<QQuickItem*>(component);
-        item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
-    }
 }
 
 void Macropad::initAppStackView(const QObject* const qmlWindow) {

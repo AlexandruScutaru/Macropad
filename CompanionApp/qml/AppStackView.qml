@@ -14,9 +14,6 @@ Item {
 
     required property MainController mainController
 
-    property bool deviceConnected: false
-    property bool slidersConnected: false
-
     function deviceConnectTryAgainClicked() {
         stack.clear();
         stack.push(loadingView);
@@ -59,8 +56,8 @@ Item {
                 NavigationBarModel {
                     id: navBarModel
 
-                    keypadTabEnabled: appStackView.deviceConnected
-                    slidersTabEnabled: appStackView.slidersConnected
+                    keypadTabEnabled: false
+                    slidersTabEnabled: false
                 }
             }
         }
@@ -92,14 +89,14 @@ Item {
                 Connections {
                     target: appStackView.mainController
                     function onDeviceConnected() {
-                        appStackView.deviceConnected = true;
-                        appStackView.slidersConnected = true;
+                        navBarModel.keypadTabEnabled = true;
+                        navBarModel.slidersTabEnabled = true;
                         stack.replace(keypadView);
                     }
 
                     function onDeviceNotFound() {
-                        appStackView.deviceConnected = false;
-                        appStackView.slidersConnected = false;
+                        navBarModel.keypadTabEnabled = false;
+                        navBarModel.slidersTabEnabled = false;
                         stack.replace(notConnectedView);
                     }
                 }
