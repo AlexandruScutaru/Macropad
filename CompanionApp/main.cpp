@@ -24,6 +24,13 @@ int main(int argc, char *argv[]) {
         CMD_ARG_PLAYGROUND
     });
 
+    const auto isPlayground = IS_DEBUG && cmdArgs.getFlag(CMD_ARG_PLAYGROUND);
+    const MacropadConfig macropadConfig = {
+        .isDebug = IS_DEBUG,
+        .isSkipPhysicalDevice = isPlayground || cmdArgs.getFlag(CMD_ARG_SKIP_PHYSICAL_DEVICE),
+        .isPlayground = isPlayground
+    };
+
     QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon(":/resources/app_icon.png"));
     QQmlApplicationEngine engine;
@@ -46,7 +53,7 @@ int main(int argc, char *argv[]) {
 
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreated,
-        &app, [&engine, macropad, &cmdArgs](QObject* obj, const QUrl& url) {
+        &app, [&engine, macropad, &macropadConfig](QObject* obj, const QUrl& url) {
             if (!obj) {
                 qDebug() << "QQmlApplicationEngine created object is null (for some reason) for " << url;
                 QCoreApplication::exit(-2);
@@ -69,18 +76,19 @@ int main(int argc, char *argv[]) {
                 engine.rootContext()->setContextProperty("Theme", theme);
             });
 
-            macropad->onInitialized({
-                .isDebug = IS_DEBUG,
-                .isSkipPhysicalDevice = cmdArgs.getFlag(CMD_ARG_SKIP_PHYSICAL_DEVICE),
-                .isPlayground = cmdArgs.getFlag(CMD_ARG_PLAYGROUND)
-            });
+            macropad->onInitialized(macropadConfig);
         },
         Qt::QueuedConnection
     );
 
     engine.rootContext()->setContextProperty("MacroPad", macropad);
     engine.rootContext()->setContextProperty("Theme", macropad->getTheme());
-    engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
+
+    if (macropadConfig.isPlayground) {
+        engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Playground.qml"));
+    } else {
+        engine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
+    }
 
     return app.exec();
 }

@@ -46,7 +46,6 @@ private:
     QObject* const getMainWindowObject();
 
     void initTrayIcon();
-    void initPlayground(const QObject* const qmlWindow);
     void initAppStackView(const QObject* const qmlWindow);
 
     QQmlApplicationEngine& mQmlEngine;
