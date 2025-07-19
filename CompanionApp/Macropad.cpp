@@ -48,7 +48,7 @@ void Macropad::onInitialized(const MacropadConfig& config) {
     const auto qmlWindow = getMainWindowObject();
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
-    mMainController = new MainController(mPotentiometersReader, mAppSettings, mConfig.isSkipPhysicalDevice, this);
+    mMainController = new MainController(mPotentiometersReader, mAppSettings->potentiometersInfo(), mConfig.isSkipPhysicalDevice, this);
 
     QObject::connect(mMainController, &MainController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
@@ -72,6 +72,14 @@ QSize Macropad::windowSize() {
 
 void Macropad::saveWindowSize(int w, int h) {
     mAppSettings->saveWindowSize({ w, h });
+}
+
+bool Macropad::navBarExpanded() {
+    return mAppSettings->navBarExpanded();
+}
+
+void Macropad::saveNavBarExpanded(bool expanded) {
+    mAppSettings->saveNavBarExpanded(expanded);
 }
 
 QObject* const Macropad::getMainWindowObject() {

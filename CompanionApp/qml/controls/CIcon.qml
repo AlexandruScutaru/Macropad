@@ -24,8 +24,7 @@ Item {
     width: iconWidth
     height: iconHeight
 
-    property int initialAngle: { initialAngle = (icon.flipIcon ? 180 : 0) }
-    rotation: initialAngle
+    rotation: icon.flipIcon ? 180 : 0
 
     Component.onCompleted: {
         isAnimationForward = !flipIcon;

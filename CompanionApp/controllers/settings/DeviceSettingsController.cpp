@@ -18,15 +18,10 @@ DeviceSettingsController::~DeviceSettingsController() {
 
 void DeviceSettingsController::init(AppSettings* appSettings) {
     mAppSettings = appSettings;
-    mDevicePath = mAppSettings->lastDevicePath();
     emit devicePathChanged(mDevicePath);
 }
 
-void DeviceSettingsController::forgetDeviceClicked() {
-    mAppSettings->clearLastDevicePath();
-    mDevicePath = mAppSettings->lastDevicePath();
-    emit devicePathChanged(mDevicePath);
-}
+void DeviceSettingsController::forgetDeviceClicked() {}
 
 QString DeviceSettingsController::getDevicePath() {
     return mDevicePath;

@@ -53,6 +53,14 @@ Item {
                     }
                 }
 
+                onNavBarExpandedChanged: (expanded) => {
+                    MacroPad.saveNavBarExpanded(expanded);
+                }
+
+                Component.onCompleted: {
+                    navBar.expanded = MacroPad.navBarExpanded();
+                }
+
                 NavigationBarModel {
                     id: navBarModel
 
@@ -113,7 +121,7 @@ Item {
 
         parent: Overlay.overlay
         anchors.centerIn: parent
-        width: parent.width * 0.8
+        width: parent.width * 0.7
         height: parent.height * 0.8
 
         visible: false

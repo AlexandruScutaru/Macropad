@@ -15,7 +15,9 @@ Q_DECLARE_OPAQUE_POINTER(hid_device*)
 
 class HidHelper;
 class PotentiometersReader;
-class AppSettings;
+
+struct PotentiometerInfo;
+using Potentiometers =  std::vector<PotentiometerInfo>;
 
 
 class MainController : public QObject {
@@ -23,10 +25,9 @@ class MainController : public QObject {
     QML_ELEMENT
     QML_UNCREATABLE("Not intended to be created from QML directly")
 public:
-    explicit MainController(PotentiometersReader* potentiometersReader, AppSettings* appSettings, bool skipPhysicalDevice, QObject* parent = nullptr);
+    explicit MainController(PotentiometersReader* potentiometersReader, const Potentiometers& potentiometersInfo, bool skipPhysicalDevice, QObject* parent = nullptr);
     ~MainController();
 
-    Q_INVOKABLE AppSettings* getAppSettings();
     Q_INVOKABLE DeviceInfoModel* getDeviceInfoModel();
     Q_INVOKABLE SlidersModel* getSlidersModel();
 
@@ -47,12 +48,12 @@ private slots:
     void onPotentiometersChanged(const std::vector<int>& values);
 
 private:
-    QPointer<AppSettings> mAppSettings{ nullptr };
     QPointer<DeviceInfoModel> mDeviceInfoModel{ nullptr };
     QPointer<SlidersModel> mSlidersModel{ nullptr };
     QPointer<PotentiometersReader> mPotentiometersReader{ nullptr };
     QPointer<HidHelper> mHidHelper{ nullptr };
 
+    Potentiometers mPotentiometersInfo;
     bool mHidInitted{ false };
     bool mIsCalibrating{ false };
     bool mSkipPhysicalDevice{ false };
