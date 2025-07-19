@@ -4,20 +4,24 @@ import QtQuick.Controls.Basic
 ApplicationWindow {
     id: mainWindow
 
-    width: 640
-    height: 480
-    minimumWidth: 640
-    minimumHeight: 480
+    property bool lastSizeRestored: false
+    readonly property int minWidth: 900
+    readonly property int minHeight: 540
+
+    width: minWidth
+    height: minHeight
+    minimumWidth: minWidth
+    minimumHeight: minHeight
     visible: true
     title: qsTr("Macropad Companion")
     color: Theme.backgroundPrimary;
 
     onWidthChanged: {
-        MacroPad.saveWindowSize(width, height);
+        saveWindowSize();
     }
 
     onHeightChanged: {
-        MacroPad.saveWindowSize(width, height);
+        saveWindowSize();
     }
 
     Component.onCompleted: {
@@ -25,6 +29,13 @@ ApplicationWindow {
         var size = MacroPad.windowSize();
         width = size.width;
         height = size.height;
+        lastSizeRestored = true;
+    }
+
+    function saveWindowSize() {
+        if (lastSizeRestored) {
+            MacroPad.saveWindowSize(width, height);
+        }
     }
 
     function windowShowRequested() {

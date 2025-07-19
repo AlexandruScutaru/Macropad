@@ -13,11 +13,15 @@ ListModel {
     property bool slidersTabEnabled: false
 
     onKeypadTabEnabledChanged: {
-        model.setProperty(0, "tabEnabled", keypadTabEnabled);
+        if (model.count) {
+            model.setProperty(0, "tabEnabled", keypadTabEnabled);
+        }
     }
 
     onSlidersTabEnabledChanged: {
-        model.setProperty(1, "tabEnabled", slidersTabEnabled);
+        if (model.count) {
+            model.setProperty(1, "tabEnabled", slidersTabEnabled);
+        }
     }
 
     Component.onCompleted: {

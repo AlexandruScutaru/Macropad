@@ -18,7 +18,6 @@ struct PotentiometerInfo {
     int max{ 1023 };
 };
 
-using HotkeyActionMap = std::unordered_map<Hotkeys::Actions, int>;
 using Potentiometers =  std::vector<PotentiometerInfo>;
 
 
@@ -26,6 +25,7 @@ class AppSettings : public QObject {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Not intended to be created from QML directly")
+
 public:
     explicit AppSettings(QObject* parent = nullptr);
     ~AppSettings();
@@ -33,16 +33,8 @@ public:
     QSize windowSize();
     void saveWindowSize(const QSize& size);
 
-    bool devHelperState();
-    void saveDevHelperState(bool state);
-
-    QString lastDevicePath();
-    void saveLastDevicePath(const QString& path);
-    void clearLastDevicePath();
-
-    HotkeyActionMap hotkeyActionMap();
-    void saveHotkeyActionMap(const HotkeyActionMap& hotkeyActionMap);
-    Hotkeys::Actions keyToHotkeyAction(int key);
+    bool navBarExpanded();
+    void saveNavBarExpanded(bool expanded);
 
     Potentiometers potentiometersInfo();
     void savePotentiometersInfo(const Potentiometers& potentiometers);
@@ -51,14 +43,10 @@ private:
     std::unique_ptr<QSettings> getSettings();
 
     void readWindowState();
-    void readDeviceConnectionData();
-    void readHotkeyActions();
     void readPotentiometersInfo();
 
     QSize mWindowSize;
-    bool mDevHelperState{ false };
-    QString mLastDevicePath;
-    HotkeyActionMap mHotkeyActionMap;
+    bool mNavBarExpanded{ true };
     Potentiometers mPotentiometersInfo;
 
 };

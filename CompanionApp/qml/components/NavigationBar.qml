@@ -10,6 +10,7 @@ Item {
     id: navBar
 
     signal navTabButtonClicked(name: string)
+    signal navBarExpandedChanged(expanded: bool)
 
     readonly property int expanded_width: 180
     readonly property int collapsed_width: 56
@@ -17,7 +18,7 @@ Item {
 
     property ListModel tabButtonsModel
     property string currentSelection
-    property bool expanded: false
+    property bool expanded: true
 
     implicitWidth: expanded ? expanded_width : collapsed_width
 
@@ -42,6 +43,7 @@ Item {
 
         onFinished: {
             navBar.expanded = !navBar.expanded;
+            navBar.navBarExpandedChanged(navBar.expanded);
         }
     }
 

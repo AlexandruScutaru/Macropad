@@ -18,8 +18,6 @@ TrayIcon::TrayIcon(QObject *parent)
         return;
     }
 
-    QApplication::setQuitOnLastWindowClosed(false);
-
     QAction* showAction = new QAction("Show", this);
     QAction* quitAction = new QAction("Quit", this);
 

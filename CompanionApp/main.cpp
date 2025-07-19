@@ -33,11 +33,12 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
     QApplication::setWindowIcon(QIcon(":/resources/app_icon.png"));
-    QQmlApplicationEngine engine;
-    QQuickStyle::setStyle("basic");
-
+    QApplication::setQuitOnLastWindowClosed(false);
     QApplication::setOrganizationName("Macropad");
     QApplication::setApplicationName("Companion");
+
+    QQmlApplicationEngine engine;
+    QQuickStyle::setStyle("basic");
 
     auto appSettings = new AppSettings(qApp);
     auto macropad = new Macropad(engine, appSettings, qApp);

@@ -69,8 +69,6 @@ qt_add_qml_module(${TARGET_NAME}
         controllers/settings/DeviceSettingsController.h
         controllers/settings/HotkeyActions.cpp
         controllers/settings/HotkeyActions.h
-        controllers/settings/HotkeysSettingsController.cpp
-        controllers/settings/HotkeysSettingsController.h
         controllers/settings/SlidersSettingsController.cpp
         controllers/settings/SlidersSettingsController.h
 
@@ -82,8 +80,6 @@ qt_add_qml_module(${TARGET_NAME}
         models/DeviceInfoModel.h
         models/SlidersModel.cpp
         models/SlidersModel.h
-        models/settings/HotkeysSettingsModel.cpp
-        models/settings/HotkeysSettingsModel.h
         models/settings/SlidersSettingsModel.cpp
         models/settings/SlidersSettingsModel.h
 
@@ -122,6 +118,7 @@ source_group("QML Files" FILES ${QML_SRC})
 qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
+        resources/close_icon.svg
         resources/expand_icon.svg
         resources/keys_icon.svg
         resources/settings_icon.svg
@@ -129,7 +126,6 @@ qt_add_resources(${TARGET_NAME} "resources"
 
         resources/app_icon.png
         resources/back_arrow_icon.png
-        resources/close_icon.png
         resources/info_icon.png
         resources/search_icon.png
         resources/not_connected_animation.gif

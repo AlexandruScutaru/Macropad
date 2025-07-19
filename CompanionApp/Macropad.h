@@ -33,18 +33,18 @@ public:
     void onInitialized(const MacropadConfig& config);
     Theme* getTheme();
 
+    Q_INVOKABLE QSize windowSize();
+    Q_INVOKABLE void saveWindowSize(int w, int h);
+    Q_INVOKABLE bool navBarExpanded();
+    Q_INVOKABLE void saveNavBarExpanded(bool expanded);
+
 signals:
     void showWindowRequested();
     void themeChanged(Theme* theme);
 
-public slots:
-    QSize windowSize();
-    void saveWindowSize(int w, int h);
-    void loadTheme(ThemeVariant variant);
-
 private:
     QObject* const getMainWindowObject();
-
+    void loadTheme(ThemeVariant variant);
     void initTrayIcon();
     void initAppStackView(const QObject* const qmlWindow);
 

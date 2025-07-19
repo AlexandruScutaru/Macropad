@@ -109,7 +109,7 @@ Rectangle {
             Layout.topMargin: 12
             Layout.rightMargin: 12
 
-            iconName: "qrc:///resources/close_icon.png"
+            iconName: "qrc:///resources/close_icon.svg"
             toolTipText: qsTr("Close")
             iconAnimationType: CIcon.AnimationType.Scale
 
