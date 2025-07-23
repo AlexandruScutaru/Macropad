@@ -5,39 +5,19 @@ import QtQuick.Controls.Basic
 Button {
     id: button
 
-    property alias buttonRadius: buttonBackground.radius
-    property alias iconAnimationType: icon.animationType
-    property alias iconToggleAnimation: icon.toggleAnimation
-    property alias iconFlipIcon: icon.flipIcon
-
     signal buttonClicked
-    property int buttonHeight: 40
-    property int marginSize: 10
+    property int buttonHeight: 50
+    property int marginSize: 12
+    property int iconSize: 20
     property string iconName
     property string label
     property string toolTipText
     property int fontSize: 14
-    property bool expanded: true
 
     font.pointSize: fontSize
     text: label
     anchors.margins: 0
     padding: 0
-
-    function getBgColor() {
-        if (!button.enabled) return Theme.buttonSecondaryDisabled;
-        if (button.down) return Theme.buttonSecondaryPressed;
-        if (button.checked) return Theme.buttonSecondaryPressed;
-        if (button.hovered) return Theme.buttonSecondaryHovered;
-        return Theme.buttonSecondaryNormal;
-    }
-
-    function getTextColor() {
-        if (!button.enabled) return Theme.textDisabled;
-        if (button.hovered) return Theme.textPrimary;
-        if (!button.checked) return Theme.textSecondary;
-        return Theme.textPrimary;
-    }
 
     contentItem: Item {
         anchors.fill: parent
@@ -50,15 +30,35 @@ Button {
             anchors.rightMargin: button.marginSize
 
             CIcon {
+                id: chevronIcon
+
+                property bool expanded: false
+                Layout.preferredWidth:  16
+                Layout.preferredHeight: 16
+                Layout.alignment: Qt.AlignLeft
+
+                source: "qrc:///resources/chevron_icon.svg"
+                iconSize: 16
+                color: button.getTextColor()
+
+                rotation: expanded ? 90 : 0
+                Behavior on rotation {
+                    NumberAnimation {
+                        easing.type: Easing.InOutQuad
+                        duration: 200
+                    }
+                }
+            }
+
+            CIcon {
                 id: icon
 
-                property int size: button.buttonHeight - 2 * button.marginSize
-                Layout.preferredWidth: size
-                Layout.preferredHeight: size
+                Layout.preferredWidth: button.iconSize
+                Layout.preferredHeight: button.iconSize
                 Layout.alignment: Qt.AlignLeft
 
                 source: button.iconName
-                iconSize: size
+                iconSize: button.iconSize
                 color: button.getTextColor()
                 visible: button.iconName.length > 0
             }
@@ -66,7 +66,6 @@ Button {
             Text {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
-                // Text glyphs seem visually lower than I'd like, for now leaving it like this
                 Layout.topMargin: -1
 
                 text: button.text
@@ -75,7 +74,6 @@ Button {
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
-                visible: button.expanded
             }
         }
     }
@@ -87,30 +85,29 @@ Button {
         implicitHeight: button.buttonHeight
         color: button.getBgColor()
         border.width: 0
-        radius: 6
-    }
-
-    onPressed: {
-        icon.onPressed();
-    }
-
-    onReleased: {
-        icon.onReleased();
-    }
-
-    onCanceled: {
-        icon.onReleased();
+        radius: 0
     }
 
     onClicked: {
-        icon.onClicked();
+        chevronIcon.expanded = !chevronIcon.expanded;
         button.buttonClicked();
+    }
+
+    function getBgColor() {
+        if (button.down) return Theme.buttonSecondaryPressed;
+        if (button.hovered) return Theme.buttonSecondaryHovered;
+        return Theme.buttonSecondaryNormal;
+    }
+
+    function getTextColor() {
+        if (button.hovered) return Theme.textPrimary;
+        return Theme.textSecondary;
     }
 
     ToolTip {
         id: tooltip
         text: button.toolTipText
-        visible: button.hovered && button.enabled && !button.down && !button.expanded && text.length > 0
+        visible: button.hovered && button.enabled && !button.down && text.length > 0
         delay: 600
     }
 }

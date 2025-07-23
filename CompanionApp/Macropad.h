@@ -11,6 +11,8 @@ namespace Hotkeys {
     enum class Actions;
 }
 
+class KeypadController;
+
 class AudioOutputSwitcher;
 class AppSettings;
 class MainController;
@@ -33,6 +35,8 @@ public:
     void onInitialized(const MacropadConfig& config);
     Theme* getTheme();
 
+    Q_INVOKABLE KeypadController* getKeypadController();
+
     Q_INVOKABLE QSize windowSize();
     Q_INVOKABLE void saveWindowSize(int w, int h);
     Q_INVOKABLE bool navBarExpanded();
@@ -53,6 +57,8 @@ private:
     MacropadConfig mConfig;
     QPointer<Theme> mTheme{ nullptr };
     AppSettings* mAppSettings{ nullptr };
+    QPointer<KeypadController> mKeypadController{ nullptr };
+
     AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
     PotentiometersReader* mPotentiometersReader{ nullptr };
     MainController* mMainController{nullptr};

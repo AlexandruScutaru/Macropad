@@ -9,6 +9,9 @@
 #include "tray/TrayIcon.h"
 #include "theming/ThemeLoader.h"
 
+#include "controllers/KeypadController.h"
+
+
 #include <QApplication>
 #include <QDebug>
 #include <QQmlComponent>
@@ -46,6 +49,8 @@ void Macropad::onInitialized(const MacropadConfig& config) {
     }
 
     const auto qmlWindow = getMainWindowObject();
+    mKeypadController = new KeypadController(this);
+
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
     mMainController = new MainController(mPotentiometersReader, mAppSettings->potentiometersInfo(), mConfig.isSkipPhysicalDevice, this);
@@ -64,6 +69,10 @@ Theme* Macropad::getTheme() {
     }
 
     return mTheme.data();
+}
+
+KeypadController* Macropad::getKeypadController() {
+    return mKeypadController;
 }
 
 QSize Macropad::windowSize() {
@@ -108,7 +117,7 @@ void Macropad::initAppStackView(const QObject* const qmlWindow) {
     if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(QML_APP_CONTAINER_NAME); deviceViewContainer) {
         QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/AppStackView.qml"));
         if (deviceView.isError() || deviceView.isNull()) {
-            qDebug() << "Cannot create AppStackView.qml";
+            qDebug() << "Cannot create AppStackView.qml: " << deviceView.errors();
             return;
         }
 
