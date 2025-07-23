@@ -40,8 +40,12 @@ set(qml_plain_files
     qml/KeypadView.qml
     qml/SlidersView.qml
     qml/SettingsView.qml
+    qml/components/ActionsList.qml
     qml/components/NavigationBar.qml
     qml/components/NavigationBarModel.qml
+    qml/components/Key.qml
+    qml/components/KeypadKeys.qml
+    qml/components/LayerPagination.qml
 )
 
 foreach(file_name ${qml_plain_files})
@@ -63,6 +67,9 @@ qt_add_qml_module(${TARGET_NAME}
     SOURCES
         audio/AudioOutputSwitcher.h
 
+        controllers/KeypadController.cpp
+        controllers/KeypadController.h
+
         controllers/MainController.cpp
         controllers/MainController.h
         controllers/settings/DeviceSettingsController.cpp
@@ -75,6 +82,11 @@ qt_add_qml_module(${TARGET_NAME}
         misc/CmdArgs.cpp
         misc/CmdArgs.h
         misc/DebugChecker.h
+
+        models/ActionsListModel.cpp
+        models/ActionsListModel.h
+        models/ActionSectionsListModel.cpp
+        models/ActionSectionsListModel.h
 
         models/DeviceInfoModel.cpp
         models/DeviceInfoModel.h
@@ -118,7 +130,9 @@ source_group("QML Files" FILES ${QML_SRC})
 qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
+        resources/chevron_icon.svg
         resources/close_icon.svg
+        resources/drag_icon.svg
         resources/expand_icon.svg
         resources/keys_icon.svg
         resources/settings_icon.svg

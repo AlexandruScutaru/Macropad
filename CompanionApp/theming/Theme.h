@@ -46,7 +46,7 @@ class Theme : public QObject {
 
     COLOR_PROPERTY(backgroundPrimary, "#1e1e1e");
     COLOR_PROPERTY(backgroundSecondary, "#252525");
-    COLOR_PROPERTY(backgroundTertiary, "#353535");
+    COLOR_PROPERTY(backgroundTertiary, "#2e2e2e");
     COLOR_PROPERTY(backgroundBackdrop, "#60000000");
 
     COLOR_PROPERTY(accentPrimaryNormal, "#414e39");

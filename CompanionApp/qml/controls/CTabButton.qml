@@ -5,14 +5,14 @@ import QtQuick.Controls.Basic
 Button {
     id: button
 
-    readonly property int marginSize: 10
-    readonly property int buttonHeight: 40
-
+    property alias buttonRadius: buttonBackground.radius
     property alias iconAnimationType: icon.animationType
     property alias iconToggleAnimation: icon.toggleAnimation
     property alias iconFlipIcon: icon.flipIcon
 
     signal buttonClicked
+    property int buttonHeight: 40
+    property int marginSize: 10
     property string iconName
     property string label
     property string toolTipText
@@ -81,6 +81,8 @@ Button {
     }
 
     background: Rectangle {
+        id: buttonBackground
+
         implicitWidth: 80
         implicitHeight: button.buttonHeight
         color: button.getBgColor()

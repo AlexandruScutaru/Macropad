@@ -12,7 +12,7 @@ Rectangle {
     anchors.fill: parent
     anchors.margins: 0
 
-    color: Theme.backgroundTertiary
+    color: Theme.backgroundPrimary
     border.color: Theme.border
     border.width: 1
     radius:8
