@@ -43,6 +43,7 @@ QHash<int, QByteArray> ActionsListModel::roleNames() const {
     roles[ActionId] = "actionId";
     roles[ActionName] = "actionName";
     roles[IconName] = "iconName";
+    roles[ActionToolTip] = "toolTip";
     return roles;
 }
 

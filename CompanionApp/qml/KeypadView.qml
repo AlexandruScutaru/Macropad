@@ -4,6 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic
 
+import Controls
 import "."
 
 Item {
@@ -55,53 +56,54 @@ Item {
 
                 Item {
                     id: keypadActionAssignArea
-                    SplitView.minimumHeight: actionSplitter.height * 0.3
+
+                    SplitView.minimumHeight: actionAssignLayout.anchors.topMargin + keypadKeys.minSize + actionAssignLayout.spacing + layerPagination.height + actionAssignLayout.anchors.bottomMargin
                     SplitView.fillHeight: true
 
                     ColumnLayout {
-                        anchors.fill: parent
-                        anchors.margins: 12
-                        spacing: 12
+                        id: actionAssignLayout
 
-                        Item {
-                            Layout.fillHeight: true
-                        }
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        spacing: 20
 
                         KeypadKeys {
                             id: keypadKeys
 
-                            Layout.minimumHeight: 100
-                            Layout.minimumWidth: 100
-                            Layout.maximumHeight: 350
-                            Layout.maximumWidth: 350
+                            readonly property int minSize: 150
+                            readonly property int maxSize: 350
+
+                            Layout.minimumHeight: minSize
+                            Layout.minimumWidth: minSize
+                            Layout.maximumHeight: maxSize
+                            Layout.maximumWidth: maxSize
                             Layout.fillHeight: true
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignCenter
 
-                            outlineColor: "red"
+                            outlineColor: "transparent"
 
                             onKeySelected: (row, col) => {}
                             onKeyTriggered: (row, col) => {}
                         }
 
-                        Item {
-                            Layout.fillHeight: true
-                        }
-
                         LayerPagination {
                             id: layerPagination
 
-                            Layout.alignment: Qt.AlignHCenter
-                            Layout.topMargin: 12
-                            Layout.bottomMargin: 8
+                            Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
+
+                            // temp data for time being
+                            readonly property var colors: ["red", "yellow", "magenta", "green", "cyan"];
 
                             pageCount: 5
                             currentPage: 0
 
-                            onPageChanged: (page) => {
-                                const colors = ["red", "yellow", "magenta", "green", "cyan"];
-                                keypadKeys.outlineColor = colors[page];
+                            Component.onCompleted: {
+                                keypadKeys.outlineColor = colors[currentPage];
                             }
+
+                            onCurrentPageChanged: { keypadKeys.outlineColor = colors[currentPage]; }
+                            onPageChanged: (page) => { currentPage = page; }
                         }
                     }
                 }
@@ -109,6 +111,13 @@ Item {
                 Item {
                     id: actionConfigArea
                     SplitView.minimumHeight: actionSplitter.height * 0.3
+
+                    CVerticalScrollView {
+                        id: scrollView
+
+                        anchors.fill: parent
+                        anchors.margins: 0
+                    }
                 }
             }
         }
@@ -117,7 +126,7 @@ Item {
             id: actionsSidePanel
 
             Layout.fillHeight: true
-            Layout.preferredWidth: 280
+            Layout.preferredWidth: 340
 
             color: Theme.backgroundSecondary
 

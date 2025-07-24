@@ -33,22 +33,6 @@ Rectangle {
     Drag.hotSpot.y: 0
     Drag.dragType: Drag.Automatic
 
-    DragHandler {
-        id: dragHandler
-        target: null
-
-        onActiveChanged: {
-            if (active) {
-                draggedItem.grabToImage(function(result) {
-                    item.Drag.imageSource = result.url
-                    item.Drag.active = true
-                }, Qt.size(draggedItem.width, draggedItem.height));
-            } else {
-                item.Drag.active = false
-            }
-        }
-    }
-
     RowLayout {
         anchors.fill: parent
         spacing: item.marginSize
@@ -68,41 +52,68 @@ Rectangle {
             visible: item.iconName.length > 0
         }
 
-        CText {
+        Text {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignVCenter
             Layout.topMargin: -1
 
-            label: item.label
-            fontSize: item.fontSize
+            horizontalAlignment: Text.AlignLeft
+            verticalAlignment: Text.AlignVCenter
+
+            text: item.label
             color: item.getTextColor()
-            hAlign: Text.AlignLeft
-            vAlign: Text.AlignVCenter
+            font.pointSize: item.fontSize
             elide: Text.ElideRight
         }
 
-        CIcon {
-            id: chevronIcon
+        MouseArea {
+            id: dragMouseArea
 
-            property bool expanded: false
-            Layout.preferredWidth:  16
-            Layout.preferredHeight: 16
+            Layout.preferredHeight: item.height
+            Layout.preferredWidth: 20
             Layout.alignment: Qt.AlignRight
 
-            source: "qrc:///resources/drag_icon.svg"
-            iconSize: 16
-            color: Theme.textDisabled
+            property bool hovered: false
+            hoverEnabled: true
+
+            onEntered: { dragMouseArea.hovered = true; }
+            onExited: { dragMouseArea.hovered = false; }
+
+            CIcon {
+                anchors.centerIn: parent
+                source: "qrc:///resources/drag_icon.svg"
+                iconSize: 16
+                color: dragMouseArea.hovered ? Theme.textPrimary : Theme.textDisabled
+            }
+
+            DragHandler {
+                id: dragHandler
+
+                target: null
+                acceptedButtons: Qt.LeftButton
+
+                onActiveChanged: {
+                    if (active) {
+                        draggedItem.grabToImage(function(result) {
+                            item.Drag.imageSource = result.url
+                            item.Drag.active = true
+                        }, Qt.size(draggedItem.width, draggedItem.height));
+                    } else {
+                        item.Drag.active = false
+                    }
+                }
+            }
         }
     }
 
     function getBgColor() {
         if (item.down) return Theme.buttonSecondaryPressed;
-        if (item.hovered) return Theme.buttonSecondaryHovered;
+        if (item.hovered || dragMouseArea.hovered) return Theme.buttonSecondaryHovered;
         return Theme.buttonSecondaryNormal;
     }
 
     function getTextColor() {
-        if (item.hovered || item.down) return Theme.textPrimary;
+        if (item.hovered || item.down || dragMouseArea.hovered) return Theme.textPrimary;
         return Theme.textSecondary;
     }
 
@@ -111,6 +122,7 @@ Rectangle {
 
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton
+        z: -1
 
         onEntered: { item.hovered = true; }
         onExited: { item.hovered = false; }
@@ -157,14 +169,14 @@ Rectangle {
                 color: Theme.textPrimary
             }
 
-            CText {
+            Text {
                 Layout.fillWidth: true
                 Layout.topMargin: -1
 
-                label: item.label
-                fontSize: 12
+                text: item.label
+                font.pointSize: 12
                 color: Theme.textPrimary
-                hAlign: Text.AlignLeft
+                horizontalAlignment: Text.AlignLeft
                 elide: Text.ElideRight
             }
         }

@@ -32,9 +32,9 @@ ApplicationWindow {
             anchors.margins: 20
             anchors.rightMargin: 4
 
-            ScrollView {
+            CVerticalScrollView {
                 id: scrollView
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
                 anchors.fill: parent
 
                 ColumnLayout {

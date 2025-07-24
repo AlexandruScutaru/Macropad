@@ -9,16 +9,14 @@ Item {
 
     property alias actionsModel: sectionRepeater.model
 
-    ScrollView {
+    CVerticalScrollView {
         id: scrollView
 
         anchors.fill: parent
         anchors.margins: 0
 
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-
         ColumnLayout {
-            width: scrollView.width
+            width: scrollView.width - 12
             spacing: 0
 
             Repeater {
@@ -57,6 +55,7 @@ Item {
                         property bool shown: false
 
                         anchors.margins: 0
+                        anchors.leftMargin: 8
                         padding: 0
                         anchors.left: parent.left
                         anchors.right: parent.right
@@ -95,13 +94,20 @@ Item {
                                         "actionId": "${modelData.actionId}"
                                     }`
                                     label: modelData.actionName
+                                    toolTipText: modelData.toolTip
                                     iconName: "qrc:///resources/%1".arg(modelData.iconName)
-                                    leftMargin: 12 + 16 + 12 // header item: leftMargin + chevron_icon + spacing
+                                    leftMargin: 12 + 16 + 12 - 8 // align to header item icon: leftMargin + chevron_icon + spacing - pane leftMargin
                                 }
                             }
                         }
                     }
                 }
+            }
+
+            // anchors.bottomMargin on the ColumnLayout didn't seem to do anything
+            // using this to push the content up a bit but not the scroll bar
+            Item {
+                Layout.preferredHeight: 8
             }
         }
     }
