@@ -14,7 +14,7 @@ Item {
     property int pageCount: 1
     property int currentPage: 0
 
-    readonly property int componentHeight: 32
+    readonly property int componentHeight: 28
 
     width: mainLayout.width
     height: componentHeight
@@ -49,7 +49,7 @@ Item {
                 padding: 0
                 text: index + 1
                 enabled: index != pagination.currentPage
-                font.pointSize: 14
+                font.pointSize: 12
 
                 contentItem: Item {
                     anchors.fill: parent

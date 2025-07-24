@@ -13,6 +13,7 @@
 struct ActionEntry {
     int id;
     std::string actionName;
+    std::string toolTip;
     std::string iconName;
 };
 using Actions = std::vector<ActionEntry>;

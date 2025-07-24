@@ -26,7 +26,7 @@ Rectangle {
 
     CIcon {
         anchors.centerIn: parent
-        iconSize: 32
+        iconSize: key.width * 0.6
 
         source: key.actionIconName.length ? "qrc:///resources/%1".arg(key.actionIconName) : ""
         color: key.getTextColor()

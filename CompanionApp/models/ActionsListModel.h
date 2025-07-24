@@ -16,6 +16,7 @@ public:
     enum ActionsRoles {
         ActionId = Qt::UserRole + 1,
         ActionName,
+        ActionToolTip,
         IconName
     };
 

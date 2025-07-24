@@ -40,10 +40,10 @@ Item {
                 onNavTabButtonClicked: (tabName) => {
                     switch (tabName) {
                         case navBarModel.keypadTabName:
-                            stack.replace(keypadView)
+                            stack.currentItem.currentIndex = 0;
                             break;
                         case navBarModel.slidersTabName:
-                            stack.replace(slidersView)
+                            stack.currentItem.currentIndex = 1;
                             break;
                         case navBarModel.settingsTabName:
                             settingsPopup.visible = true;
@@ -99,7 +99,7 @@ Item {
                     function onDeviceConnected() {
                         navBarModel.keypadTabEnabled = true;
                         navBarModel.slidersTabEnabled = true;
-                        stack.replace(keypadView);
+                        stack.replace(macropadView);
                     }
 
                     function onDeviceNotFound() {
@@ -179,13 +179,14 @@ Item {
     }
 
     Component {
-        id: keypadView
-        KeypadView {}
-    }
+        id: macropadView
+        StackLayout {
+            id: stackLayout
+            currentIndex: 0
 
-    Component {
-        id: slidersView
-        SlidersView {}
+            KeypadView {}
+            SlidersView {}
+        }
     }
 
     Component {

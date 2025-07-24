@@ -16,33 +16,33 @@ KeypadController::KeypadController(QObject* parent)
     setAvailableActions({
         {
             .sectionName = "A Section", .iconName = "keys_icon.svg", .actions = {
-                { .id =  1, .actionName = "My action",              .iconName = "keys_icon.svg" },
-                { .id =  2, .actionName = "Some action",            .iconName = "keys_icon.svg" },
-                { .id =  3, .actionName = "Oh damn another action", .iconName = "keys_icon.svg" },
-                { .id =  4, .actionName = "Some other action",      .iconName = "keys_icon.svg" },
-                { .id =  5, .actionName = "THE action",             .iconName = "keys_icon.svg" }
+                { .id =  1, .actionName = "My action",               .toolTip = "Tool Tip", .iconName = "keys_icon.svg" },
+                { .id =  2, .actionName = "Some action",             .toolTip = "Tool Tip", .iconName = "keys_icon.svg" },
+                { .id =  3, .actionName = "Oh damn another action",  .toolTip = "Tool Tip", .iconName = "keys_icon.svg" },
+                { .id =  4, .actionName = "Some other action",       .toolTip = "Tool Tip", .iconName = "keys_icon.svg" },
+                { .id =  5, .actionName = "THE action",              .toolTip = "Tool Tip", .iconName = "keys_icon.svg" }
             }
         },
         {
             .sectionName = "Another section", .iconName = "sliders_icon.svg", .actions = {
-                { .id =  6, .actionName = "Some action",            .iconName = "sliders_icon.svg" },
-                { .id =  7, .actionName = "My action",              .iconName = "sliders_icon.svg" }
+                { .id =  6, .actionName = "Some action",             .toolTip = "Tool Tip", .iconName = "sliders_icon.svg" },
+                { .id =  7, .actionName = "My action",               .toolTip = "Tool Tip", .iconName = "sliders_icon.svg" }
             }
         },
         {
             .sectionName = "Very important section", .iconName = "settings_icon.svg", .actions = {
-                { .id =  8, .actionName = "My action",              .iconName = "settings_icon.svg" },
-                { .id =  9, .actionName = "Some action",            .iconName = "settings_icon.svg" },
-                { .id = 10, .actionName = "Oh damn another action", .iconName = "settings_icon.svg" },
-                { .id = 11, .actionName = "Some other action",      .iconName = "settings_icon.svg" },
-                { .id = 12, .actionName = "THE action",             .iconName = "settings_icon.svg" }
+                { .id =  8, .actionName = "My action",               .toolTip = "Tool Tip", .iconName = "settings_icon.svg" },
+                { .id =  9, .actionName = "Some action",             .toolTip = "Tool Tip", .iconName = "settings_icon.svg" },
+                { .id = 10, .actionName = "Oh damn another action",  .toolTip = "Tool Tip", .iconName = "settings_icon.svg" },
+                { .id = 11, .actionName = "Some other action",       .toolTip = "Tool Tip", .iconName = "settings_icon.svg" },
+                { .id = 12, .actionName = "THE action",              .toolTip = "Tool Tip", .iconName = "settings_icon.svg" }
             }
         },
         {
             .sectionName = "Other section", .iconName = "close_icon.svg", .actions = {
-                { .id = 13, .actionName = "My action",              .iconName = "close_icon.svg" },
-                { .id = 14, .actionName = "Some action",            .iconName = "close_icon.svg" },
-                { .id = 15, .actionName = "Oh damn another action", .iconName = "close_icon.svg" }
+                { .id = 13, .actionName = "My action",               .toolTip = "Tool Tip", .iconName = "close_icon.svg" },
+                { .id = 14, .actionName = "Some action",             .toolTip = "Tool Tip", .iconName = "close_icon.svg" },
+                { .id = 15, .actionName = "Oh damn another action",  .toolTip = "Tool Tip", .iconName = "close_icon.svg" }
             }
         }
     });
@@ -68,6 +68,7 @@ void KeypadController::setAvailableActions(const ActionSections& actionSections)
             ActionsListModel::Row actionRow;
             actionRow[ActionsListModel::ActionId] = action.id;
             actionRow[ActionsListModel::ActionName] = QString::fromStdString(action.actionName);
+            actionRow[ActionsListModel::ActionToolTip] = QString::fromStdString(action.toolTip);
             actionRow[ActionsListModel::IconName] = QString::fromStdString(action.iconName);
             actionsModel.push_back(actionRow);
         }
