@@ -11,10 +11,12 @@ Item {
     id: keypadView
 
     property KeypadController keypadController
+    property var layersModel
 
     Component.onCompleted: {
         keypadController = MacroPad.getKeypadController();
         actionsList.actionsModel = keypadController.getActionSectionsListModel();
+        layersModel = keypadController.getLayerListModel();
     }
 
     RowLayout {
@@ -81,28 +83,26 @@ Item {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignCenter
 
-                            outlineColor: "transparent"
+                            model: keypadView.layersModel.getRow(layerPagination.currentPage)
 
-                            onKeySelected: (row, col) => {}
-                            onKeyTriggered: (row, col) => {}
+                            onKeyActionAssigned: (key, actionId) => {
+                                keypadView.keypadController.assignAction(layerPagination.currentPage, key, actionId);
+                            }
+
+                            onKeySelected: (key, actionId) => {}
+
+                            onKeyTriggered: (key) => {}
                         }
 
                         LayerPagination {
                             id: layerPagination
 
+                            Layout.fillWidth: true
                             Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
 
-                            // temp data for time being
-                            readonly property var colors: ["red", "yellow", "magenta", "green", "cyan"];
-
-                            pageCount: 5
+                            pageCount: keypadView.layersModel.count
                             currentPage: 0
 
-                            Component.onCompleted: {
-                                keypadKeys.outlineColor = colors[currentPage];
-                            }
-
-                            onCurrentPageChanged: { keypadKeys.outlineColor = colors[currentPage]; }
                             onPageChanged: (page) => { currentPage = page; }
                         }
                     }

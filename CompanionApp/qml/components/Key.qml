@@ -13,9 +13,9 @@ Rectangle {
 
     property string actionIconName: ""
     property string actionName: ""
-    property int actionId: -1
+    property string actionId: ""
 
-    signal actionAssigned
+    signal actionAssigned(actionId: string)
     signal clicked
     signal doubleClicked
 
@@ -30,7 +30,7 @@ Rectangle {
 
         source: key.actionIconName.length ? "qrc:///resources/%1".arg(key.actionIconName) : ""
         color: key.getTextColor()
-        visible: key.actionId >= 0
+        visible: key.actionId.length >= 0
     }
 
     MouseArea {
@@ -68,7 +68,7 @@ Rectangle {
         onDropped: (drag) => {
             if (key.parseDroppedData(drag.text)) {
                 key.dragHover = false;
-                key.actionAssigned();
+                key.actionAssigned(key.actionId);
             }
         }
     }
@@ -90,7 +90,7 @@ Rectangle {
 
             actionIconName = jsonObj.iconName;
             actionName = jsonObj.actionName;
-            actionId = parseInt(jsonObj.actionId);
+            actionId = jsonObj.actionId;
 
             return true;
         } catch(e) {

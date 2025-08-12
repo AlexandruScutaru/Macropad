@@ -11,17 +11,20 @@ Item {
 
     signal pageChanged(page: int)
 
+    readonly property int componentHeight: 28
     property int pageCount: 1
     property int currentPage: 0
 
-    readonly property int componentHeight: 28
-
-    width: mainLayout.width
     height: componentHeight
 
     RowLayout {
         id: mainLayout
+        anchors.fill: parent
         spacing: 0
+
+        Item {
+            Layout.fillWidth: true
+        }
 
         PrevNextButton {
             Layout.rightMargin: 12
@@ -115,6 +118,10 @@ Item {
                     pagination.pageChanged(++pagination.currentPage);
                 }
             }
+        }
+
+        Item {
+            Layout.fillWidth: true
         }
     }
 

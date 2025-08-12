@@ -9,7 +9,7 @@
 #include "tray/TrayIcon.h"
 #include "theming/ThemeLoader.h"
 
-#include "controllers/KeypadController.h"
+#include "keypad/KeypadModule.h"
 
 
 #include <QApplication>
@@ -40,7 +40,7 @@ Macropad::~Macropad() {
     }
 }
 
-void Macropad::onInitialized(const MacropadConfig& config) {
+void Macropad::init(const MacropadConfig& config) {
     mConfig = config;
     initTrayIcon();
 
@@ -49,7 +49,7 @@ void Macropad::onInitialized(const MacropadConfig& config) {
     }
 
     const auto qmlWindow = getMainWindowObject();
-    mKeypadController = new KeypadController(this);
+    mKeypadModule = new KeypadModule(mAppSettings, this);
 
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
@@ -72,7 +72,7 @@ Theme* Macropad::getTheme() {
 }
 
 KeypadController* Macropad::getKeypadController() {
-    return mKeypadController;
+    return mKeypadModule->getController();
 }
 
 QSize Macropad::windowSize() {
