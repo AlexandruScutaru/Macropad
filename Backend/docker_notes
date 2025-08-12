@@ -1,0 +1,69 @@
+# Quick cheatsheet
+
+# start/stop docker engine
+systemctl start/stop docker
+
+# create an image
+# -t to tag the iamge and give it a name
+# <path> is the path to the Dockerfile
+docker build -t <image_name> <path>
+
+# list all images
+docker image ls
+
+# remove an image
+docker image rm <image_id>
+
+# inspect an image to get details it was built with
+docker inspect <image_id>
+
+# list running containers
+docker ps
+
+# list all container, including not running ones
+docker ps -a (-all)
+
+# create and start container
+# -d run it in background (ie detached mode)
+# --name to set a name for the container
+# -p H_PORT:C_PORT means publish and bind the container port C_PORT to the host port H_PORT
+docker run -d --name <container_name> -p PORT:PORT <image_name>
+
+# start a container
+docker start <container_name|container_id>
+
+# stop a contianer
+docker stop <container_id>
+
+# delete a container
+docker rm <container_id>
+
+# re-attach to a running container
+# --sig-proxy=false so that one can use ctrl+c (SIGTERM) while attached to exit without stopping the container
+docker attach --sig-proxy=false <contianer_name>
+
+
+# use a docker compose to take care of building and running the docker image/container
+# -d if the container should start in the background as IT IS IMPOSSIBLE ON MY SIDE TO DETACH FROM THE CONTAINER
+docker compose up -d
+
+# to forcefully recreate everything
+docker compose up -d --build --force-recreate --no-deps <service_name>
+
+# run docker compose on a file which will en up overriding configs from the initial one
+docker compose -f initial-compose.yml -f overriding-compose.yml up
+
+
+# debug app running in a container
+# run
+docker compose -f docker-compose.yml -f docker-compose.debug.yml up
+# debugger will start in waiting for client mode
+# attach to the debugger
+# create a new vscode launch config with the attach property and host:port to connect to
+# launch debugger from vscode and it should be connected
+
+
+# reload app while running in docker
+# done by using volumes
+# use pwd as the Dockerfile's WORKDIR path
+docker run -d --name NAME -p PORT:PORT -w WORK_DIR -v "${pwd}:WORK_DIR" IMAGE_NAME
