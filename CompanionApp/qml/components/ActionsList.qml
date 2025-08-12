@@ -25,7 +25,7 @@ Item {
                 Column {
                     id: actionGroup
 
-                    required property string sectionName
+                    required property string name
                     required property string iconName
                     required property var actionList
 
@@ -37,7 +37,7 @@ Item {
 
                         iconName: "qrc:///resources/%1".arg(actionGroup.iconName)
                         iconSize: 20
-                        text: actionGroup.sectionName
+                        text: actionGroup.name
                         onClicked: actionGroupWrapper.shown = !actionGroupWrapper.shown
                     }
 
@@ -90,10 +90,10 @@ Item {
                                     anchors.right: parent.right
                                     mimePayload: `{
                                         "iconName": "${modelData.iconName}",
-                                        "actionName": "${modelData.actionName}",
+                                        "actionName": "${modelData.name}",
                                         "actionId": "${modelData.actionId}"
                                     }`
-                                    label: modelData.actionName
+                                    label: modelData.name
                                     toolTipText: modelData.toolTip
                                     iconName: "qrc:///resources/%1".arg(modelData.iconName)
                                     leftMargin: 12 + 16 + 12 - 8 // align to header item icon: leftMargin + chevron_icon + spacing - pane leftMargin

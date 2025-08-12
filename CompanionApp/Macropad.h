@@ -11,6 +11,7 @@ namespace Hotkeys {
     enum class Actions;
 }
 
+class KeypadModule;
 class KeypadController;
 
 class AudioOutputSwitcher;
@@ -32,7 +33,7 @@ public:
     explicit Macropad(QQmlApplicationEngine& engine, AppSettings* appSettings, QObject* parent = nullptr);
     ~Macropad();
 
-    void onInitialized(const MacropadConfig& config);
+    void init(const MacropadConfig& config);
     Theme* getTheme();
 
     Q_INVOKABLE KeypadController* getKeypadController();
@@ -56,8 +57,9 @@ private:
 
     MacropadConfig mConfig;
     QPointer<Theme> mTheme{ nullptr };
-    AppSettings* mAppSettings{ nullptr };
-    QPointer<KeypadController> mKeypadController{ nullptr };
+    QPointer<AppSettings> mAppSettings{ nullptr };
+
+    QPointer<KeypadModule> mKeypadModule{ nullptr };
 
     AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
     PotentiometersReader* mPotentiometersReader{ nullptr };

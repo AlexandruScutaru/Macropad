@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
                 engine.rootContext()->setContextProperty("Theme", theme);
             });
 
-            macropad->onInitialized(macropadConfig);
+            macropad->init(macropadConfig);
         },
         Qt::QueuedConnection
     );

@@ -57,6 +57,29 @@ set(qml_singletons
 )
 set_source_files_properties(${qml_singletons} PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
+set(keypad_module
+    keypad/KeypadModule.cpp
+    keypad/KeypadModule.h
+    keypad/KeypadTypes.h
+
+    keypad/service/KeypadService.cpp
+    keypad/service/KeypadService.h
+
+    keypad/controller/KeypadController.cpp
+    keypad/controller/KeypadController.h
+
+    keypad/model/ActionConfigListModel.cpp
+    keypad/model/ActionConfigListModel.h
+    keypad/model/ActionsListModel.cpp
+    keypad/model/ActionsListModel.h
+    keypad/model/ActionSectionsListModel.cpp
+    keypad/model/ActionSectionsListModel.h
+    keypad/model/KeysListModel.cpp
+    keypad/model/KeysListModel.h
+    keypad/model/LayerListModel.cpp
+    keypad/model/LayerListModel.h
+)
+
 qt_add_qml_module(${TARGET_NAME}
     URI MacropadCompanion
     VERSION 1.0
@@ -65,10 +88,9 @@ qt_add_qml_module(${TARGET_NAME}
         ${qml_plain_files}
 
     SOURCES
-        audio/AudioOutputSwitcher.h
+        ${keypad_module}
 
-        controllers/KeypadController.cpp
-        controllers/KeypadController.h
+        audio/AudioOutputSwitcher.h
 
         controllers/MainController.cpp
         controllers/MainController.h
@@ -82,11 +104,8 @@ qt_add_qml_module(${TARGET_NAME}
         misc/CmdArgs.cpp
         misc/CmdArgs.h
         misc/DebugChecker.h
-
-        models/ActionsListModel.cpp
-        models/ActionsListModel.h
-        models/ActionSectionsListModel.cpp
-        models/ActionSectionsListModel.h
+        misc/ListModel.cpp
+        misc/ListModel.h
 
         models/DeviceInfoModel.cpp
         models/DeviceInfoModel.h
@@ -121,6 +140,7 @@ qt_add_qml_module(${TARGET_NAME}
 target_include_directories(${TARGET_NAME} PUBLIC
     controllers
     controllers/settings
+    keypad/controller
     theming
 )
 

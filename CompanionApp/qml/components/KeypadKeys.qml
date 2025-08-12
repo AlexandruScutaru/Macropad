@@ -7,11 +7,12 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: keys
 
-    signal keySelected(row: int, col: int)
-    signal keyTriggered(row: int, col: int)
+    signal keyActionAssigned(key: int, actionId: string)
+    signal keySelected(key: int, actionId: string)
+    signal keyTriggered(key: int)
 
-    property alias outlineColor: keypadContainer.glowColor
-    property point selectedKey: Qt.point(-1, -1)
+    property var model
+    property int selectedKey: -1
     property real aspectRatio: 1.0
 
     implicitWidth: height * aspectRatio
@@ -20,7 +21,6 @@ Item {
     Rectangle {
         id: keypadContainer
 
-        property color glowColor: "green"
         anchors.horizontalCenter: parent.horizontalCenter
         height: parent.height
         implicitWidth: height * keys.aspectRatio
@@ -32,7 +32,7 @@ Item {
             samples: 25
             radius: 12
             spread: 0.3
-            color: keypadContainer.glowColor
+            color: keys.model.color
             transparentBorder: true
             cached: true
         }
@@ -48,28 +48,37 @@ Item {
 
             Repeater {
                 id: keysRepeater
-                model: keypadKeysModel
+
+                model: keys.model.keysList
 
                 Key {
                     id: keyCell
 
-                    required property int row
-                    required property int column
-                    required property bool round
+                    required property int index
+                    required property bool keyIsRound
+                    required property string keyActionId
+                    required property string keyActionName
+                    required property string keyActionIcon
 
-                    Layout.row: row
-                    Layout.column: column
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    isRound: round
+                    isRound: keyIsRound
+                    actionId: keyActionId
+                    actionName: keyActionName
+                    actionIconName: keyActionIcon
 
                     selected: isKeySelected()
 
-                    onActionAssigned: selectKey()
+                    onActionAssigned:(actionId) => {
+                        keys.keyActionAssigned(index, actionId);
+                        keys.selectedKey = -1;
+                        selectKey();
+                    }
+
                     onClicked: selectKey()
 
                     onDoubleClicked: {
-                        keys.keyTriggered(row, column)
+                        keys.keyTriggered(index)
                     }
 
                     function selectKey() {
@@ -77,30 +86,15 @@ Item {
                             return;
                         }
 
-                        keys.selectedKey = Qt.point(column, row);
-                        keys.keySelected(row, column)
+                        keys.selectedKey = index
+                        keys.keySelected(index, actionId);
                     }
 
                     function isKeySelected(): bool {
-                        // y as in (vertical) rows and x for (horizontal) columns
-                        return row === keys.selectedKey.y && column === keys.selectedKey.x;
+                        return keys.selectedKey === index
                     }
                 }
             }
         }
-    }
-
-    ListModel {
-        id: keypadKeysModel
-
-        ListElement { row: 0; column: 0; round: true }
-        ListElement { row: 0; column: 1; round: false }
-        ListElement { row: 0; column: 2; round: false }
-        ListElement { row: 1; column: 0; round: false }
-        ListElement { row: 1; column: 1; round: false }
-        ListElement { row: 1; column: 2; round: false }
-        ListElement { row: 2; column: 0; round: false }
-        ListElement { row: 2; column: 1; round: false }
-        ListElement { row: 2; column: 2; round: false }
     }
 }
