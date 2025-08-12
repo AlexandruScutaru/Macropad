@@ -4,6 +4,9 @@
             "path": "."
         },
         {
+            "path": "Backend"
+        },
+        {
             "path": "CompanionApp"
         },
         {
@@ -14,6 +17,7 @@
         "cmake.options.statusBarVisibility": "visible",
         "C_Cpp.autoAddFileAssociations": false,
         "files.exclude": {
+            "Backend": true,
             "CompanionApp": true,
             "Firmware": true
         }
