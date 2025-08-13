@@ -9,6 +9,7 @@ from app import db
 from app.schemas import UserSchema, TokensSchema, ErrorSchema
 from app.models import UserModel, JtiModel
 from app.routes.doc_blueprint import DocBlueprint
+from .common_messages import COMMON_MESSAGES
 
 bp = DocBlueprint("user_auth", __name__, description="User and authentication related endpoints")
 
@@ -18,12 +19,10 @@ MESSAGES = {
     "already_exists": "User already exists.",
     "delete_success": "User deleted.",
     "delete_failure": "Error while deleting the user.",
-    "not_found": "User not found.",
     "login_success": "User logged in successfully.",
     "logout_success": "User logged out successfully.",
     "refresh_success": "Access token refreshed.",
     "invalid_credentials": "Invalid credentials.",
-    "invalid_request": "Invalid payload."
 }
 
 
@@ -32,12 +31,13 @@ class UserRegister(MethodView):
     @bp.arguments(UserSchema)
     @bp.response(201, UserSchema, description=MESSAGES["register_success"])
     @bp.alt_response(409, description=MESSAGES["already_exists"])
-    @bp.alt_response(422, description=MESSAGES["invalid_request"])
+    @bp.alt_response(422, description=COMMON_MESSAGES["invalid_request"])
     @bp.alt_response(500, description=MESSAGES["register_failure"], schema=ErrorSchema)
     def post(self, user_data):
         user = UserModel(
+            email=user_data["email"],
             username=user_data["username"],
-            password=pbkdf2_sha256.hash((user_data["password"]))
+            password_hash=pbkdf2_sha256.hash((user_data["password"]))
         )
 
         try:
@@ -56,19 +56,19 @@ class UserRegister(MethodView):
 class User(MethodView):
     @bp.response(200, UserSchema)
     # not sure how this can happen, maybe some sync issues could leave the app in such state?
-    @bp.alt_response(404, description=MESSAGES["not_found"], schema=ErrorSchema)
+    @bp.alt_response(404, description=COMMON_MESSAGES["user_not_found"], schema=ErrorSchema)
     @bp.jwt_required_with_doc()
     def get(self):
-        user = UserModel.query.get_or_404(int(get_jwt_identity()), description=MESSAGES["not_found"])
+        user = UserModel.query.get_or_404(int(get_jwt_identity()), description=COMMON_MESSAGES["user_not_found"])
         return user
 
     @bp.response(204, description=MESSAGES["delete_success"])
-    @bp.alt_response(404, description=MESSAGES["not_found"], schema=ErrorSchema)
+    @bp.alt_response(404, description=COMMON_MESSAGES["user_not_found"], schema=ErrorSchema)
     @bp.jwt_required_with_doc()
     def delete(self):
         do_logout(get_jwt()["jti"])
 
-        user = UserModel.query.get_or_404(int(get_jwt_identity()), description=MESSAGES["not_found"])
+        user = UserModel.query.get_or_404(int(get_jwt_identity()), description=COMMON_MESSAGES["user_not_found"])
         try:
             db.session.delete(user)
             db.session.commit()
@@ -83,11 +83,14 @@ class UserLogin(MethodView):
     @bp.arguments(UserSchema)
     @bp.response(200, TokensSchema, description=MESSAGES["login_success"])
     @bp.alt_response(401, description=MESSAGES["invalid_credentials"])
-    @bp.alt_response(422, description=MESSAGES["invalid_request"], schema=ErrorSchema)
+    @bp.alt_response(422, description=COMMON_MESSAGES["invalid_request"], schema=ErrorSchema)
     def post(self, user_data):
-        user = UserModel.query.filter(UserModel.username == user_data["username"]).first()
+        user = UserModel.query.filter(
+            (UserModel.email == user_data.get("email", "")) | (UserModel.username == user_data.get("username", ""))
+            # this can also be written as or_(UserModel.email == user_data.get("email", ""), UserModel.username == user_data.get("username", ""))
+        ).first()
 
-        if user and pbkdf2_sha256.verify(user_data["password"], user.password):
+        if user and pbkdf2_sha256.verify(user_data["password"], user.password_hash):
             access = create_access_token(identity=str(user.id), fresh=True)
             refresh = create_refresh_token(identity=str(user.id))
             return {"access_token": access, "refresh_token": refresh}
