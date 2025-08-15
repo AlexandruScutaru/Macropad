@@ -14,7 +14,7 @@ class UserModel(db.Model):
     username: orm.Mapped[str] = orm.mapped_column(sql.String(64), index=True, unique=True, nullable=False)
     password_hash: orm.Mapped[str] = orm.mapped_column(sql.String(), unique=False, nullable=False)
 
-    profiles: orm.WriteOnlyMapped[List["ProfileModel"]] = orm.relationship(back_populates="user", cascade="all, delete")
+    profiles: orm.WriteOnlyMapped[List["ProfileModel"]] = orm.relationship(back_populates="user", cascade="all,delete", passive_deletes=True)
 
     def __repr__(self):
         return f"<User ID: {self.id} '{self.username}'>"

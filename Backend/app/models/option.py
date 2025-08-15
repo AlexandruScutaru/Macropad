@@ -11,7 +11,7 @@ class OptionModel(db.Model):
     id: orm.Mapped[int] = orm.mapped_column(primary_key=True)
     name: orm.Mapped[str] = orm.mapped_column(sql.String(32), unique=False, nullable=False)
     value: orm.Mapped[str] = orm.mapped_column(sql.String(), unique=False, nullable=False)
-    key_id: orm.Mapped[int] = orm.mapped_column(sql.ForeignKey(KeyModel.id), index=True, nullable=False)
+    key_id: orm.Mapped[int] = orm.mapped_column(sql.ForeignKey(KeyModel.id, onupdate="CASCADE", ondelete="CASCADE"), index=True, nullable=False)
 
     key: orm.Mapped["KeyModel"] = orm.relationship(back_populates="options")
 

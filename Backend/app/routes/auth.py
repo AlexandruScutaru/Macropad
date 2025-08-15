@@ -66,13 +66,14 @@ class User(MethodView):
     @bp.alt_response(404, description=COMMON_MESSAGES["user_not_found"], schema=ErrorSchema)
     @bp.jwt_required_with_doc()
     def delete(self):
-        do_logout(get_jwt()["jti"])
+        UserLogout.do_logout(get_jwt()["jti"])
 
         user = UserModel.query.get_or_404(int(get_jwt_identity()), description=COMMON_MESSAGES["user_not_found"])
         try:
             db.session.delete(user)
             db.session.commit()
-        except SQLAlchemyError:
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Error while deleting user: {e}")
             abort(500, message=MESSAGES["delete_failure"])
 
         return None
@@ -103,8 +104,23 @@ class UserLogout(MethodView):
     @bp.response(204, description=MESSAGES["logout_success"])
     @bp.jwt_required_with_doc()
     def post(self):
-        do_logout(get_jwt()["jti"])
+        self.do_logout(get_jwt()["jti"])
         return None
+
+    @staticmethod
+    def do_logout(jti_value: str):
+        current_app.logger.debug("Logout user")
+        jti = JtiModel(jti=jti_value)
+
+        # look at redis for this kind of thing
+        try:
+            db.session.add(jti)
+            db.session.commit()
+        except IntegrityError:
+            current_app.logger.warning(f"jti `{jti_value}` already existing in the db")
+        except SQLAlchemyError:
+            current_app.logger.warning(f"error inserting jti `{jti_value}` into the db")
+        # will look into properly handling error responses for these cases
 
 
 @bp.route("/refresh")
@@ -118,16 +134,3 @@ class TokenRefresh(MethodView):
         refresh_token = authorization_header.split()[1]
         return {"access_token": new_token, "refresh_token": refresh_token}
 
-
-def do_logout(jti_value: str):
-    jti = JtiModel(jti=jti_value)
-
-    # look at redis for this kind of thing
-    try:
-        db.session.add(jti)
-        db.session.commit()
-    except IntegrityError:
-        current_app.logger.warning(f"jti `{jti_value}` already existing in the db")
-    except SQLAlchemyError:
-        current_app.logger.warning(f"error inserting jti `{jti_value}` into the db")
-    # will look into properly handling error responses for these cases
