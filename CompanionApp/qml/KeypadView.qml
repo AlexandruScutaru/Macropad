@@ -112,8 +112,8 @@ Item {
                     id: actionConfigArea
                     SplitView.minimumHeight: actionSplitter.height * 0.3
 
-                    CVerticalScrollView {
-                        id: scrollView
+                    KeyConfig {
+                        id: keyConfig
 
                         anchors.fill: parent
                         anchors.margins: 0

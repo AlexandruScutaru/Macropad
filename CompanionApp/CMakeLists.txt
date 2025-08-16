@@ -44,6 +44,7 @@ set(qml_plain_files
     qml/components/NavigationBar.qml
     qml/components/NavigationBarModel.qml
     qml/components/Key.qml
+    qml/components/KeyConfig.qml
     qml/components/KeypadKeys.qml
     qml/components/LayerPagination.qml
 )
@@ -61,6 +62,8 @@ set(keypad_module
     keypad/KeypadModule.cpp
     keypad/KeypadModule.h
     keypad/KeypadTypes.h
+
+    keypad/actions/SystemActions.h
 
     keypad/service/KeypadService.cpp
     keypad/service/KeypadService.h

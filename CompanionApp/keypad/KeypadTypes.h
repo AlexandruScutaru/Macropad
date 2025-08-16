@@ -3,48 +3,43 @@
 #include <QString>
 #include <QVariant>
 
+#include <tuple>
 #include <unordered_map>
 
 namespace Keypad {
-    struct ActionEntry {
+    enum class OptionType {
+        String = 0
+    };
+
+    struct Config {
+        QString name;
+        QString tooltip;
+        OptionType type{ OptionType::String };
+        QVariant value;
+    };
+    using Configs = std::vector<Config>;
+
+    struct Action {
         QString id;
         QString name;
-        QString toolTip;
-        QString iconName;
+        QString tooltip;
+        QString icon;
+        Configs config;
     };
-    using Actions = std::vector<ActionEntry>;
+    using ActionsMap = std::unordered_map<QString, Action>;
 
     struct SectionEntry {
         QString name;
         QString iconName;
-        Actions actions;
+        std::vector<QString> actions;
     };
     using Sections = std::vector<SectionEntry>;
 
-    enum class FieldType {
-        String = 0,
-        Number
-    };
+    using AvailableActions = std::tuple<ActionsMap, Sections>;
 
-    struct ConfigField {
-        FieldType type;
-        QString name;
-        QString tooltip;
-        QVariant value;
-    };
-    using ConfigFields = std::vector<ConfigField>;
-
-    struct KeyEntry {
-        QString actionId;
-        QString actionName;
-        QString actionIcon;
-        ConfigFields config;
-    };
-    using Keys = std::vector<KeyEntry>;
-
-    struct LayerEntry {
+    struct Layer {
         QString color;
-        Keys keys;
+        std::vector<Action> actions;
     };
-    using Layers = std::vector<LayerEntry>;
+    using Layers = std::vector<Layer>;
 }

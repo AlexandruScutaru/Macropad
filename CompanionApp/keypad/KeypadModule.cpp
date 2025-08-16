@@ -1,4 +1,5 @@
 #include "KeypadModule.h"
+#include "actions/SystemActions.h"
 #include "controller/KeypadController.h"
 #include "service/KeypadService.h"
 #include "AppSettings.h"
@@ -7,14 +8,7 @@
 
 #include <algorithm>
 
-
-#define ACTION(displayName, tooltip, icon, sectionName, actionName) \
-    {\
-        .id = KeypadModule::ComputeActionId(sectionName, actionName),\
-        .name = displayName,\
-        .toolTip = tooltip,\
-        .iconName = icon\
-    }
+using namespace Keypad;
 
 
 KeypadModule::KeypadModule(QPointer<AppSettings> appSettings, QObject* parent)
@@ -35,18 +29,17 @@ KeypadController* KeypadModule::getController() {
     return mController;
 }
 
-Keypad::Sections KeypadModule::loadAvailableActions() {
-    return {
-        {
-            .name = tr("System"), .iconName = "sliders_icon.svg", .actions = {
-                ACTION(tr("Open website"), tr("Opens a website in the default browser application"), "sliders_icon.svg", "system", "website")
-            }
-        }
-    };
+AvailableActions KeypadModule::loadAvailableActions() {
+    ActionsMap actionsMap;
+    Sections sections;
+
+    Actions::InsertSystemActions(actionsMap, sections);
+
+    return { actionsMap, sections };
 }
 
 // in theory I want this to generate a deterministic UUID based on the fields provided
 // but will revisit it at a later time, returning just the concatenation of the fields
-QString KeypadModule::ComputeActionId(const QString& section, const QString& action) {
+QString KeypadModule::Id(const QString& section, const QString& action) {
     return QString("id_%1_%2").arg(section, action);
 }
