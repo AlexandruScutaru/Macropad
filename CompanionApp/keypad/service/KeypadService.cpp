@@ -8,14 +8,16 @@
 #include <QDebug>
 
 
-KeypadService::KeypadService(const Keypad::Sections& sections, QPointer<AppSettings> appSettings, QObject* parent)
+KeypadService::KeypadService(const Keypad::AvailableActions& actions, QPointer<AppSettings> appSettings, QObject* parent)
     : QObject(parent)
     , mAppSettings(appSettings)
     , mActionSectionsListModel(new ActionSectionsListModel(this))
     , mLayerListModel(new LayerListModel(this))
-    , mActionSections(sections)
 {
     qDebug() << "KeypadService::KeypadService";
+
+    mActionsMap = std::get<0>(actions);
+    mActionSections = std::get<1>(actions);
 
     populateActionsListModel();
     populateLayersModel(loadSavedKeypadConfig());
@@ -39,11 +41,11 @@ void KeypadService::assignActionRequested(int layer, int key, const QString& act
 
     // update model to reflect changes
     QMap<int, QVariant> keyRow;
-    if (const auto actionInfo = getActionById(action)) {
+    if (const auto actionInfo = getAction(action)) {
         keyRow[KeysListModel::Round] = key == 0;
         keyRow[KeysListModel::ActionId] = actionInfo->id;
         keyRow[KeysListModel::ActionName] = actionInfo->name;
-        keyRow[KeysListModel::ActionIcon] = actionInfo->toolTip;
+        keyRow[KeysListModel::ActionIcon] = actionInfo->tooltip;
         keyRow[KeysListModel::ActionConfig] = {};
     }
     mKeysLayersModels[layer]->updateRow(key, keyRow);
@@ -60,18 +62,20 @@ void KeypadService::populateActionsListModel() {
 
         QList<QMap<int, QVariant>> actionsModel;
         actionsModel.reserve(section.actions.size());
-        for (const auto& action: section.actions) {
+        for (const auto& actionId: section.actions) {
             QMap<int, QVariant> actionRow;
-            actionRow[ActionsListModel::Id] = action.id;
-            actionRow[ActionsListModel::Name] = action.name;
-            actionRow[ActionsListModel::ToolTip] = action.toolTip;
-            actionRow[ActionsListModel::IconName] = action.iconName;
+            if (const auto action = getAction(actionId); action != std::nullopt) {
+                actionRow[ActionsListModel::Id] = action->id;
+                actionRow[ActionsListModel::Name] = action->name;
+                actionRow[ActionsListModel::ToolTip] = action->tooltip;
+                actionRow[ActionsListModel::IconName] = action->icon;
+            }
             actionsModel.push_back(actionRow);
         }
 
         // mind this lives however long the parent model does
         // when at some point the model data is reset but the parent is not de-allocated
-        // these sub-models will need to be manually dealt wtih
+        // these sub-models will need to be manually dealt with
         const auto actionsListModel = new ActionsListModel(this);
         actionsListModel->setData(actionsModel);
         sectionRow[ActionSectionsListModel::ActionsList] = QVariant::fromValue(actionsListModel);
@@ -97,12 +101,12 @@ void KeypadService::populateLayersModel(const Keypad::Layers& layers) {
         QMap<int, QVariant> layerRow;
         layerRow[LayerListModel::Color] = "red";
         QList<QMap<int, QVariant>> keysModel;
-        for (int key = 0; key < layers[layer].keys.size(); key++) {
+        for (int key = 0; key < layers[layer].actions.size(); key++) {
             QMap<int, QVariant> keyRow;
             keyRow[KeysListModel::Round] = key == 0;
-            keyRow[KeysListModel::ActionId] = layers[layer].keys[key].actionId;
-            keyRow[KeysListModel::ActionName] = layers[layer].keys[key].actionName;
-            keyRow[KeysListModel::ActionIcon] = layers[layer].keys[key].actionIcon;
+            keyRow[KeysListModel::ActionId] = layers[layer].actions[key].id;
+            keyRow[KeysListModel::ActionName] = layers[layer].actions[key].name;
+            keyRow[KeysListModel::ActionIcon] = layers[layer].actions[key].icon;
             keyRow[KeysListModel::ActionConfig] = {};
             keysModel.push_back(keyRow);
         }
@@ -123,17 +127,17 @@ Keypad::Layers KeypadService::loadSavedKeypadConfig() {
     layers.reserve(savedConfig.size());
 
     for (const auto& savedLayer: savedConfig) {
-        Keypad::LayerEntry layer;
+        Keypad::Layer layer;
         layer.color = savedLayer.color;
-        layer.keys.reserve(savedLayer.keys.size());
+        layer.actions.reserve(savedLayer.keys.size());
         for (const auto& savedKey: savedLayer.keys) {
-            Keypad::KeyEntry key;
-            if (const auto action = getActionById(savedKey.id)) {
-                key.actionId = savedKey.id;
-                key.actionName = action->name;
-                key.actionIcon = action->iconName;
+            Keypad::Action action;
+            if (const auto actionInfo = getAction(savedKey.id); actionInfo != std::nullopt) {
+                action.id = actionInfo->id;
+                action.name = actionInfo->name;
+                action.icon = actionInfo->icon;
             }
-            layer.keys.push_back(key);
+            layer.actions.push_back(action);
         }
         layers.push_back(layer);
     }
@@ -141,15 +145,9 @@ Keypad::Layers KeypadService::loadSavedKeypadConfig() {
     return layers;
 }
 
-std::optional<Keypad::ActionEntry> KeypadService::getActionById(const QString& id) {
-    for (const auto& section: mActionSections) {
-        const auto res = std::find_if(section.actions.begin(), section.actions.end(), [id](const auto& action) {
-            return id == action.id;
-        });
-
-        if (res != section.actions.end()) {
-            return *res;
-        }
+std::optional<Keypad::Action> KeypadService::getAction(const QString& id) {
+    if (const auto& action = mActionsMap.find(id); action != mActionsMap.end()) {
+        return action->second;
     }
 
     return std::nullopt;

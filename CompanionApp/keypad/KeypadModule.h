@@ -17,10 +17,10 @@ public:
 
     KeypadController* getController();
 
-private:
-    static QString ComputeActionId(const QString& section, const QString& action);
+    static QString Id(const QString& section, const QString& action);
 
-    Keypad::Sections loadAvailableActions();
+private:
+    Keypad::AvailableActions loadAvailableActions();
 
     QPointer<KeypadController> mController{ nullptr };
 

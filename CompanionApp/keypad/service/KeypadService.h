@@ -9,13 +9,14 @@
 
 class AppSettings;
 class ActionSectionsListModel;
+class KeyConfigListModel;
 class LayerListModel;
 class KeysListModel;
 
 class KeypadService : public QObject {
     Q_OBJECT
 public:
-    KeypadService(const Keypad::Sections& sections, QPointer<AppSettings> appSettings, QObject* parent = nullptr);
+    KeypadService(const Keypad::AvailableActions& actions, QPointer<AppSettings> appSettings, QObject* parent = nullptr);
     ~KeypadService();
 
     ActionSectionsListModel* getActionSectionsListModel();
@@ -27,13 +28,15 @@ private:
     void populateActionsListModel();
     void populateLayersModel(const Keypad::Layers& layers);
     Keypad::Layers loadSavedKeypadConfig();
-    std::optional<Keypad::ActionEntry> getActionById(const QString& id);
+    std::optional<Keypad::Action> getAction(const QString& id);
 
     QPointer<AppSettings> mAppSettings{ nullptr };
     QPointer<ActionSectionsListModel> mActionSectionsListModel{ nullptr };
     QPointer<LayerListModel> mLayerListModel{ nullptr };
+    QPointer<KeyConfigListModel> mKeyConfigListModel{ nullptr };
     std::vector<QPointer<KeysListModel>> mKeysLayersModels;
 
+    Keypad::ActionsMap mActionsMap;
     Keypad::Sections mActionSections;
 
 };
