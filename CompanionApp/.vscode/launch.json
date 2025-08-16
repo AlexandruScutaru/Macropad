@@ -26,6 +26,19 @@
             "console": "integratedTerminal"
         },
         {
+            "name": "Launch 🪟 - Playground",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "args": [
+                "--playground"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
             "name": "Launch 🐧",
             "type": "cppdbg",
             "request": "launch",
