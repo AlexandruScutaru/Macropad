@@ -178,8 +178,9 @@ target_link_libraries(${TARGET_NAME} PRIVATE Controlsplugin)
 
 # platform specific configurations
 if(WIN32)
+    set(HIDAPI_DIR "${CMAKE_SOURCE_DIR}/deps/windows/hidapi/cmake")
     find_package(HIDAPI REQUIRED)
-    set(HIDAPI_INCLUDE ./deps/hidapi/include)
+    set(HIDAPI_INCLUDE "${CMAKE_SOURCE_DIR}/deps/windows/hidapi/include")
     include_directories(HIDAPI ${HIDAPI_INCLUDE})
 
     target_sources(${TARGET_NAME} PUBLIC
