@@ -13,6 +13,9 @@ Item {
     property KeypadController keypadController
     property var layersModel
 
+    property int currentLayerIndex: 0
+    property int currentKey: -1
+
     Component.onCompleted: {
         keypadController = MacroPad.getKeypadController();
         actionsList.actionsModel = keypadController.getActionSectionsListModel();
@@ -83,13 +86,15 @@ Item {
                             Layout.fillWidth: true
                             Layout.alignment: Qt.AlignCenter
 
-                            model: keypadView.layersModel.getRow(layerPagination.currentPage)
+                            model: keypadView.layersModel.getRow(keypadView.currentLayerIndex)
 
                             onKeyActionAssigned: (key, actionId) => {
-                                keypadView.keypadController.assignAction(layerPagination.currentPage, key, actionId);
+                                keypadView.keypadController.assignAction(keypadView.currentLayerIndex, key, actionId);
                             }
 
-                            onKeySelected: (key, actionId) => {}
+                            onKeySelected: (key, actionId) => {
+                                keypadView.currentKey = key;
+                            }
 
                             onKeyTriggered: (key) => {}
                         }
@@ -103,7 +108,9 @@ Item {
                             pageCount: keypadView.layersModel.count
                             currentPage: 0
 
-                            onPageChanged: (page) => { currentPage = page; }
+                            onPageChanged: (page) => {
+                                keypadView.currentLayerIndex = page;
+                            }
                         }
                     }
                 }
@@ -117,6 +124,8 @@ Item {
 
                         anchors.fill: parent
                         anchors.margins: 0
+
+                        model: keypadView.currentKey >= 0 ? keypadView.layersModel.getRow(keypadView.currentLayerIndex).keysList.getRow(keypadView.currentKey) : undefined
                     }
                 }
             }

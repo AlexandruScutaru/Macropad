@@ -24,6 +24,7 @@ static constexpr auto MAX = "max";
 
 static constexpr auto NUM_POTENTIOMETERS = 4;
 static constexpr auto NUM_LAYERS_DEFAULT = 3;
+static constexpr auto DEFAULT_LAYER_COLOR = "#00ff00";
 
 
 AppSettings::AppSettings(QObject* parent)
@@ -177,6 +178,7 @@ void AppSettings::readLayersInfo() {
     mLayersInfo.resize(layerCount);
     for (int layer = 0; layer < layerCount; layer++) {
         settings->setArrayIndex(layer);
+        mLayersInfo[layer].color = settings->value(LAYER_COLOR, DEFAULT_LAYER_COLOR).toString();
         auto keys = Keys();
         const auto keyCount = settings->beginReadArray(KEYS);
         for (int key = 0; key < keyCount; key++) {

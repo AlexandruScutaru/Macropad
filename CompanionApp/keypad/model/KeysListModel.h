@@ -10,6 +10,7 @@ public:
         Round = Qt::UserRole + 1,
         ActionId,
         ActionName,
+        ActionTooltip,
         ActionIcon,
         ActionConfig
     };

@@ -3,12 +3,12 @@
 #include <QDebug>
 
 
-ActionConfigModel::ActionConfigModel(QObject* parent)
+ActionConfigListModel::ActionConfigListModel(QObject* parent)
     : ListModel(parent)
 {}
 
 
-QHash<int, QByteArray> ActionConfigModel::roleNames() const {
+QHash<int, QByteArray> ActionConfigListModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[Type] = "type",
     roles[Name] = "name",

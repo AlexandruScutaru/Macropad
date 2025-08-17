@@ -40,7 +40,9 @@ set(qml_plain_files
     qml/KeypadView.qml
     qml/SlidersView.qml
     qml/SettingsView.qml
+
     qml/components/ActionsList.qml
+    qml/components/GradientSeparator.qml
     qml/components/NavigationBar.qml
     qml/components/NavigationBarModel.qml
     qml/components/Key.qml
@@ -58,31 +60,6 @@ set(qml_singletons
 )
 set_source_files_properties(${qml_singletons} PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
-set(keypad_module
-    keypad/KeypadModule.cpp
-    keypad/KeypadModule.h
-    keypad/KeypadTypes.h
-
-    keypad/actions/SystemActions.h
-
-    keypad/service/KeypadService.cpp
-    keypad/service/KeypadService.h
-
-    keypad/controller/KeypadController.cpp
-    keypad/controller/KeypadController.h
-
-    keypad/model/ActionConfigListModel.cpp
-    keypad/model/ActionConfigListModel.h
-    keypad/model/ActionsListModel.cpp
-    keypad/model/ActionsListModel.h
-    keypad/model/ActionSectionsListModel.cpp
-    keypad/model/ActionSectionsListModel.h
-    keypad/model/KeysListModel.cpp
-    keypad/model/KeysListModel.h
-    keypad/model/LayerListModel.cpp
-    keypad/model/LayerListModel.h
-)
-
 qt_add_qml_module(${TARGET_NAME}
     URI MacropadCompanion
     VERSION 1.0
@@ -91,8 +68,6 @@ qt_add_qml_module(${TARGET_NAME}
         ${qml_plain_files}
 
     SOURCES
-        ${keypad_module}
-
         audio/AudioOutputSwitcher.h
 
         controllers/MainController.cpp
@@ -137,12 +112,15 @@ qt_add_qml_module(${TARGET_NAME}
         Macropad.h
 )
 
+add_subdirectory(keypad)
+
 # unfortunately I have to add this to include path
 # by using QML_ELEMENT, qt6 cmake will try to automatically register the type
 # and the class in question needs to be accessible via include path without prefixes
 target_include_directories(${TARGET_NAME} PUBLIC
     controllers
     controllers/settings
+    keypad
     keypad/controller
     theming
 )

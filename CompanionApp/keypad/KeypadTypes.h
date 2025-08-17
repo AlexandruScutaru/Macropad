@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QtQml>
 #include <QString>
 #include <QVariant>
 
@@ -7,9 +8,12 @@
 #include <unordered_map>
 
 namespace Keypad {
-    enum class OptionType {
+    Q_NAMESPACE
+    QML_ELEMENT
+    enum OptionType {
         String = 0
     };
+    Q_ENUM_NS(OptionType);
 
     struct Config {
         QString name;

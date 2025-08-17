@@ -3,7 +3,7 @@
 #include "misc/ListModel.h"
 
 
-class ActionConfigModel : public ListModel {
+class ActionConfigListModel : public ListModel {
     Q_OBJECT
 public:
     enum ConfigRoles {
@@ -13,8 +13,8 @@ public:
         Value
     };
 
-    explicit ActionConfigModel(QObject* parent = nullptr);
-    ~ActionConfigModel() = default;
+    explicit ActionConfigListModel(QObject* parent = nullptr);
+    ~ActionConfigListModel() = default;
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

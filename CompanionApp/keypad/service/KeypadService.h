@@ -8,8 +8,8 @@
 #include <vector>
 
 class AppSettings;
+class ActionConfigListModel;
 class ActionSectionsListModel;
-class KeyConfigListModel;
 class LayerListModel;
 class KeysListModel;
 
@@ -33,7 +33,6 @@ private:
     QPointer<AppSettings> mAppSettings{ nullptr };
     QPointer<ActionSectionsListModel> mActionSectionsListModel{ nullptr };
     QPointer<LayerListModel> mLayerListModel{ nullptr };
-    QPointer<KeyConfigListModel> mKeyConfigListModel{ nullptr };
     std::vector<QPointer<KeysListModel>> mKeysLayersModels;
 
     Keypad::ActionsMap mActionsMap;
