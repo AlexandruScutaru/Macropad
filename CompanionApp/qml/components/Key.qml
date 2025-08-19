@@ -11,11 +11,13 @@ Rectangle {
     property bool selected: false
     property bool dragHover: false
 
-    property string actionIconName: ""
     property string actionName: ""
-    property string actionId: ""
+    property string actionDisplayName: ""
+    property string actionIconName: ""
 
-    signal actionAssigned(actionId: string)
+    property string droppedActionName: ""
+
+    signal actionAssigned(actionName: string)
     signal clicked
     signal doubleClicked
 
@@ -30,7 +32,7 @@ Rectangle {
 
         source: key.actionIconName.length ? "qrc:///resources/%1".arg(key.actionIconName) : ""
         color: key.getTextColor()
-        visible: key.actionId.length >= 0
+        visible: key.actionName.length >= 0
     }
 
     MouseArea {
@@ -68,15 +70,15 @@ Rectangle {
         onDropped: (drag) => {
             if (key.parseDroppedData(drag.text)) {
                 key.dragHover = false;
-                key.actionAssigned(key.actionId);
+                key.actionAssigned(key.droppedActionName);
             }
         }
     }
 
     ToolTip {
         id: tooltip
-        text: key.actionName
-        visible: key.hovered && key.actionId >= 0 && key.actionName.length > 0
+        text: key.actionDisplayName
+        visible: key.hovered && key.actionName >= 0 && key.actionDisplayName.length > 0
         delay: 600
     }
 
@@ -84,13 +86,9 @@ Rectangle {
         try {
             const jsonObj = JSON.parse(data);
             if (!jsonObj) throw new Error("couldn't parse json data");
-            if (!jsonObj.iconName) throw new Error("couldn't find property 'iconName' in mimeData");
             if (!jsonObj.actionName) throw new Error("couldn't find property 'actionName' in mimeData");
-            if (!jsonObj.actionId) throw new Error("couldn't find property 'actionId' in mimeData");
 
-            actionIconName = jsonObj.iconName;
-            actionName = jsonObj.actionName;
-            actionId = jsonObj.actionId;
+            droppedActionName = jsonObj.actionName
 
             return true;
         } catch(e) {

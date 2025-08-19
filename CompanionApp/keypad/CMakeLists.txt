@@ -10,6 +10,10 @@ target_sources(${TARGET_NAME} PRIVATE
     service/KeypadService.cpp
     service/KeypadService.h
 
+    controller/ActionConfigController.cpp
+    controller/ActionConfigController.h
+    controller/AvailableActionsController.cpp
+    controller/AvailableActionsController.h
     controller/KeypadController.cpp
     controller/KeypadController.h
 
@@ -21,6 +25,4 @@ target_sources(${TARGET_NAME} PRIVATE
     model/ActionSectionsListModel.h
     model/KeysListModel.cpp
     model/KeysListModel.h
-    model/LayerListModel.cpp
-    model/LayerListModel.h
 )

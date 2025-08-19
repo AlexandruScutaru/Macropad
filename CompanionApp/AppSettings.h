@@ -19,17 +19,6 @@ struct PotentiometerInfo {
 };
 using Potentiometers = std::vector<PotentiometerInfo>;
 
-struct KeyInfo {
-    QString id;
-    std::vector<QString> options;
-};
-using Keys = std::array<KeyInfo, 9>;
-
-struct LayerInfo {
-    QString color{ "transparent" };
-    Keys keys;
-};
-using Layers = std::vector<LayerInfo>;
 
 class AppSettings : public QObject {
     Q_OBJECT
@@ -49,9 +38,8 @@ public:
     Potentiometers potentiometersInfo();
     void savePotentiometersInfo(const Potentiometers& potentiometers);
 
-    Layers layersInfo();
-    void saveKeyAssignment(int layer, int key, const QString& action);
-    void saveLayersInfo(const Layers& layers);
+    QString profileData();
+    void saveProfileData(const QString& profile);
 
 private:
     std::unique_ptr<QSettings> getSettings();
@@ -60,11 +48,11 @@ private:
 
     void readWindowState();
     void readPotentiometersInfo();
-    void readLayersInfo();
+    void readProfileData();
 
     QSize mWindowSize;
     bool mNavBarExpanded{ true };
     Potentiometers mPotentiometersInfo;
-    Layers mLayersInfo;
+    QString mProfileData;
 
 };

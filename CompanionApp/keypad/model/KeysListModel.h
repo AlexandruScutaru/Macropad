@@ -8,11 +8,9 @@ class KeysListModel : public ListModel {
 public:
     enum KeysRoles {
         Round = Qt::UserRole + 1,
-        ActionId,
         ActionName,
-        ActionTooltip,
-        ActionIcon,
-        ActionConfig
+        ActionDisplayName,
+        ActionIcon
     };
 
     explicit KeysListModel(QObject* parent = nullptr);

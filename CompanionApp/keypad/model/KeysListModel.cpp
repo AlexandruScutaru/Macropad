@@ -11,10 +11,8 @@ KeysListModel::KeysListModel(QObject* parent)
 QHash<int, QByteArray> KeysListModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[Round] = "keyIsRound";
-    roles[ActionId] = "keyActionId";
     roles[ActionName] = "keyActionName";
-    roles[ActionTooltip] = "keyActionTooltip";
+    roles[ActionDisplayName] = "keyActionDisplayName";
     roles[ActionIcon] = "keyActionIcon";
-    roles[ActionConfig] = "keyActionConfig";
     return roles;
 }

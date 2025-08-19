@@ -4,8 +4,9 @@
 #include <QString>
 #include <QVariant>
 
-#include <tuple>
+#include <optional>
 #include <unordered_map>
+
 
 namespace Keypad {
     Q_NAMESPACE
@@ -17,6 +18,7 @@ namespace Keypad {
 
     struct Config {
         QString name;
+        QString displayName;
         QString tooltip;
         OptionType type{ OptionType::String };
         QVariant value;
@@ -24,26 +26,42 @@ namespace Keypad {
     using Configs = std::vector<Config>;
 
     struct Action {
-        QString id;
         QString name;
+        QString displayName;
         QString tooltip;
         QString icon;
-        Configs config;
+        Configs configs;
     };
     using ActionsMap = std::unordered_map<QString, Action>;
 
     struct SectionEntry {
-        QString name;
+        QString displayName;
         QString iconName;
         std::vector<QString> actions;
     };
     using Sections = std::vector<SectionEntry>;
 
-    using AvailableActions = std::tuple<ActionsMap, Sections>;
+    struct AvailableActions {
+        ActionsMap actionsMap;
+        Sections sections;
+
+        std::optional<Keypad::Action> getAction(const QString& name) const {
+            if (const auto& action = actionsMap.find(name); action != actionsMap.end()) {
+                return action->second;
+            }
+        
+            return std::nullopt;
+        }
+    };
 
     struct Layer {
         QString color;
         std::vector<Action> actions;
     };
     using Layers = std::vector<Layer>;
+
+    struct Profile {
+        QString name;
+        Layers layers;
+    };
 }

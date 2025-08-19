@@ -7,7 +7,7 @@ import Controls
 Item {
     id: actionsList
 
-    property alias actionsModel: sectionRepeater.model
+    required property AvailableActionsController controller
 
     CVerticalScrollView {
         id: scrollView
@@ -21,6 +21,8 @@ Item {
 
             Repeater {
                 id: sectionRepeater
+
+                model: actionsList.controller.getActionSectionsListModel()
 
                 Column {
                     id: actionGroup
@@ -89,11 +91,9 @@ Item {
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     mimePayload: `{
-                                        "iconName": "${modelData.iconName}",
-                                        "actionName": "${modelData.name}",
-                                        "actionId": "${modelData.actionId}"
+                                        "actionName": "${modelData.name}"
                                     }`
-                                    label: modelData.name
+                                    label: modelData.displayName
                                     toolTipText: modelData.toolTip
                                     iconName: "qrc:///resources/%1".arg(modelData.iconName)
                                     leftMargin: 12 + 16 + 12 - 8 // align to header item icon: leftMargin + chevron_icon + spacing - pane leftMargin
