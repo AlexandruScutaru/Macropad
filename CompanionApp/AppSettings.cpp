@@ -11,11 +11,8 @@ static constexpr auto WINDOWSTATE_HEIGHT = "windowState/height";
 static constexpr auto WINDOWSTATE_NAVBAR_EXPANDED = "windowState/navBarExpanded";
 
 static constexpr auto DEVICE = "device";
-
 static constexpr auto KEYPAD = "keypad";
-static constexpr auto LAYERS_ARRAY = "layers";
-static constexpr auto LAYER_COLOR = "color";
-static constexpr auto KEYS = "keys";
+static constexpr auto PROFILE = "profile";
 static constexpr auto ACTION_ID = "actionId";
 
 static constexpr auto SLIDERS_ARRAY = "sliders";
@@ -23,8 +20,6 @@ static constexpr auto MIN = "min";
 static constexpr auto MAX = "max";
 
 static constexpr auto NUM_POTENTIOMETERS = 4;
-static constexpr auto NUM_LAYERS_DEFAULT = 3;
-static constexpr auto DEFAULT_LAYER_COLOR = "#00ff00";
 
 
 AppSettings::AppSettings(QObject* parent)
@@ -34,7 +29,7 @@ AppSettings::AppSettings(QObject* parent)
 
     readWindowState();
     readPotentiometersInfo();
-    readLayersInfo();
+    readProfileData();
 }
 
 AppSettings::~AppSettings() {
@@ -122,86 +117,30 @@ void AppSettings::readPotentiometersInfo() {
     }
 }
 
-Layers AppSettings::layersInfo() {
-    return mLayersInfo;
+QString AppSettings::profileData() {
+    return mProfileData;
 }
 
-void AppSettings::saveKeyAssignment(int layer, int key, const QString& action) {
-    addLayersAsNeeded(layer);
-    mLayersInfo[layer].keys[key].id = action;
-
-    auto settings = getSettings();
-    settings->beginGroup(DEVICE);
-      settings->beginGroup(KEYPAD);
-        settings->beginWriteArray(LAYERS_ARRAY, mLayersInfo.size());
-          settings->setArrayIndex(layer);
-            settings->beginWriteArray(KEYS, mLayersInfo[layer].keys.size());
-              settings->setArrayIndex(key);
-              settings->setValue(ACTION_ID, action);
-            settings->endArray();
-          settings->endArray();
-      settings->endGroup();
-    settings->endGroup();
-}
-
-void AppSettings::saveLayersInfo(const Layers& layers) {
+void AppSettings::saveProfileData(const QString& profile) {
     auto settings = getSettings();
 
     settings->beginGroup(DEVICE);
     settings->beginGroup(KEYPAD);
-    settings->beginWriteArray(LAYERS_ARRAY);
-    for (int layer = 0; layer < mLayersInfo.size(); layer++) {
-        settings->setArrayIndex(layer);
-        settings->setValue(LAYER_COLOR, mLayersInfo[layer].color);
 
-        const auto& keys = mLayersInfo[layer].keys;
-        settings->beginWriteArray(KEYS);
-        for (int key = 0; key < keys.size(); key++) {
-            settings->setArrayIndex(key);
-            settings->setValue(ACTION_ID, keys[key].id);
-        }
-        settings->endArray();
-    }
-    settings->endArray();
+    settings->setValue(PROFILE, profile);
+
     settings->endGroup();
     settings->endGroup();
 }
 
-void AppSettings::readLayersInfo() {
+void AppSettings::readProfileData() {
     auto settings = getSettings();
 
     settings->beginGroup(DEVICE);
     settings->beginGroup(KEYPAD);
-    auto layerCount = settings->beginReadArray(LAYERS_ARRAY);
 
-    mLayersInfo.clear();
-    mLayersInfo.resize(layerCount);
-    for (int layer = 0; layer < layerCount; layer++) {
-        settings->setArrayIndex(layer);
-        mLayersInfo[layer].color = settings->value(LAYER_COLOR, DEFAULT_LAYER_COLOR).toString();
-        auto keys = Keys();
-        const auto keyCount = settings->beginReadArray(KEYS);
-        for (int key = 0; key < keyCount; key++) {
-            settings->setArrayIndex(key);
-            keys[key].id = settings->value(ACTION_ID, "").toString();
-        }
-        settings->endArray();
-        mLayersInfo[layer].keys = keys;
-    }
-    settings->endArray();
+    mProfileData = settings->value(PROFILE, "").toString();
+
     settings->endGroup();
     settings->endGroup();
-}
-
-void AppSettings::addLayersAsNeeded(int layer) {
-    const int diff = (layer + 1) - static_cast<int>(mLayersInfo.size());
-    if (diff <= 0) {
-        return;
-    }
-
-    for (auto i = 0; i < diff; i++) {
-        mLayersInfo.push_back({});
-    }
-
-    saveLayersInfo(mLayersInfo);
 }

@@ -7,7 +7,8 @@ TextField {
     signal inputAccepted(value: string)
     property string placeholder
     property string toolTipText
-    property int fontSize: 14
+    property int fontSize: 12
+    property int radius: height / 2
 
     placeholderText: placeholder
     placeholderTextColor: Theme.textSecondary
@@ -18,18 +19,18 @@ TextField {
     leftPadding: 12
     rightPadding: 12
 
-    horizontalAlignment: TextInput.AlignHCenter
+    horizontalAlignment: TextInput.AlignLeft
 
     function isValid() {
         return textField.acceptableInput || text.length === 0;
     }
 
     background: Rectangle {
-        implicitHeight: 32
+        implicitHeight: 20
         color: Theme.backgroundTertiary
         border.color: Theme.error
         border.width: textField.isValid() ? 0 : 1
-        radius: height / 2
+        radius: textField.radius
     }
 
     onAccepted: {

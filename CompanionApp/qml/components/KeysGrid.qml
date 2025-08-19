@@ -7,11 +7,13 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: keys
 
-    signal keyActionAssigned(key: int, actionId: string)
-    signal keySelected(key: int, actionId: string)
+    signal actionAssigned(key: int, actionName: string)
+    signal keySelected(key: int)
     signal keyTriggered(key: int)
 
-    property var model
+    property alias model: keysRepeater.model
+    property color outlineColor: "transparent"
+
     property int selectedKey: -1
     property real aspectRatio: 1.0
 
@@ -19,7 +21,7 @@ Item {
     implicitHeight: width / aspectRatio
 
     Rectangle {
-        id: keypadContainer
+        id: gridContainer
 
         anchors.horizontalCenter: parent.horizontalCenter
         height: parent.height
@@ -32,7 +34,7 @@ Item {
             samples: 25
             radius: 12
             spread: 0.3
-            color: keys.model.color
+            color: keys.outlineColor
             transparentBorder: true
             cached: true
         }
@@ -49,28 +51,26 @@ Item {
             Repeater {
                 id: keysRepeater
 
-                model: keys.model.keysList
-
                 Key {
                     id: keyCell
 
                     required property int index
                     required property bool keyIsRound
-                    required property string keyActionId
                     required property string keyActionName
+                    required property string keyActionDisplayName
                     required property string keyActionIcon
 
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     isRound: keyIsRound
-                    actionId: keyActionId
                     actionName: keyActionName
+                    actionDisplayName: keyActionDisplayName
                     actionIconName: keyActionIcon
 
                     selected: isKeySelected()
 
-                    onActionAssigned:(actionId) => {
-                        keys.keyActionAssigned(index, actionId);
+                    onActionAssigned:(actionName) => {
+                        keys.actionAssigned(index, actionName);
                         keys.selectedKey = -1;
                         selectKey();
                     }
@@ -78,7 +78,7 @@ Item {
                     onClicked: selectKey()
 
                     onDoubleClicked: {
-                        keys.keyTriggered(index)
+                        keys.keyTriggered(index);
                     }
 
                     function selectKey() {
@@ -86,12 +86,12 @@ Item {
                             return;
                         }
 
-                        keys.selectedKey = index
-                        keys.keySelected(index, actionId);
+                        keys.selectedKey = index;
+                        keys.keySelected(index);
                     }
 
                     function isKeySelected(): bool {
-                        return keys.selectedKey === index
+                        return keys.selectedKey === index;
                     }
                 }
             }

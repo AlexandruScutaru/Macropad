@@ -9,7 +9,8 @@ public:
     enum ConfigRoles {
         Type = Qt::UserRole + 1,
         Name,
-        ToolTip,
+        DisplayName,
+        Tooltip,
         Value
     };
 

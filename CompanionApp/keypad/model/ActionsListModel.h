@@ -7,8 +7,8 @@ class ActionsListModel : public ListModel {
     Q_OBJECT
 public:
     enum ActionsRoles {
-        Id = Qt::UserRole + 1,
-        Name,
+        Name = Qt::UserRole + 1,
+        DisplayName,
         ToolTip,
         IconName
     };

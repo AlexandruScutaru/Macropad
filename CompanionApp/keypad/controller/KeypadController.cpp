@@ -1,13 +1,11 @@
 #include "KeypadController.h"
-
-#include "../service/KeypadService.h"
+#include "../KeypadTypes.h"
 
 #include <QDebug>
 
 
-KeypadController::KeypadController(QPointer<KeypadService> service, QObject* parent)
+KeypadController::KeypadController(QObject* parent)
     : QObject(parent)
-    , mService(service)
 {
     qDebug() << "KeypadController::KeypadController";
 }
@@ -17,14 +15,131 @@ KeypadController::~KeypadController() {
 }
 
 
-ActionSectionsListModel* KeypadController::getActionSectionsListModel() {
-    return mService->getActionSectionsListModel();
+int KeypadController::layerCount() {
+    return mLayerCount;
 }
 
-LayerListModel* KeypadController::getLayerListModel() {
-    return mService->getLayerListModel();
+int KeypadController::currentLayer() {
+    return mCurrentLayer;
 }
 
-void KeypadController::assignAction(int layer, int key, const QString& actionId) {
-    mService->assignActionRequested(layer, key, actionId);
+QString KeypadController::layerColor() {
+    return mLayerColor;
+}
+
+KeysListModel* KeypadController::model() {
+    return mCurrentModel;
+}
+
+void KeypadController::setCurrentLayer(int layer) {
+    if (!isIndexInBounds(layer) || mCurrentLayer == layer) {
+        return;
+    }
+
+    handleLayerChange(layer);
+}
+
+void KeypadController::setLayerColor(const QString& color) {
+    if (mLayerColor == color) {
+        return;
+    }
+
+    mLayerColor = color;
+    emit layerColorChanged(mLayerColor);
+}
+
+void KeypadController::assignAction(int key, const QString& actionName) {
+    if (!isIndexInBounds(mCurrentLayer)) {
+        return;
+    }
+
+    emit actionAssignRequested(mCurrentLayer, key, actionName);
+}
+
+void KeypadController::onKeySelected(int key) {
+    emit keySelected(mCurrentLayer, key);
+}
+
+void KeypadController::onKeyTriggered(int key) {
+    emit keyTriggered(mCurrentLayer, key);
+}
+
+void KeypadController::onProfileChanged(const Keypad::Profile& profile) {
+    for (auto& [_, model]: mLayers) {
+        if (model) {
+            model->deleteLater();
+        }
+    }
+    mLayers.clear();
+
+    for (const auto& layer: profile.layers) {
+        mLayers.emplace_back(layer.color, createKeysListModels(layer));
+    }
+
+    auto count = mLayers.size();
+    if (count != mLayerCount) {
+        mLayerCount = count;
+        emit layerCountChanged(mLayerCount);
+    }
+
+    if (mLayerCount > 0) {
+        handleLayerChange(0);
+    } else {
+        mCurrentModel = nullptr;
+        mLayerColor = "transparent";
+        mCurrentLayer = 0;
+        emit modelChanged(mCurrentModel);
+        emit layerColorChanged(mLayerColor);
+        emit currentLayerChanged(mCurrentLayer);
+    }
+}
+
+void KeypadController::onActionAssigned(int layer, int key, const Keypad::Action& action) {
+    QMap<int, QVariant> keyRow;
+    keyRow[KeysListModel::Round] = key == 0;
+    keyRow[KeysListModel::ActionName] = action.name;
+    keyRow[KeysListModel::ActionDisplayName] = action.displayName;
+    keyRow[KeysListModel::ActionIcon] = action.icon;
+
+    auto& [_, model] = mLayers[mCurrentLayer];
+    if (model) {
+        model->updateRow(key, keyRow);
+    }
+}
+
+KeysListModel* KeypadController::createKeysListModels(const Keypad::Layer& layer) {
+    QList<QMap<int, QVariant>> keysModel;
+    for (int key = 0; key < layer.actions.size(); key++) {
+        const auto& action = layer.actions[key];
+        QMap<int, QVariant> keyRow;
+        keyRow[KeysListModel::Round] = key == 0;
+        keyRow[KeysListModel::ActionName] = action.name;
+        keyRow[KeysListModel::ActionDisplayName] = action.displayName;
+        keyRow[KeysListModel::ActionIcon] = action.icon;
+        keysModel.push_back(keyRow);
+    }
+    const auto keysListModel = new KeysListModel(this);
+    keysListModel->setData(keysModel);
+    
+    return keysListModel;
+}
+
+bool KeypadController::isIndexInBounds(int index) const {
+    if (index < 0 || static_cast<size_t>(index) >= mLayers.size()) {
+        qDebug() << "Index '" << index << "' out of bounds!";
+        return false;
+    }
+
+    return true;
+}
+
+void KeypadController::handleLayerChange(int newLayer) {
+    mCurrentLayer = newLayer;
+    emit currentLayerChanged(mCurrentLayer);
+
+    const auto& [color, model] = mLayers[mCurrentLayer];
+    mLayerColor = color;
+    mCurrentModel = model;
+    emit layerColorChanged(mLayerColor);
+    emit modelChanged(mCurrentModel);
 }

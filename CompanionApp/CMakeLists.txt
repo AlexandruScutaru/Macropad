@@ -47,7 +47,8 @@ set(qml_plain_files
     qml/components/NavigationBarModel.qml
     qml/components/Key.qml
     qml/components/KeyConfig.qml
-    qml/components/KeypadKeys.qml
+    qml/components/KeypadLayers.qml
+    qml/components/KeysGrid.qml
     qml/components/LayerPagination.qml
 )
 
@@ -122,6 +123,7 @@ target_include_directories(${TARGET_NAME} PUBLIC
     controllers/settings
     keypad
     keypad/controller
+    keypad/model
     theming
 )
 
@@ -153,6 +155,10 @@ target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Widgets)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Concurrent)
 
 target_link_libraries(${TARGET_NAME} PRIVATE Controlsplugin)
+
+# common configurations
+set(NLOHMANN_JSON_INCLUDE "${CMAKE_SOURCE_DIR}/deps/common/nlohmann_json")
+include_directories(SYSTEM ${NLOHMANN_JSON_INCLUDE})
 
 # platform specific configurations
 if(WIN32)

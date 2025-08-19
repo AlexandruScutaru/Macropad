@@ -36,7 +36,7 @@ public:
     void init(const MacropadConfig& config);
     Theme* getTheme();
 
-    Q_INVOKABLE KeypadController* getKeypadController();
+    Q_INVOKABLE KeypadModule* getKeypadModule();
 
     Q_INVOKABLE QSize windowSize();
     Q_INVOKABLE void saveWindowSize(int w, int h);

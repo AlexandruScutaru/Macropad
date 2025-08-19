@@ -71,8 +71,8 @@ Theme* Macropad::getTheme() {
     return mTheme.data();
 }
 
-KeypadController* Macropad::getKeypadController() {
-    return mKeypadModule->getController();
+KeypadModule* Macropad::getKeypadModule() {
+    return mKeypadModule;
 }
 
 QSize Macropad::windowSize() {

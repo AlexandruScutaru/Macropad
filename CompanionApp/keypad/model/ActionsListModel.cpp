@@ -10,8 +10,8 @@ ActionsListModel::ActionsListModel(QObject* parent)
 
 QHash<int, QByteArray> ActionsListModel::roleNames() const {
     QHash<int, QByteArray> roles;
-    roles[Id] = "actionId";
     roles[Name] = "name";
+    roles[DisplayName] = "displayName";
     roles[IconName] = "iconName";
     roles[ToolTip] = "toolTip";
     return roles;

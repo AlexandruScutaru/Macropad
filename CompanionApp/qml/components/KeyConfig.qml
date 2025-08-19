@@ -1,23 +1,25 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
+import QtQml.Models
 
 import Controls
 
 Item {
     id: keyconfig
 
-    property var model
+    required property ActionConfigController controller
 
     CText {
         id: configUnavailable
         anchors.centerIn: parent
 
         label: qsTr("Select a key to configure it")
-        fontSize: 12
+        fontSize: 14
         hAlign: Text.AlignHCenter | Text.AlignVCenter
         color: Theme.textPrimary
 
-        visible: keyconfig.model.keyActionId === "" || keyconfig.model.keyActionId === undefined
+        visible: keyconfig.controller.keyActionName === "" || keyconfig.controller.keyActionName === undefined
     }
 
     Item {
@@ -29,14 +31,14 @@ Item {
             anchors.topMargin: 12
             anchors.bottomMargin: 12
 
-            spacing: 8
+            spacing: 12
 
             CText {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
 
-                label: keyconfig.model.keyActionName ?? ""
+                label: keyconfig.controller.keyActionDisplayName
                 fontSize: 14
                 hAlign: Text.AlignLeft
                 color: Theme.textPrimary
@@ -45,11 +47,27 @@ Item {
             GradientSeparator {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
-                Layout.rightMargin: 8
 
                 colorEnds: "transparent"
                 colorMiddle: Theme.textDisabled
                 orientation: Gradient.Horizontal
+            }
+
+            CText {
+                id: noOptions
+                Layout.fillWidth: true
+
+                label: qsTr("Action has no options")
+                fontSize: 12
+                hAlign: Text.AlignHCenter
+                color: Theme.textPrimary
+
+                visible: keyconfig.controller.model.count === 0
+            }
+
+            Item {
+                visible: noOptions.visible
+                Layout.fillHeight: true
             }
 
             CVerticalScrollView {
@@ -57,40 +75,74 @@ Item {
 
                 Layout.fillWidth: true
                 Layout.fillHeight: true
+                Layout.rightMargin: 4
 
-                Repeater {
-                    id: optionsRepeater
+                visible: !noOptions.visible
 
-                    model: keyconfig.model.keyActionConfig
+                ColumnLayout {
+                    width: scrollView.width
+                    spacing: 8
+
+                    Repeater {
+                        id: optionsRepeater
+
+                        model: keyconfig.controller.model
+                        delegate: chooser
+
+                        DelegateChooser {
+                            id: chooser
+                            role: "type"
+
+                            DelegateChoice { roleValue: Keypad.String; delegate: stringOption }
+                        }
+                    }
 
                     Item {
-                        id: option
+                        Layout.fillHeight: true
+                    }
+                }
+            }
+        }
+    }
 
-                        anchors.fill: parent
+    Component {
+        id: stringOption
 
-                        anchors.leftMargin: 20
-                        anchors.rightMargin: 28
+        Item {
+            id: option
 
-                        required property string name
-                        required property int type
+            Layout.fillWidth: true
+            Layout.preferredHeight: row.height
+            Layout.leftMargin: 20
+            Layout.rightMargin: 20
 
-                        RowLayout {
-                            spacing: 8
+            required property string name
+            required property string displayName
+            required property string tooltip
+            required property string value
 
-                            CText {
-                                label: option.name
-                                fontSize: 12
-                                hAlign: Text.AlignLeft
-                                color: Theme.textPrimary
-                            }
+            RowLayout {
+                id: row
+                width: option.width
+                spacing: 8
 
-                            CText {
-                                label: option.type === Keypad.String ? "string" : "other"
-                                fontSize: 12
-                                hAlign: Text.AlignLeft
-                                color: Theme.textPrimary
-                            }
-                        }
+                CText {
+                    Layout.fillWidth: true
+                    label: option.displayName
+                    fontSize: 12
+                    hAlign: Text.AlignLeft
+                    color: Theme.textPrimary
+                }
+
+                CTextField {
+                    Layout.preferredWidth: option.width * 0.66
+
+                    text: option.value
+                    toolTipText: option.tooltip
+                    radius: 8
+
+                    onInputAccepted: (value) => {
+                        keyconfig.controller.optionChanged(option.name, value);
                     }
                 }
             }

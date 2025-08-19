@@ -1,27 +1,22 @@
 #include "KeypadService.h"
 #include "AppSettings.h"
+#include "../actions/SystemActions.h"
 #include "../model/ActionConfigListModel.h"
-#include "../model/ActionSectionsListModel.h"
-#include "../model/ActionsListModel.h"
-#include "../model/LayerListModel.h"
-#include "../model/KeysListModel.h"
 
+#include <nlohmann/json.hpp>
 #include <QDebug>
 
+#include <algorithm>
 
-KeypadService::KeypadService(const Keypad::AvailableActions& actions, QPointer<AppSettings> appSettings, QObject* parent)
+using json = nlohmann::json;
+
+
+KeypadService::KeypadService(QPointer<AppSettings> appSettings, QObject* parent)
     : QObject(parent)
     , mAppSettings(appSettings)
-    , mActionSectionsListModel(new ActionSectionsListModel(this))
-    , mLayerListModel(new LayerListModel(this))
 {
     qDebug() << "KeypadService::KeypadService";
-
-    mActionsMap = std::get<0>(actions);
-    mActionSections = std::get<1>(actions);
-
-    populateActionsListModel();
-    populateLayersModel(loadSavedKeypadConfig());
+    loadAvailableActions();
 }
 
 KeypadService::~KeypadService() {
@@ -29,149 +24,184 @@ KeypadService::~KeypadService() {
 }
 
 
-ActionSectionsListModel* KeypadService::getActionSectionsListModel() {
-    return mActionSectionsListModel;
+const Keypad::AvailableActions& KeypadService::getAvailableActions() const {
+    return mAvailableActions;
 }
 
-LayerListModel* KeypadService::getLayerListModel() {
-    return mLayerListModel;
+const Keypad::Profile& KeypadService::getCurrentProfile() const {
+    return mCurrentProfile;
 }
 
-void KeypadService::assignActionRequested(int layer, int key, const QString& action) {
-    mAppSettings->saveKeyAssignment(layer, key, action);
-
-    // update model to reflect changes
-    QMap<int, QVariant> keyRow;
-    if (const auto actionInfo = getAction(action)) {
-        keyRow[KeysListModel::Round] = key == 0;
-        keyRow[KeysListModel::ActionId] = actionInfo->id;
-        keyRow[KeysListModel::ActionName] = actionInfo->name;
-        keyRow[KeysListModel::ActionTooltip] = actionInfo->tooltip;
-        keyRow[KeysListModel::ActionIcon] = actionInfo->icon;
-        keyRow[KeysListModel::ActionConfig] = {};
+void KeypadService::onActionAssignRequested(int layer, int key, const QString& actionName) {
+    try {
+        if (const auto actionInfo = mAvailableActions.getAction(actionName); actionInfo != std::nullopt) {
+            mCurrentProfile.layers[layer].actions[key] = *actionInfo;
+            //TODO: update code so that profile data is saved more granurarly so as to not dump the entire thing for just some parts of it
+            saveProfile(mCurrentProfile);
+            emit actionAssigned(layer, key, *actionInfo);
+        }
+    } catch(...) {
+        qWarning() << "An error ocurred accessing the action to be assigned:" << layer << key << actionName;
     }
-    mKeysLayersModels[layer]->updateRow(key, keyRow);
 }
 
-void KeypadService::populateActionsListModel() {
-    QList<QMap<int, QVariant>> sectionModel;
-    sectionModel.reserve(mActionSections.size());
+void KeypadService::onKeySelected(int layer, int key) {
+    try {
+        const auto& action = mCurrentProfile.layers[layer].actions[key];
+        emit actionConfigChanged(layer, key, action);
+    } catch(...) {
+        qWarning() << "An error ocurred accessing the configuration of the selected key: " << layer << key;
+    }
+}
 
-    for (const auto& section: mActionSections) {
-        QMap<int, QVariant> sectionRow;
-        sectionRow[ActionSectionsListModel::Name] = section.name;
-        sectionRow[ActionSectionsListModel::IconName] = section.iconName;
+void KeypadService::onKeyTriggered(int layer, int key) {
+    try {
+        const auto& action = mCurrentProfile.layers[layer].actions[key];
+        if (action.name.isEmpty()) {
+            return;
+        }
+        emit actionTriggered(action);
+    } catch(...) {
+        qWarning() << "An error ocurred accessing the configuration of the triggered key: " << layer << key;
+    }
+}
 
-        QList<QMap<int, QVariant>> actionsModel;
-        actionsModel.reserve(section.actions.size());
-        for (const auto& actionId: section.actions) {
-            QMap<int, QVariant> actionRow;
-            if (const auto action = getAction(actionId); action != std::nullopt) {
-                actionRow[ActionsListModel::Id] = action->id;
-                actionRow[ActionsListModel::Name] = action->name;
-                actionRow[ActionsListModel::ToolTip] = action->tooltip;
-                actionRow[ActionsListModel::IconName] = action->icon;
+void KeypadService::onConfigOptionChanged(int layer, int key, const QString& name, const QVariant& value) {
+    try {
+        auto& action = mCurrentProfile.layers[layer].actions[key];
+        if (auto config = std::find_if(action.configs.begin(), action.configs.end(), [name](const auto& config) { return config.name == name; });
+            config != action.configs.end())
+        {
+            config->value = value;
+            saveProfile(mCurrentProfile);
+            emit actionConfigChanged(layer, key, action);
+        }
+    } catch(...) {
+        qWarning() << "An error ocurred updating the key config option:" << layer << key << name;
+    }
+}
+
+void KeypadService::loadSavedProfile() {
+    mCurrentProfile = {};
+
+    try {
+        const auto profileStr = mAppSettings->profileData();
+        json profileJson = json::parse(profileStr.toStdString());
+        mCurrentProfile.name = QString::fromStdString(profileJson.at("name").get<std::string>());
+
+        const auto& layersJson = profileJson.at("layers");
+        mCurrentProfile.layers.resize(layersJson.size());
+        for (const auto& layerJson: layersJson) {
+            auto& layer = mCurrentProfile.layers[layerJson.at("index").get<int>()];
+            layer.color = QString::fromStdString(layerJson.value<std::string>("color", "transparent"));
+
+            const auto& actionsJson = layerJson.at("actions");
+            layer.actions.resize(actionsJson.size());
+            for (const auto& actionJson: actionsJson) {
+                auto& action = layer.actions[actionJson.at("index").get<int>()];
+
+                const auto actionName = QString::fromStdString(actionJson.at("name").get<std::string>());
+                if (const auto& actionInfo = mAvailableActions.getAction(actionName); actionInfo != std::nullopt) {
+                    action.name = actionName;
+                    action.displayName = actionInfo->displayName;
+                    action.tooltip = actionInfo->tooltip;
+                    action.icon = actionInfo->icon;
+
+                    const auto& configsJson = actionJson.contains("configs") ? actionJson.at("configs") : json::array();
+                    action.configs.resize(configsJson.size());
+                    if (action.configs.size() == actionInfo->configs.size()) {
+                        for (const auto& configJson: configsJson) {
+                            int configIndex = configJson.at("index").get<int>();
+                            auto& config = action.configs[configIndex];
+                            config.name = QString::fromStdString(configJson.at("name").get<std::string>());
+                            config.displayName = actionInfo->configs[configIndex].displayName;
+                            config.tooltip = actionInfo->configs[configIndex].tooltip;
+                            config.type = actionInfo->configs[configIndex].type;
+                            config.value = JsonReadVariant(configJson, "value", config.type);
+                        }
+                    }
+                }
             }
-            actionsModel.push_back(actionRow);
         }
-
-        // mind this lives however long the parent model does
-        // when at some point the model data is reset but the parent is not de-allocated
-        // these sub-models will need to be manually dealt with
-        const auto actionsListModel = new ActionsListModel(this);
-        actionsListModel->setData(actionsModel);
-        sectionRow[ActionSectionsListModel::ActionsList] = QVariant::fromValue(actionsListModel);
-        sectionModel.push_back(sectionRow);
+    } catch (const json::exception& e) {
+        qWarning() << "Failed to parse profile JSON:" << e.what();
+        mCurrentProfile = {};
     }
 
-    mActionSectionsListModel->setData(sectionModel);
+    if (mCurrentProfile.layers.empty()) {
+        // TODO: set this as a configuration from upper levels
+        const size_t ACTIONS_PER_LAYER = 9;
+        const auto actions = std::vector<Keypad::Action>(ACTIONS_PER_LAYER);
+        mCurrentProfile.layers.emplace_back("#00ff00", actions );
+        mCurrentProfile.name = "Default profile";
+    }
+
+    emit profileLoaded(mCurrentProfile);
 }
 
-void KeypadService::populateLayersModel(const Keypad::Layers& layers) {
-    QList<QMap<int, QVariant>> layersModel;
-    layersModel.reserve(layers.size());
+void KeypadService::saveProfile(const Keypad::Profile& profile) {
+    try {
+        json profileJson;
+        profileJson["name"] = profile.name.toStdString();
 
-    for (auto& keysModel: mKeysLayersModels) {
-        if (keysModel) {
-            keysModel->deleteLater();
-        }
-    }
-    mKeysLayersModels.clear();
-    mKeysLayersModels.reserve(layers.size());
+        for (auto layerIndex = 0; layerIndex < profile.layers.size(); layerIndex++) {
+            const auto& layer = profile.layers[layerIndex];
+            json layerJson;
+            layerJson["index"] = layerIndex;
+            layerJson["color"] = layer.color.toStdString();
 
-    for (const auto& layer: layers) {
-        QMap<int, QVariant> layerRow;
-        layerRow[LayerListModel::Color] = layer.color;
-        QList<QMap<int, QVariant>> keysModel;
-        for (int key = 0; key < layer.actions.size(); key++) {
-            const auto& action = layer.actions[key];
-            QMap<int, QVariant> keyRow;
-            keyRow[KeysListModel::Round] = key == 0;
-            keyRow[KeysListModel::ActionId] = action.id;
-            keyRow[KeysListModel::ActionName] = action.name;
-            keyRow[KeysListModel::ActionTooltip] = action.tooltip;
-            keyRow[KeysListModel::ActionIcon] = action.icon;
+            for (auto actionIndex = 0; actionIndex < layer.actions.size(); actionIndex++) {
+                const auto& action = layer.actions[actionIndex];
+                json actionJson;
+                actionJson["index"] = actionIndex;
+                actionJson["name"] = action.name.toStdString();
 
-            QList<QMap<int, QVariant>> configModel;
-            for (const auto& option: action.config) {
-                QMap<int, QVariant> optionRow;
-                optionRow[ActionConfigListModel::Type] = option.type;
-                optionRow[ActionConfigListModel::Name] = option.name;
-                optionRow[ActionConfigListModel::ToolTip] = option.tooltip;
-                optionRow[ActionConfigListModel::Value] = option.value;
-                configModel.push_back(optionRow);
+                for (auto configIndex = 0; configIndex < action.configs.size(); configIndex++) {
+                    const auto& config = action.configs[configIndex];
+                    json configJson;
+                    configJson["index"] = configIndex;
+                    configJson["name"] = config.name.toStdString();
+                    JsonWriteVariant(configJson, "value", config.type, config.value);
+                    actionJson["configs"].push_back(configJson);
+                }
+
+                layerJson["actions"].push_back(actionJson);
             }
-            const auto configListModel = new ActionConfigListModel(this);
-            configListModel->setData(configModel);
-            keyRow[KeysListModel::ActionConfig] = QVariant::fromValue(configListModel);
-            keysModel.push_back(keyRow);
-        }
-        const auto keysListModel = new KeysListModel(this);
-        mKeysLayersModels.push_back(QPointer(keysListModel));
-        keysListModel->setData(keysModel);
-        layerRow[LayerListModel::KeysList] = QVariant::fromValue(keysListModel);
-        layersModel.push_back(layerRow);
-    }
 
-    mLayerListModel->setData(layersModel);
+            profileJson["layers"].push_back(layerJson);
+        }
+
+        const std::string profileStr = profileJson.dump();
+        mAppSettings->saveProfileData(QString::fromStdString(profileStr));
+    } catch (const json::exception& e) {
+        qWarning() << "Failed to save profile JSON:" << e.what();
+    }
 }
 
-Keypad::Layers KeypadService::loadSavedKeypadConfig() {
-    auto savedConfig = mAppSettings->layersInfo();
-    if (savedConfig.size() == 0) {
-        // add a default layer in case nothing is saved yet
-        auto arr = std::array<KeyInfo, 9>{};
-        savedConfig.push_back({ "#00ff00", arr });
-    }
 
-    Keypad::Layers layers;
-    layers.reserve(savedConfig.size());
-
-    for (const auto& savedLayer: savedConfig) {
-        Keypad::Layer layer;
-        layer.color = savedLayer.color;
-        layer.actions.reserve(savedLayer.keys.size());
-        for (const auto& savedKey: savedLayer.keys) {
-            Keypad::Action action;
-            if (const auto actionInfo = getAction(savedKey.id); actionInfo != std::nullopt) {
-                action.id = actionInfo->id;
-                action.name = actionInfo->name;
-                action.icon = actionInfo->icon;
-                action.tooltip = actionInfo->tooltip;
-                action.config = actionInfo->config;
-            }
-            layer.actions.push_back(action);
-        }
-        layers.push_back(layer);
-    }
-
-    return layers;
+void KeypadService::loadAvailableActions() {
+    Keypad::Actions::InsertSystemActions(mAvailableActions);
 }
 
-std::optional<Keypad::Action> KeypadService::getAction(const QString& id) {
-    if (const auto& action = mActionsMap.find(id); action != mActionsMap.end()) {
-        return action->second;
+
+QVariant KeypadService::JsonReadVariant(const nlohmann::json& json, const std::string& fieldName, Keypad::OptionType type) {
+    switch (type) {
+        case Keypad::OptionType::String:
+            return QString::fromStdString(json.value<std::string>(fieldName, ""));
+        default:
+            // no-op
+            break;
     }
 
-    return std::nullopt;
+    return {};
+}
+
+void KeypadService::JsonWriteVariant(nlohmann::json& json, const std::string& fieldName, Keypad::OptionType type, const QVariant& variant) {
+    switch (type) {
+        case Keypad::OptionType::String:
+            json[fieldName] = variant.toString().toStdString();
+        default:
+            // no-op
+            break;
+    }
 }
