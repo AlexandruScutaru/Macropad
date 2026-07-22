@@ -19,7 +19,7 @@ Item {
         hAlign: Text.AlignHCenter | Text.AlignVCenter
         color: Theme.textPrimary
 
-        visible: keyconfig.controller.keyActionName === "" || keyconfig.controller.keyActionName === undefined
+        visible: keyconfig.controller.keyActionId === "" || keyconfig.controller.keyActionId === undefined
     }
 
     Item {

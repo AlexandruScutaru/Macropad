@@ -6,12 +6,12 @@
 #include <QDebug>
 
 
-AvailableActionsController::AvailableActionsController(const Keypad::AvailableActions& availableActions, QObject* parent)
+AvailableActionsController::AvailableActionsController(QObject* parent)
     : QObject(parent)
-    , mActionSectionsListModel(new ActionSectionsListModel(this))
 {
     qDebug() << "AvailableActionsController::AvailableActionsController";
-    populateActionsListModel(availableActions);
+
+    mActionSectionsListModel = new ActionSectionsListModel(this);
 }
 
 AvailableActionsController::~AvailableActionsController() {
@@ -19,11 +19,19 @@ AvailableActionsController::~AvailableActionsController() {
 }
 
 
-ActionSectionsListModel* AvailableActionsController::getActionSectionsListModel() {
+ActionSectionsListModel* AvailableActionsController::model() {
     return mActionSectionsListModel;
 }
 
-void AvailableActionsController::populateActionsListModel(const Keypad::AvailableActions& availableActions) {
+void AvailableActionsController::onAvailableActionsChanged(const Keypad::AvailableActions& availableActions) {
+    if (mActionSectionsListModel) {
+        mActionSectionsListModel->deleteLater();
+    }
+
+    // deleting this here for now rather than reseting the data
+    // as doing that requires additional nested model lifecycle management
+    mActionSectionsListModel = new ActionSectionsListModel(this);
+
     QList<QMap<int, QVariant>> sectionModel;
     sectionModel.reserve(availableActions.sections.size());
 
@@ -34,13 +42,13 @@ void AvailableActionsController::populateActionsListModel(const Keypad::Availabl
 
         QList<QMap<int, QVariant>> actionsModel;
         actionsModel.reserve(section.actions.size());
-        for (const auto& actionName: section.actions) {
+        for (const auto& actionId: section.actions) {
             QMap<int, QVariant> actionRow;
-            if (const auto action = availableActions.getAction(actionName); action != std::nullopt) {
-                actionRow[ActionsListModel::Name] = action->name;
-                actionRow[ActionsListModel::DisplayName] = action->displayName;
-                actionRow[ActionsListModel::ToolTip] = action->tooltip;
-                actionRow[ActionsListModel::IconName] = action->icon;
+            if (const auto it = availableActions.getAction(actionId); it != std::nullopt) {
+                actionRow[ActionsListModel::Id] = it->id;
+                actionRow[ActionsListModel::DisplayName] = it->displayName;
+                actionRow[ActionsListModel::ToolTip] = it->tooltip;
+                actionRow[ActionsListModel::IconName] = it->iconName;
             }
             actionsModel.push_back(actionRow);
         }
@@ -55,4 +63,5 @@ void AvailableActionsController::populateActionsListModel(const Keypad::Availabl
     }
 
     mActionSectionsListModel->setData(sectionModel);
+    emit modelChanged(mActionSectionsListModel);
 }

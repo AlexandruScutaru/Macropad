@@ -28,7 +28,7 @@ public:
     explicit KeypadController(QObject* parent = nullptr);
     ~KeypadController();
 
-    Q_INVOKABLE void assignAction(int key, const QString& actionName);
+    Q_INVOKABLE void assignAction(int key, const QString& actionId);
     Q_INVOKABLE void onKeySelected(int key);
     Q_INVOKABLE void onKeyTriggered(int key);
 
@@ -46,7 +46,7 @@ signals:
     void layerColorChanged(const QString& color);
     void modelChanged(KeysListModel* model);
 
-    void actionAssignRequested(int layer, int key, const QString& actionName);
+    void actionAssignRequested(int layer, int key, const QString& actionId);
     void keySelected(int layer, int key);
     void keyTriggered(int layer, int key);
 

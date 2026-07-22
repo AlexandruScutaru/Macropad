@@ -15,7 +15,7 @@ public:
     };
 
     explicit ActionConfigListModel(QObject* parent = nullptr);
-    ~ActionConfigListModel() = default;
+    ~ActionConfigListModel();
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

@@ -10,6 +10,8 @@ ActionConfigController::ActionConfigController(QObject* parent)
     : QObject(parent)
 {
     qDebug() << "ActionConfigController::ActionConfigController";
+
+    mActionConfigListModel = new ActionConfigListModel(this);
 }
 
 ActionConfigController::~ActionConfigController() {
@@ -21,8 +23,8 @@ void ActionConfigController::optionChanged(const QString& name, const QVariant& 
     emit configOptionChanged(mKeyActionLayer, mKeyAction, name, value);
 }
 
-QString ActionConfigController::keyActionName() {
-    return mActionName;
+QString ActionConfigController::keyActionId() {
+    return mActionId;
 }
 
 QString ActionConfigController::keyActionDisplayName() {
@@ -34,9 +36,11 @@ ActionConfigListModel* ActionConfigController::model() {
 }
 
 void ActionConfigController::onActionConfigChanged(int layer, int key, const Keypad::Action& action) {
-    if (mActionConfigListModel) {
-        mActionConfigListModel->deleteLater();
+    if (!mActionConfigListModel) {
+        mActionConfigListModel = new ActionConfigListModel(this);
     }
+
+    mActionConfigListModel->reset();
 
     QList<QMap<int, QVariant>> configModel;
     for (const auto& config: action.configs) {
@@ -49,11 +53,10 @@ void ActionConfigController::onActionConfigChanged(int layer, int key, const Key
         configModel.push_back(configRow);
     }
 
-    mActionConfigListModel = new ActionConfigListModel(this);
     mActionConfigListModel->setData(configModel);
     emit modelChanged(mActionConfigListModel);
-    mActionName = action.name;
-    emit keyActionNameChanged(mActionName);
+    mActionId = action.id;
+    emit keyActionIdChanged(mActionId);
     mActionDisplayName = action.displayName;
     emit keyActionDisplayNameChanged(mActionDisplayName);
 

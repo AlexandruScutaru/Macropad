@@ -8,13 +8,13 @@ class KeysListModel : public ListModel {
 public:
     enum KeysRoles {
         Round = Qt::UserRole + 1,
-        ActionName,
+        ActionId,
         ActionDisplayName,
         ActionIcon
     };
 
     explicit KeysListModel(QObject* parent = nullptr);
-    ~KeysListModel() = default;
+    ~KeysListModel();
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

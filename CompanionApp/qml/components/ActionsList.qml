@@ -22,7 +22,7 @@ Item {
             Repeater {
                 id: sectionRepeater
 
-                model: actionsList.controller.getActionSectionsListModel()
+                model: actionsList.controller.model
 
                 Column {
                     id: actionGroup
@@ -90,8 +90,9 @@ Item {
 
                                     anchors.left: parent.left
                                     anchors.right: parent.right
+
                                     mimePayload: `{
-                                        "actionName": "${modelData.name}"
+                                        "actionId": "${modelData.id}"
                                     }`
                                     label: modelData.displayName
                                     toolTipText: modelData.toolTip

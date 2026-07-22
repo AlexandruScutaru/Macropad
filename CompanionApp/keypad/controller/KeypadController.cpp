@@ -8,6 +8,8 @@ KeypadController::KeypadController(QObject* parent)
     : QObject(parent)
 {
     qDebug() << "KeypadController::KeypadController";
+
+    mCurrentModel = new KeysListModel(this);
 }
 
 KeypadController::~KeypadController() {
@@ -48,12 +50,12 @@ void KeypadController::setLayerColor(const QString& color) {
     emit layerColorChanged(mLayerColor);
 }
 
-void KeypadController::assignAction(int key, const QString& actionName) {
+void KeypadController::assignAction(int key, const QString& actionId) {
     if (!isIndexInBounds(mCurrentLayer)) {
         return;
     }
 
-    emit actionAssignRequested(mCurrentLayer, key, actionName);
+    emit actionAssignRequested(mCurrentLayer, key, actionId);
 }
 
 void KeypadController::onKeySelected(int key) {
@@ -97,9 +99,9 @@ void KeypadController::onProfileChanged(const Keypad::Profile& profile) {
 void KeypadController::onActionAssigned(int layer, int key, const Keypad::Action& action) {
     QMap<int, QVariant> keyRow;
     keyRow[KeysListModel::Round] = key == 0;
-    keyRow[KeysListModel::ActionName] = action.name;
+    keyRow[KeysListModel::ActionId] = action.id;
     keyRow[KeysListModel::ActionDisplayName] = action.displayName;
-    keyRow[KeysListModel::ActionIcon] = action.icon;
+    keyRow[KeysListModel::ActionIcon] = action.iconName;
 
     auto& [_, model] = mLayers[mCurrentLayer];
     if (model) {
@@ -113,9 +115,9 @@ KeysListModel* KeypadController::createKeysListModels(const Keypad::Layer& layer
         const auto& action = layer.actions[key];
         QMap<int, QVariant> keyRow;
         keyRow[KeysListModel::Round] = key == 0;
-        keyRow[KeysListModel::ActionName] = action.name;
+        keyRow[KeysListModel::ActionId] = action.id;
         keyRow[KeysListModel::ActionDisplayName] = action.displayName;
-        keyRow[KeysListModel::ActionIcon] = action.icon;
+        keyRow[KeysListModel::ActionIcon] = action.iconName;
         keysModel.push_back(keyRow);
     }
     const auto keysListModel = new KeysListModel(this);

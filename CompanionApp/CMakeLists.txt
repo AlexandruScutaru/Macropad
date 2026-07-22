@@ -113,7 +113,11 @@ qt_add_qml_module(${TARGET_NAME}
         Macropad.h
 )
 
+# devices
 add_subdirectory(keypad)
+
+# action handlers for the configurable keypad keys
+add_subdirectory(action-handlers)
 
 # unfortunately I have to add this to include path
 # by using QML_ELEMENT, qt6 cmake will try to automatically register the type

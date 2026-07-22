@@ -5,8 +5,6 @@ target_sources(${TARGET_NAME} PRIVATE
     KeypadModule.h
     KeypadTypes.h
 
-    actions/SystemActions.h
-
     service/KeypadService.cpp
     service/KeypadService.h
 

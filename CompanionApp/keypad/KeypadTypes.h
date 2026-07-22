@@ -12,7 +12,8 @@ namespace Keypad {
     Q_NAMESPACE
     QML_ELEMENT
     enum OptionType {
-        String = 0
+        Unknown = 0,
+        String
     };
     Q_ENUM_NS(OptionType);
 
@@ -26,27 +27,30 @@ namespace Keypad {
     using Configs = std::vector<Config>;
 
     struct Action {
-        QString name;
+        QString id;
+        QString sectionId;
         QString displayName;
         QString tooltip;
-        QString icon;
+        QString iconName;
         Configs configs;
     };
     using ActionsMap = std::unordered_map<QString, Action>;
+    using Actions = std::vector<Action>;
 
-    struct SectionEntry {
+    struct Section {
+        QString id;
         QString displayName;
         QString iconName;
         std::vector<QString> actions;
     };
-    using Sections = std::vector<SectionEntry>;
+    using Sections = std::vector<Section>;
 
     struct AvailableActions {
         ActionsMap actionsMap;
         Sections sections;
 
-        std::optional<Keypad::Action> getAction(const QString& name) const {
-            if (const auto& action = actionsMap.find(name); action != actionsMap.end()) {
+        std::optional<Keypad::Action> getAction(const QString& id) const {
+            if (const auto& action = actionsMap.find(id); action != actionsMap.end()) {
                 return action->second;
             }
         
@@ -56,11 +60,12 @@ namespace Keypad {
 
     struct Layer {
         QString color;
-        std::vector<Action> actions;
+        Actions actions;
     };
     using Layers = std::vector<Layer>;
 
     struct Profile {
+        QString id;
         QString name;
         Layers layers;
     };
