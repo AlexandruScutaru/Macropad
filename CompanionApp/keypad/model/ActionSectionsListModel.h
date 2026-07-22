@@ -13,7 +13,7 @@ public:
     };
 
     explicit ActionSectionsListModel(QObject* parent = nullptr);
-    ~ActionSectionsListModel() = default;
+    ~ActionSectionsListModel();
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

@@ -1,15 +1,15 @@
 #include "Macropad.h"
 
-#include "audio/AudioOutputSwitcher.h"
+#include "action-handlers/system/SystemActions.h"
 #include "AppSettings.h"
+#include "audio/AudioOutputSwitcher.h"
 #include "controllers/MainController.h"
 #include "controllers/settings/HotkeyActions.h"
 #include "hid/PotentiometersReader.h"
-#include "misc/DebugChecker.h"
-#include "tray/TrayIcon.h"
-#include "theming/ThemeLoader.h"
-
 #include "keypad/KeypadModule.h"
+#include "misc/DebugChecker.h"
+#include "theming/ThemeLoader.h"
+#include "tray/TrayIcon.h"
 
 
 #include <QApplication>
@@ -48,8 +48,8 @@ void Macropad::init(const MacropadConfig& config) {
         return;
     }
 
-    const auto qmlWindow = getMainWindowObject();
     mKeypadModule = new KeypadModule(mAppSettings, this);
+    initActionHandlers();
 
     mAudioOutputSwitcher = new AudioOutputSwitcher(this);
     mPotentiometersReader = new PotentiometersReader(this);
@@ -59,7 +59,7 @@ void Macropad::init(const MacropadConfig& config) {
 
     // TODO: get theme from saved settings
     loadTheme(ThemeVariant::Dark);
-    initAppStackView(qmlWindow);
+    initAppStackView(getMainWindowObject());
 }
 
 Theme* Macropad::getTheme() {
@@ -104,6 +104,14 @@ void Macropad::loadTheme(ThemeVariant variant) {
 
     mTheme = QPointer(ThemeLoader::LoadTheme(THEMES_URI, variant));
     emit themeChanged(mTheme.data());
+}
+
+void Macropad::initActionHandlers() {
+    mActionHandlers.push_back(std::make_shared<SystemActions>());
+
+    for (const auto& handler: mActionHandlers) {
+        mKeypadModule->registerHandler(handler);
+    }
 }
 
 void Macropad::initTrayIcon() {

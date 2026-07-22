@@ -7,14 +7,14 @@ class ActionsListModel : public ListModel {
     Q_OBJECT
 public:
     enum ActionsRoles {
-        Name = Qt::UserRole + 1,
+        Id = Qt::UserRole + 1,
         DisplayName,
         ToolTip,
         IconName
     };
 
     explicit ActionsListModel(QObject* parent = nullptr);
-    ~ActionsListModel() = default;
+    ~ActionsListModel();
 
 protected:
     QHash<int, QByteArray> roleNames() const override;

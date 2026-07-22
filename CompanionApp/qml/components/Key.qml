@@ -11,13 +11,13 @@ Rectangle {
     property bool selected: false
     property bool dragHover: false
 
-    property string actionName: ""
+    property string actionId: ""
     property string actionDisplayName: ""
     property string actionIconName: ""
 
-    property string droppedActionName: ""
+    property string droppedActionId: ""
 
-    signal actionAssigned(actionName: string)
+    signal actionAssigned(actionId: string)
     signal clicked
     signal doubleClicked
 
@@ -32,7 +32,7 @@ Rectangle {
 
         source: key.actionIconName.length ? "qrc:///resources/%1".arg(key.actionIconName) : ""
         color: key.getTextColor()
-        visible: key.actionName.length >= 0
+        visible: key.actionId.length >= 0
     }
 
     MouseArea {
@@ -70,7 +70,7 @@ Rectangle {
         onDropped: (drag) => {
             if (key.parseDroppedData(drag.text)) {
                 key.dragHover = false;
-                key.actionAssigned(key.droppedActionName);
+                key.actionAssigned(key.droppedActionId);
             }
         }
     }
@@ -78,7 +78,7 @@ Rectangle {
     ToolTip {
         id: tooltip
         text: key.actionDisplayName
-        visible: key.hovered && key.actionName >= 0 && key.actionDisplayName.length > 0
+        visible: key.hovered && key.actionId >= 0 && key.actionDisplayName.length > 0
         delay: 600
     }
 
@@ -86,9 +86,9 @@ Rectangle {
         try {
             const jsonObj = JSON.parse(data);
             if (!jsonObj) throw new Error("couldn't parse json data");
-            if (!jsonObj.actionName) throw new Error("couldn't find property 'actionName' in mimeData");
+            if (!jsonObj.actionId) throw new Error("couldn't find property 'actionId' in mimeData");
 
-            droppedActionName = jsonObj.actionName
+            droppedActionId = jsonObj.actionId
 
             return true;
         } catch(e) {

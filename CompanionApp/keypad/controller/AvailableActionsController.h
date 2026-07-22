@@ -16,15 +16,20 @@ class AvailableActionsController : public QObject {
     Q_OBJECT
     QML_ELEMENT
     QML_UNCREATABLE("Not intended to be created from QML directly")
+    Q_PROPERTY(ActionSectionsListModel* model READ model NOTIFY modelChanged)
 public:
-    explicit AvailableActionsController(const Keypad::AvailableActions& availableActions, QObject* parent = nullptr);
+    explicit AvailableActionsController(QObject* parent = nullptr);
     ~AvailableActionsController();
 
-    Q_INVOKABLE ActionSectionsListModel* getActionSectionsListModel();
+    ActionSectionsListModel* model();
+
+signals:
+    void modelChanged(ActionSectionsListModel* model);
+
+public slots:
+    void onAvailableActionsChanged(const Keypad::AvailableActions& availableActions);
 
 private:
-    void populateActionsListModel(const Keypad::AvailableActions& availableActions);
-
     QPointer<ActionSectionsListModel> mActionSectionsListModel{ nullptr };
 
 };

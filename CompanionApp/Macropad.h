@@ -1,11 +1,15 @@
 #pragma once
 
+#include "theming/Theme.h"
+
 #include <QApplication>
 #include <QObject>
 #include <QQmlApplicationEngine>
 #include <QPointer>
 
-#include "theming/Theme.h"
+#include <memory>
+#include <vector>
+
 
 namespace Hotkeys {
     enum class Actions;
@@ -19,6 +23,9 @@ class AppSettings;
 class MainController;
 class PotentiometersReader;
 class TrayIcon;
+
+class IActionHandler;
+using IActionHandlerPtr = std::shared_ptr<IActionHandler>;
 
 struct MacropadConfig {
     bool isDebug = false;
@@ -50,6 +57,8 @@ signals:
 private:
     QObject* const getMainWindowObject();
     void loadTheme(ThemeVariant variant);
+
+    void initActionHandlers();
     void initTrayIcon();
     void initAppStackView(const QObject* const qmlWindow);
 
@@ -66,5 +75,7 @@ private:
     MainController* mMainController{nullptr};
 
     TrayIcon* mTrayIcon{ nullptr };
+
+    std::vector<IActionHandlerPtr> mActionHandlers;
 
 };

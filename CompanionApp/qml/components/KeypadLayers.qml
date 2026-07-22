@@ -30,8 +30,8 @@ Item {
             model: keypadLayers.controller.model
             outlineColor: keypadLayers.controller.layerColor ?? "transparent"
 
-            onActionAssigned: (key, actionName) => {
-                keypadLayers.controller.assignAction(key, actionName);
+            onActionAssigned: (key, actionId) => {
+                keypadLayers.controller.assignAction(key, actionId);
             }
 
             onKeySelected: (key) => {

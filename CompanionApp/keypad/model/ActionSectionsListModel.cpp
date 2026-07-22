@@ -5,7 +5,13 @@
 
 ActionSectionsListModel::ActionSectionsListModel(QObject* parent)
     : ListModel(parent)
-{}
+{
+    qDebug() << "ActionSectionsListModel::ActionSectionsListModel";
+}
+
+ActionSectionsListModel::~ActionSectionsListModel() {
+    qDebug() << "ActionSectionsListModel::~ActionSectionsListModel";
+}
 
 
 QHash<int, QByteArray> ActionSectionsListModel::roleNames() const {

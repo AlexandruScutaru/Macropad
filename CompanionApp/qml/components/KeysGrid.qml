@@ -7,7 +7,7 @@ import Qt5Compat.GraphicalEffects
 Item {
     id: keys
 
-    signal actionAssigned(key: int, actionName: string)
+    signal actionAssigned(key: int, actionId: string)
     signal keySelected(key: int)
     signal keyTriggered(key: int)
 
@@ -56,21 +56,21 @@ Item {
 
                     required property int index
                     required property bool keyIsRound
-                    required property string keyActionName
+                    required property string keyActionId
                     required property string keyActionDisplayName
                     required property string keyActionIcon
 
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     isRound: keyIsRound
-                    actionName: keyActionName
+                    actionId: keyActionId
                     actionDisplayName: keyActionDisplayName
                     actionIconName: keyActionIcon
 
                     selected: isKeySelected()
 
-                    onActionAssigned:(actionName) => {
-                        keys.actionAssigned(index, actionName);
+                    onActionAssigned:(actionId) => {
+                        keys.actionAssigned(index, actionId);
                         keys.selectedKey = -1;
                         selectKey();
                     }
