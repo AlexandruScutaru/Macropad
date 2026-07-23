@@ -10,6 +10,7 @@
 #include "misc/DebugChecker.h"
 #include "theming/ThemeLoader.h"
 #include "tray/TrayIcon.h"
+#include "os/IPlatform.h"
 
 
 #include <QApplication>
@@ -107,7 +108,9 @@ void Macropad::loadTheme(ThemeVariant variant) {
 }
 
 void Macropad::initActionHandlers() {
-    mActionHandlers.push_back(std::make_shared<SystemActions>());
+    auto platform = osal::CreatePlatform();
+
+    mActionHandlers.push_back(std::make_shared<SystemActions>(platform));
 
     for (const auto& handler: mActionHandlers) {
         mKeypadModule->registerHandler(handler);
