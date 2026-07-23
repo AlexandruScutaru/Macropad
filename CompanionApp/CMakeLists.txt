@@ -93,6 +93,8 @@ qt_add_qml_module(${TARGET_NAME}
         models/settings/SlidersSettingsModel.cpp
         models/settings/SlidersSettingsModel.h
 
+        os/IPlatform.h
+
         hid/HidCommunicationThread.cpp
         hid/HidCommunicationThread.h
         hid/HidHelper.cpp
@@ -203,6 +205,9 @@ elseif (LINUX)
 
     target_sources(${TARGET_NAME} PUBLIC
         audio/linux/AudioOutputSwitcher.cpp
+
+        os/linux/LinuxPlatform.cpp
+        os/linux/LinuxPlatform.h
     )
 
     target_link_libraries(${TARGET_NAME} PRIVATE hidapi::hidapi)

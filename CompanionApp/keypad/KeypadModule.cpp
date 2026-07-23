@@ -4,6 +4,9 @@
 #include "service/KeypadService.h"
 #include "AppSettings.h"
 #include "action-handlers/IActionHandler.h"
+#include "Utils.h"
+
+#include <nlohmann/json.hpp>
 
 #include <QDebug>
 
@@ -151,9 +154,13 @@ void KeypadModule::onKeyTriggered(int layer, int key) {
                 return;
             }
 
-            qDebug() << "Handler: " << action.sectionId << " Action:" << action.id << "triggered!";
+            nlohmann::json actionPayload;
+            actionPayload["id"] = action.id.toStdString();
+            for (const auto& configEntry: action.configs) {
+                utils::json::WriteVariant(actionPayload, configEntry.name, configEntry.type, configEntry.value);
+            }
 
-            it->second->handleAction();
+            it->second->handleAction(actionPayload.dump());
         }
     } catch(...) {
         qWarning() << "An error ocurred accessing the configuration of the triggered key: " << layer << key;

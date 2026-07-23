@@ -1,6 +1,7 @@
 #include "KeypadService.h"
 #include "AppSettings.h"
 #include "../model/ActionConfigListModel.h"
+#include "../Utils.h"
 
 #include <nlohmann/json.hpp>
 #include <QDebug>
@@ -61,7 +62,7 @@ void KeypadService::loadSavedProfile(const Keypad::AvailableActions& availableAc
                             config.displayName = actionInfo->configs[configIndex].displayName;
                             config.tooltip = actionInfo->configs[configIndex].tooltip;
                             config.type = actionInfo->configs[configIndex].type;
-                            config.value = JsonReadVariant(configJson, "value", config.type);
+                            config.value = utils::json::ReadVariant(configJson, "value", config.type);
                         }
                     }
                 }
@@ -105,7 +106,7 @@ void KeypadService::saveProfile(const Keypad::Profile& profile) {
                     json configJson;
                     configJson["index"] = configIndex;
                     configJson["name"] = config.name.toStdString();
-                    JsonWriteVariant(configJson, "value", config.type, config.value);
+                    utils::json::WriteVariant(configJson, "value", config.type, config.value);
                     actionJson["configs"].push_back(configJson);
                 }
 
@@ -119,27 +120,5 @@ void KeypadService::saveProfile(const Keypad::Profile& profile) {
         mAppSettings->saveProfileData(QString::fromStdString(profileStr));
     } catch (const json::exception& e) {
         qWarning() << "Failed to save profile JSON:" << e.what();
-    }
-}
-
-QVariant KeypadService::JsonReadVariant(const nlohmann::json& json, const std::string& fieldName, Keypad::OptionType type) {
-    switch (type) {
-        case Keypad::OptionType::String:
-            return QString::fromStdString(json.value<std::string>(fieldName, ""));
-        default:
-            // no-op
-            break;
-    }
-
-    return {};
-}
-
-void KeypadService::JsonWriteVariant(nlohmann::json& json, const std::string& fieldName, Keypad::OptionType type, const QVariant& variant) {
-    switch (type) {
-        case Keypad::OptionType::String:
-            json[fieldName] = variant.toString().toStdString();
-        default:
-            // no-op
-            break;
     }
 }

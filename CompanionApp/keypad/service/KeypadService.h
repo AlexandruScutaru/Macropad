@@ -4,7 +4,6 @@
 
 #include <QObject>
 #include <QPointer>
-#include <nlohmann/json_fwd.hpp>
 
 #include <string>
 #include <vector>
@@ -27,8 +26,5 @@ signals:
 
 private:
     QPointer<AppSettings> mAppSettings{ nullptr };
-
-    static QVariant JsonReadVariant(const nlohmann::json& json, const std::string& fieldName, Keypad::OptionType type);
-    static void JsonWriteVariant(nlohmann::json& json, const std::string& fieldname, Keypad::OptionType type, const QVariant& variant);
 
 };
