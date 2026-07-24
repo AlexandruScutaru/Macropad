@@ -11,6 +11,10 @@ namespace osal {
 
         virtual bool openWebsite(const std::string& address) = 0;
 
+        virtual bool incVolume() = 0;
+        virtual bool decVolume() = 0;
+        virtual bool toggleMute() = 0;
+
     };
 
     using IPlatformPtr = std::shared_ptr<IPlatform>;

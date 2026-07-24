@@ -43,6 +43,10 @@ void KeypadService::loadSavedProfile(const Keypad::AvailableActions& availableAc
                 auto& action = layer.actions[actionJson.at("index").get<int>()];
 
                 const auto actionId = QString::fromStdString(actionJson.at("id").get<std::string>());
+                if (actionId.isEmpty()) {
+                    continue;
+                }
+
                 // not all details are saved in the profile, only the id
                 // for that the current available actions are queried for the rest of the data
                 if (const auto& actionInfo = availableActions.getAction(actionId); actionInfo != std::nullopt) {

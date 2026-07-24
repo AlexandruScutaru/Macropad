@@ -53,9 +53,21 @@ bool SystemActions::openWebsite(const nlohmann::json& payload) {
         return false;
     }
 
-    std::printf("openWebsite %s\n", address.c_str());
     return mPlatform->openWebsite(address);
 }
+
+bool SystemActions::increaseVolume(const nlohmann::json& payload) {
+    return mPlatform->incVolume();
+}
+
+bool SystemActions::decreaseVolume(const nlohmann::json& payload) {
+    return mPlatform->decVolume();
+}
+
+bool SystemActions::toggleMute(const nlohmann::json& payload) {
+    return mPlatform->toggleMute();
+}
+
 
 action_handlers::Section SystemActions::getActions() {
     const auto openWebsite = Action {
@@ -71,14 +83,37 @@ action_handlers::Section SystemActions::getActions() {
             }
         }
     };
-
     mActionHandlersMap[openWebsite.id] = &SystemActions::openWebsite;
+
+    const auto increaseVolume = Action {
+        .id = "volume-up",
+        .displayName = "Increase Volume",
+        .tooltip = "Increases the volume of the current output device",
+    };
+    mActionHandlersMap[increaseVolume.id] = &SystemActions::increaseVolume;
+
+    const auto decreaseVolume = Action {
+        .id = "volume-down",
+        .displayName = "Decrease Volume",
+        .tooltip = "Decreases the volume of the current output device",
+    };
+    mActionHandlersMap[decreaseVolume.id] = &SystemActions::decreaseVolume;
+
+    const auto toggleMute = Action {
+        .id = "mute",
+        .displayName = "Mute/Unmute",
+        .tooltip = "Mutes/unmutes the current output device",
+    };
+    mActionHandlersMap[toggleMute.id] = &SystemActions::toggleMute;
 
     return {
         .id = HANDLER_ID,
         .displayName = "System",
         .actions = {
-            openWebsite
+            openWebsite,
+            increaseVolume,
+            decreaseVolume,
+            toggleMute
         }
     };
 }

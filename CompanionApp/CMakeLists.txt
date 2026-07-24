@@ -198,19 +198,25 @@ if(WIN32)
 
     install(IMPORTED_RUNTIME_ARTIFACTS HIDAPI::hidapi)
 elseif (LINUX)
-    # sudo dnf install hidapi hidapi-devel
     # on linux Qt6.9 needs WrapOpenGL (dnf install mesa-libGL-devel)
 
+    # sudo dnf install hidapi hidapi-devel
     find_package(hidapi REQUIRED)
+
+    # sudo dnf install pulseaudio-libs-devel
+    find_package(PulseAudio REQUIRED)
 
     target_sources(${TARGET_NAME} PUBLIC
         audio/linux/AudioOutputSwitcher.cpp
 
+        os/linux/Audio.cpp
+        os/linux/Audio.h
         os/linux/LinuxPlatform.cpp
         os/linux/LinuxPlatform.h
     )
 
     target_link_libraries(${TARGET_NAME} PRIVATE hidapi::hidapi)
+    target_link_libraries(${TARGET_NAME} PRIVATE pulse)
 endif()
 
 include(GNUInstallDirs)
