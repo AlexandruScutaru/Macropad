@@ -12,6 +12,12 @@ osal::IPlatformPtr osal::CreatePlatform() {
 }
 
 
+LinuxPlatform::LinuxPlatform() {
+    if (!mAudio.initialize()) {
+        std::printf("unable to initialize the audio component\n");
+    }
+}
+
 bool LinuxPlatform::openWebsite(const std::string& address) {
     if (address.empty()) {
         return false;
@@ -22,4 +28,16 @@ bool LinuxPlatform::openWebsite(const std::string& address) {
     int result = posix_spawnp(&pid, "xdg-open", nullptr, nullptr, const_cast<char* const*>(argv), environ);
 
     return result == 0;
+}
+
+bool LinuxPlatform::incVolume() {
+    return mAudio.increaseVolume(2);
+}
+
+bool LinuxPlatform::decVolume() {
+    return mAudio.decreaseVolume(2);
+}
+
+bool LinuxPlatform::toggleMute() {
+    return mAudio.toggleMute();
 }
