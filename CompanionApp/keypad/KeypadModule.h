@@ -3,6 +3,7 @@
 #include "controller/ActionConfigController.h"
 #include "controller/AvailableActionsController.h"
 #include "controller/KeypadController.h"
+#include "misc/TaskRunner.h"
 
 #include <QObject>
 #include <QPointer>
@@ -49,5 +50,7 @@ private:
     Keypad::Profile mCurrentProfile;
     Keypad::AvailableActions mAvailableActions;
     std::unordered_map<std::string, IActionHandlerPtr> mActionHandlers;
+
+    async::TaskRunner mTaskRunner;
 
 };
