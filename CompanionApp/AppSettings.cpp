@@ -1,10 +1,9 @@
 #include "AppSettings.h"
 
-#include "controllers/settings/HotkeyActions.h"
-
 #include <QApplication>
 #include <QDebug>
 #include <QSettings>
+
 
 static constexpr auto WINDOWSTATE_WIDTH = "windowState/width";
 static constexpr auto WINDOWSTATE_HEIGHT = "windowState/height";

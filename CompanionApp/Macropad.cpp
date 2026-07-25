@@ -2,15 +2,12 @@
 
 #include "action-handlers/system/SystemActions.h"
 #include "AppSettings.h"
-#include "audio/AudioOutputSwitcher.h"
-#include "controllers/MainController.h"
-#include "controllers/settings/HotkeyActions.h"
-#include "hid/PotentiometersReader.h"
 #include "keypad/KeypadModule.h"
 #include "misc/DebugChecker.h"
 #include "theming/ThemeLoader.h"
 #include "tray/TrayIcon.h"
 #include "os/IPlatform.h"
+#include "hid/Device.h"
 
 
 #include <QApplication>
@@ -20,6 +17,11 @@
 
 static constexpr auto QML_APP_CONTAINER_NAME = "appStackViewContainer";
 static constexpr auto THEMES_URI = ":/resources/themes.json";
+
+static constexpr auto VID = 0xFEED;
+static constexpr auto PID = 0xB00B;
+static constexpr auto USAGE_PAGE = 0xFF60;
+static constexpr auto USAGE_ID = 0x61;
 
 
 Macropad::Macropad(QQmlApplicationEngine& engine, AppSettings* appSettings, QObject* parent)
@@ -49,18 +51,16 @@ void Macropad::init(const MacropadConfig& config) {
         return;
     }
 
+    mHidDevice = new hid::Device(this);
+    QObject::connect(mHidDevice, &hid::Device::deviceConnected, this, &Macropad::deviceConnected);
+    QObject::connect(mHidDevice, &hid::Device::deviceNotFound, this, &Macropad::deviceNotFound);
+
     mKeypadModule = new KeypadModule(mAppSettings, this);
-    initActionHandlers();
-
-    mAudioOutputSwitcher = new AudioOutputSwitcher(this);
-    mPotentiometersReader = new PotentiometersReader(this);
-    mMainController = new MainController(mPotentiometersReader, mAppSettings->potentiometersInfo(), mConfig.isSkipPhysicalDevice, this);
-
-    QObject::connect(mMainController, &MainController::switchOutputRequested, mAudioOutputSwitcher, &AudioOutputSwitcher::onSwitchOutputRequested);
 
     // TODO: get theme from saved settings
     loadTheme(ThemeVariant::Dark);
     initAppStackView(getMainWindowObject());
+    initActionHandlers();
 }
 
 Theme* Macropad::getTheme() {
@@ -70,6 +70,17 @@ Theme* Macropad::getTheme() {
     }
 
     return mTheme.data();
+}
+
+void Macropad::connectToDevice() {
+    if (mConfig.isSkipPhysicalDevice) {
+        emit deviceConnected();
+        return;
+    }
+
+    if (mHidDevice) {
+        mHidDevice->connect(VID, PID, USAGE_PAGE, USAGE_ID);
+    }
 }
 
 KeypadModule* Macropad::getKeypadModule() {
@@ -132,7 +143,7 @@ void Macropad::initAppStackView(const QObject* const qmlWindow) {
             return;
         }
 
-        auto component = deviceView.createWithInitialProperties(QVariantMap{{ "mainController", QVariant::fromValue<MainController*>(mMainController) }});
+        auto component = deviceView.createWithInitialProperties(/*QVariantMap{{ "mainController", QVariant::fromValue<MainController*>(mMainController) }}*/ {});
         auto item = qobject_cast<QQuickItem*>(component);
         item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
     }

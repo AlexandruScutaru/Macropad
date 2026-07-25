@@ -11,21 +11,16 @@
 #include <vector>
 
 
-namespace Hotkeys {
-    enum class Actions;
-}
-
-class KeypadModule;
-class KeypadController;
-
-class AudioOutputSwitcher;
 class AppSettings;
-class MainController;
-class PotentiometersReader;
+class KeypadModule;
 class TrayIcon;
 
 class IActionHandler;
 using IActionHandlerPtr = std::shared_ptr<IActionHandler>;
+
+namespace hid {
+    class Device;
+}
 
 struct MacropadConfig {
     bool isDebug = false;
@@ -43,6 +38,7 @@ public:
     void init(const MacropadConfig& config);
     Theme* getTheme();
 
+    Q_INVOKABLE void connectToDevice();
     Q_INVOKABLE KeypadModule* getKeypadModule();
 
     Q_INVOKABLE QSize windowSize();
@@ -53,6 +49,8 @@ public:
 signals:
     void showWindowRequested();
     void themeChanged(Theme* theme);
+    void deviceConnected();
+    void deviceNotFound();
 
 private:
     QObject* const getMainWindowObject();
@@ -65,16 +63,12 @@ private:
     QQmlApplicationEngine& mQmlEngine;
 
     MacropadConfig mConfig;
-    QPointer<Theme> mTheme{ nullptr };
-    QPointer<AppSettings> mAppSettings{ nullptr };
-
-    QPointer<KeypadModule> mKeypadModule{ nullptr };
-
-    AudioOutputSwitcher* mAudioOutputSwitcher{ nullptr };
-    PotentiometersReader* mPotentiometersReader{ nullptr };
-    MainController* mMainController{nullptr};
-
+    AppSettings* mAppSettings{ nullptr };
+    KeypadModule* mKeypadModule{ nullptr };
+    hid::Device* mHidDevice{ nullptr };
     TrayIcon* mTrayIcon{ nullptr };
+
+    QPointer<Theme> mTheme{ nullptr };
 
     std::vector<IActionHandlerPtr> mActionHandlers;
 

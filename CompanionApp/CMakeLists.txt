@@ -69,17 +69,6 @@ qt_add_qml_module(${TARGET_NAME}
         ${qml_plain_files}
 
     SOURCES
-        audio/AudioOutputSwitcher.h
-
-        controllers/MainController.cpp
-        controllers/MainController.h
-        controllers/settings/DeviceSettingsController.cpp
-        controllers/settings/DeviceSettingsController.h
-        controllers/settings/HotkeyActions.cpp
-        controllers/settings/HotkeyActions.h
-        controllers/settings/SlidersSettingsController.cpp
-        controllers/settings/SlidersSettingsController.h
-
         misc/CmdArgs.cpp
         misc/CmdArgs.h
         misc/DebugChecker.h
@@ -87,19 +76,12 @@ qt_add_qml_module(${TARGET_NAME}
         misc/ListModel.h
         misc/TaskRunner.h
 
-        models/DeviceInfoModel.cpp
-        models/DeviceInfoModel.h
-        models/SlidersModel.cpp
-        models/SlidersModel.h
-        models/settings/SlidersSettingsModel.cpp
-        models/settings/SlidersSettingsModel.h
-
         os/IPlatform.h
 
+        hid/Device.cpp
+        hid/Device.h
         hid/HidCommunicationThread.cpp
         hid/HidCommunicationThread.h
-        hid/HidHelper.cpp
-        hid/HidHelper.h
         hid/PotentiometersReader.cpp
         hid/PotentiometersReader.h
 
@@ -175,13 +157,8 @@ if(WIN32)
     include_directories(HIDAPI ${HIDAPI_INCLUDE})
 
     target_sources(${TARGET_NAME} PUBLIC
-        audio/windows/AudioOutputSwitcher.cpp
-
-        os/windows/IPolicyConfig.h
-        os/windows/NativeEventFilter.cpp
-        os/windows/NativeEventFilter.h
-        os/windows/WinApiWrapper.cpp
-        os/windows/WinApiWrapper.h
+        os/windows/WindowsPlatform.cpp
+        os/windows/WindowsPlatform.h
     )
 
     set_target_properties(${TARGET_NAME} PROPERTIES
@@ -208,8 +185,6 @@ elseif (LINUX)
     find_package(PulseAudio REQUIRED)
 
     target_sources(${TARGET_NAME} PUBLIC
-        audio/linux/AudioOutputSwitcher.cpp
-
         os/linux/Audio.cpp
         os/linux/Audio.h
         os/linux/LinuxPlatform.cpp

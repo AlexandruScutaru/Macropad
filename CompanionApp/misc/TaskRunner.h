@@ -48,6 +48,10 @@ namespace async {
             }
         }
 
+        ~TaskRunner() {
+            stop(); 
+        }
+
         template <typename Callable>
         requires std::invocable<Callable>
         void run(Callable&& task) {
