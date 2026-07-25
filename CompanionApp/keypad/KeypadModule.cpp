@@ -25,6 +25,7 @@ static OptionType GetInternalOptionType(action_handlers::OptionType type) {
 
 KeypadModule::KeypadModule(QPointer<AppSettings> appSettings, QObject* parent)
     : QObject(parent)
+    , mTaskRunner(3)
 {
     qDebug() << "KeypadModule::KeypadModule";
 
@@ -160,7 +161,14 @@ void KeypadModule::onKeyTriggered(int layer, int key) {
                 utils::json::WriteVariant(actionPayload, configEntry.name, configEntry.type, configEntry.value);
             }
 
-            it->second->handleAction(actionPayload.dump());
+            auto callback = []() {
+                qDebug() << "finished action handling";
+            };
+
+            mTaskRunner.run([handler = it->second, actionPayload, cb = mTaskRunner.mainThreadProxy(callback)]() {
+                handler->handleAction(actionPayload.dump());
+                cb();
+            });
         }
     } catch(...) {
         qWarning() << "An error ocurred accessing the configuration of the triggered key: " << layer << key;

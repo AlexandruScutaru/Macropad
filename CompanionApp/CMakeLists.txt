@@ -85,6 +85,7 @@ qt_add_qml_module(${TARGET_NAME}
         misc/DebugChecker.h
         misc/ListModel.cpp
         misc/ListModel.h
+        misc/TaskRunner.h
 
         models/DeviceInfoModel.cpp
         models/DeviceInfoModel.h
