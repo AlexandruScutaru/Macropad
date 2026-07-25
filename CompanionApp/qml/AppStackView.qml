@@ -12,12 +12,12 @@ Item {
 
     anchors.fill: parent
 
-    required property MainController mainController
+    // required property MainController mainController
 
     function deviceConnectTryAgainClicked() {
         stack.clear();
         stack.push(loadingView);
-        mainController.connectToDevice();
+        MacroPad.connectToDevice();
     }
 
     RowLayout {
@@ -91,11 +91,11 @@ Item {
                 replaceExit: animNone
 
                 Component.onCompleted: {
-                    appStackView.mainController.connectToDevice();
+                    MacroPad.connectToDevice();
                 }
 
                 Connections {
-                    target: appStackView.mainController
+                    target: MacroPad
                     function onDeviceConnected() {
                         navBarModel.keypadTabEnabled = true;
                         navBarModel.slidersTabEnabled = true;
