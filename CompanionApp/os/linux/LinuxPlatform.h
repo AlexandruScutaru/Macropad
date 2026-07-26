@@ -14,6 +14,7 @@ namespace osal {
         bool incVolume() override;
         bool decVolume() override;
         bool toggleMute() override;
+        bool switchOutput() override;
 
     private:
         Audio mAudio;

@@ -68,6 +68,10 @@ bool SystemActions::toggleMute(const nlohmann::json& payload) {
     return mPlatform->toggleMute();
 }
 
+bool SystemActions::switchOutput(const nlohmann::json& payload) {
+    return mPlatform->switchOutput();
+}
+
 
 action_handlers::Section SystemActions::getActions() {
     const auto openWebsite = Action {
@@ -106,6 +110,13 @@ action_handlers::Section SystemActions::getActions() {
     };
     mActionHandlersMap[toggleMute.id] = &SystemActions::toggleMute;
 
+    const auto switchOutput = Action {
+        .id = "switch-output",
+        .displayName = "Switch audio output",
+        .tooltip = "Cycle through audio devices",
+    };
+    mActionHandlersMap[switchOutput.id] = &SystemActions::switchOutput;
+
     return {
         .id = HANDLER_ID,
         .displayName = "System",
@@ -113,7 +124,8 @@ action_handlers::Section SystemActions::getActions() {
             openWebsite,
             increaseVolume,
             decreaseVolume,
-            toggleMute
+            toggleMute,
+            switchOutput
         }
     };
 }

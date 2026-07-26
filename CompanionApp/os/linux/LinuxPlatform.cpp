@@ -41,3 +41,7 @@ bool LinuxPlatform::decVolume() {
 bool LinuxPlatform::toggleMute() {
     return mAudio.toggleMute();
 }
+
+bool LinuxPlatform::switchOutput() {
+    return mAudio.switchOutput();
+}

@@ -14,6 +14,7 @@ namespace osal {
         virtual bool incVolume() = 0;
         virtual bool decVolume() = 0;
         virtual bool toggleMute() = 0;
+        virtual bool switchOutput() = 0;
 
     };
 
