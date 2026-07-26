@@ -10,6 +10,7 @@ namespace osal {
         LinuxPlatform();
 
         bool openWebsite(const std::string& address) override;
+        bool launch(const std::string& appName, const std::vector<std::string>& args) override;
 
         bool incVolume() override;
         bool decVolume() override;

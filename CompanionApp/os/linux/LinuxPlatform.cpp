@@ -4,6 +4,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <vector>
+
 using namespace osal;
 
 
@@ -26,6 +28,24 @@ bool LinuxPlatform::openWebsite(const std::string& address) {
     pid_t pid = 0;
     const char* argv[] = {"xdg-open", address.c_str(), nullptr};
     int result = posix_spawnp(&pid, "xdg-open", nullptr, nullptr, const_cast<char* const*>(argv), environ);
+
+    return result == 0;
+}
+
+bool LinuxPlatform::launch(const std::string& appName, const std::vector<std::string>& args) {
+    if (appName.empty()) {
+        return false;
+    }
+
+    std::vector<const char*> argv;
+    argv.push_back(appName.c_str());
+    for (const auto& arg : args) {
+        argv.push_back(arg.c_str());
+    }
+    argv.push_back(nullptr);
+
+    pid_t pid = 0;
+    int result = posix_spawnp(&pid, appName.c_str(), nullptr, nullptr, const_cast<char* const*>(argv.data()), environ);
 
     return result == 0;
 }

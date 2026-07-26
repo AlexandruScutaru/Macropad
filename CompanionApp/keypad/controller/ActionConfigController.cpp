@@ -43,6 +43,8 @@ void ActionConfigController::onActionConfigChanged(int layer, int key, const Key
     mActionConfigListModel->reset();
 
     QList<QMap<int, QVariant>> configModel;
+    configModel.reserve(action.configs.size());
+
     for (const auto& config: action.configs) {
         QMap<int, QVariant> configRow;
         configRow[ActionConfigListModel::Type] = config.type;
