@@ -6,6 +6,9 @@ Button {
     id: button
 
     signal buttonClicked
+
+    property alias expanded: chevronIcon.expanded
+
     property int buttonHeight: 50
     property int marginSize: 12
     property int iconSize: 20

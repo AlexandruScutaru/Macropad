@@ -1,5 +1,6 @@
 #include "SystemActions.h"
 #include <os/IPlatform.h>
+#include "misc/Utils.h"
 
 #include <nlohmann/json.hpp>
 
@@ -56,6 +57,25 @@ bool SystemActions::openWebsite(const nlohmann::json& payload) {
     return mPlatform->openWebsite(address);
 }
 
+bool SystemActions::launch(const nlohmann::json& payload) {
+    const auto& appName = payload.value<std::string>("app_name", "");
+    if (appName.empty()) {
+        std::printf("launch: empty app_name in payload\n");
+        return false;
+    }
+
+    const auto& argStr = payload.value<std::string>("args", "");
+    if (argStr.empty()) {
+        std::printf("launch: empty args in payload\n");
+        return false;
+    }
+
+    auto args = utils::split(argStr, ' ');
+
+    return mPlatform->launch(appName, args);
+}
+
+
 bool SystemActions::increaseVolume(const nlohmann::json& payload) {
     return mPlatform->incVolume();
 }
@@ -78,35 +98,61 @@ action_handlers::Section SystemActions::getActions() {
         .id = "website",
         .displayName = "Open website",
         .tooltip = "Opens a website in the default browser application",
+        .iconName = "browser.svg",
         .configs = {
             Config {
                 .name = "address",
                 .displayName = "Address",
                 .tooltip = "The address to open in the browser",
-                .type = OptionType::String
+                .type = OptionType::String,
             }
         }
     };
     mActionHandlersMap[openWebsite.id] = &SystemActions::openWebsite;
 
-    const auto increaseVolume = Action {
-        .id = "volume-up",
-        .displayName = "Increase Volume",
-        .tooltip = "Increases the volume of the current output device",
+    const auto launch = Action {
+        .id = "launch",
+        .displayName = "Launch",
+        .tooltip = "Launch an application",
+        .iconName = "rocket.svg",
+        .configs = {
+            Config {
+                .name = "app_name",
+                .displayName = "Application name",
+                .tooltip = "The application name to launch",
+                .type = OptionType::String,
+            },
+            Config {
+                .name = "args",
+                .displayName = "Arguments",
+                .tooltip = "The arguments to launch the application with",
+                .type = OptionType::String,
+            }
+        }
     };
-    mActionHandlersMap[increaseVolume.id] = &SystemActions::increaseVolume;
+    mActionHandlersMap[launch.id] = &SystemActions::launch;
 
     const auto decreaseVolume = Action {
         .id = "volume-down",
         .displayName = "Decrease Volume",
         .tooltip = "Decreases the volume of the current output device",
+        .iconName = "volume_down.svg",
     };
     mActionHandlersMap[decreaseVolume.id] = &SystemActions::decreaseVolume;
+
+    const auto increaseVolume = Action {
+        .id = "volume-up",
+        .displayName = "Increase Volume",
+        .tooltip = "Increases the volume of the current output device",
+        .iconName = "volume_up.svg",
+    };
+    mActionHandlersMap[increaseVolume.id] = &SystemActions::increaseVolume;
 
     const auto toggleMute = Action {
         .id = "mute",
         .displayName = "Mute/Unmute",
         .tooltip = "Mutes/unmutes the current output device",
+        .iconName = "volume_toggle.svg",
     };
     mActionHandlersMap[toggleMute.id] = &SystemActions::toggleMute;
 
@@ -114,16 +160,19 @@ action_handlers::Section SystemActions::getActions() {
         .id = "switch-output",
         .displayName = "Switch audio output",
         .tooltip = "Cycle through audio devices",
+        .iconName = "output_device.svg",
     };
     mActionHandlersMap[switchOutput.id] = &SystemActions::switchOutput;
 
     return {
         .id = HANDLER_ID,
         .displayName = "System",
+        .iconName = "system.svg",
         .actions = {
             openWebsite,
-            increaseVolume,
+            launch,
             decreaseVolume,
+            increaseVolume,
             toggleMute,
             switchOutput
         }

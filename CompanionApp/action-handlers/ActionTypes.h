@@ -21,6 +21,7 @@ namespace action_handlers {
         std::string id;
         std::string displayName;
         std::string tooltip;
+        std::string iconName;
         Configs configs;
     };
     using Actions = std::vector<Action>;
@@ -28,6 +29,7 @@ namespace action_handlers {
     struct Section {
         std::string id;
         std::string displayName;
+        std::string iconName;
         Actions actions;
     };
 }

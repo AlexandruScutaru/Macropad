@@ -22,7 +22,13 @@ TextField {
     horizontalAlignment: TextInput.AlignLeft
 
     function isValid() {
-        return textField.acceptableInput || text.length === 0;
+        return textField.acceptableInput || text.length !== 0;
+    }
+
+    function handleText() {
+        if (textField.isValid()) {
+            textField.inputAccepted(text);
+        }
     }
 
     background: Rectangle {
@@ -33,11 +39,14 @@ TextField {
         radius: textField.radius
     }
 
-    onAccepted: {
-        if (textField.isValid()) {
-            textField.inputAccepted(text);
-        }
-    }
+    onAccepted: textField.handleText()
+    onEditingFinished: textField.handleText()
+
+    // onActiveFocusChanged: {
+    //     if (!activeFocus) {
+    //         textField.handleText()
+    //     }
+    // }
 
     ToolTip {
         id: invalidInput

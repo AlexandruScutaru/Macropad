@@ -75,6 +75,8 @@ qt_add_qml_module(${TARGET_NAME}
         misc/ListModel.cpp
         misc/ListModel.h
         misc/TaskRunner.h
+        misc/Utils.cpp
+        misc/Utils.h
 
         os/IPlatform.h
 
@@ -122,13 +124,20 @@ source_group("QML Files" FILES ${QML_SRC})
 qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
+        resources/browser.svg
         resources/chevron_icon.svg
         resources/close_icon.svg
         resources/drag_icon.svg
         resources/expand_icon.svg
         resources/keys_icon.svg
+        resources/output_device.svg
+        resources/rocket.svg
         resources/settings_icon.svg
         resources/sliders_icon.svg
+        resources/system.svg
+        resources/volume_down.svg
+        resources/volume_toggle.svg
+        resources/volume_up.svg
 
         resources/app_icon.png
         resources/back_arrow_icon.png

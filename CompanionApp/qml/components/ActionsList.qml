@@ -40,6 +40,8 @@ Item {
                         iconName: "qrc:///resources/%1".arg(actionGroup.iconName)
                         iconSize: 20
                         text: actionGroup.name
+                        expanded: actionGroupWrapper.shown
+
                         onClicked: actionGroupWrapper.shown = !actionGroupWrapper.shown
                     }
 
@@ -54,7 +56,7 @@ Item {
                     Pane {
                         id: actionGroupWrapper
 
-                        property bool shown: false
+                        property bool shown: true
 
                         anchors.margins: 0
                         anchors.leftMargin: 8

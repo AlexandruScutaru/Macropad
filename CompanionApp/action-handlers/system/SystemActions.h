@@ -23,6 +23,7 @@ public:
 
 private:
     bool openWebsite(const nlohmann::json& payload);
+    bool launch(const nlohmann::json& payload);
 
     bool increaseVolume(const nlohmann::json& payload);
     bool decreaseVolume(const nlohmann::json& payload);
