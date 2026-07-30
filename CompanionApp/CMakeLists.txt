@@ -124,25 +124,25 @@ source_group("QML Files" FILES ${QML_SRC})
 qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
+        resources/back_arrow.svg
         resources/browser.svg
-        resources/chevron_icon.svg
-        resources/close_icon.svg
-        resources/drag_icon.svg
-        resources/expand_icon.svg
-        resources/keys_icon.svg
+        resources/chevron_arrow.svg
+        resources/close.svg
+        resources/drag_point.svg
+        resources/expand.svg
+        resources/info.svg
+        resources/keys.svg
+        resources/looking_glass.svg
         resources/output_device.svg
         resources/rocket.svg
-        resources/settings_icon.svg
-        resources/sliders_icon.svg
+        resources/settings.svg
+        resources/sliders.svg
         resources/system.svg
         resources/volume_down.svg
         resources/volume_toggle.svg
         resources/volume_up.svg
 
         resources/app_icon.png
-        resources/back_arrow_icon.png
-        resources/info_icon.png
-        resources/search_icon.png
         resources/not_connected_animation.gif
         resources/themes.json
 )

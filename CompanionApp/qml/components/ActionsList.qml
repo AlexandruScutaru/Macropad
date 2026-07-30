@@ -99,7 +99,7 @@ Item {
                                     label: modelData.displayName
                                     toolTipText: modelData.toolTip
                                     iconName: "qrc:///resources/%1".arg(modelData.iconName)
-                                    leftMargin: 12 + 16 + 12 - 8 // align to header item icon: leftMargin + chevron_icon + spacing - pane leftMargin
+                                    leftMargin: 12 + 16 + 12 - 8 // align to header item icon: leftMargin + chevron_arrow + spacing - pane leftMargin
                                 }
                             }
                         }
