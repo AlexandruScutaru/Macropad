@@ -83,7 +83,7 @@ void KeypadModule::registerHandler(const IActionHandlerPtr& handler) {
 
     sectionEntry.iconName = QString::fromStdString(section.iconName);
     if (sectionEntry.iconName.isEmpty()) {
-        sectionEntry.iconName = "sliders_icon.svg";
+        sectionEntry.iconName = "sliders.svg";
     }
 
     sectionEntry.actions.reserve(section.actions.size());
@@ -97,7 +97,7 @@ void KeypadModule::registerHandler(const IActionHandlerPtr& handler) {
 
         actionEntry.iconName = QString::fromStdString(action.iconName);
         if (actionEntry.iconName.isEmpty()) {
-            actionEntry.iconName = "sliders_icon.svg";
+            actionEntry.iconName = "sliders.svg";
         }
 
         actionEntry.configs.reserve(action.configs.size());
