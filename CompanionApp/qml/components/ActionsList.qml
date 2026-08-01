@@ -37,7 +37,7 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
 
-                        iconName: "qrc:///resources/%1".arg(actionGroup.iconName)
+                        iconName: "qrc:///resources/icons/%1".arg(actionGroup.iconName)
                         iconSize: 20
                         text: actionGroup.name
                         expanded: actionGroupWrapper.shown
@@ -98,7 +98,7 @@ Item {
                                     }`
                                     label: modelData.displayName
                                     toolTipText: modelData.toolTip
-                                    iconName: "qrc:///resources/%1".arg(modelData.iconName)
+                                    iconName: "qrc:///resources/icons/%1".arg(modelData.iconName)
                                     leftMargin: 12 + 16 + 12 - 8 // align to header item icon: leftMargin + chevron_arrow + spacing - pane leftMargin
                                 }
                             }

@@ -81,7 +81,7 @@ Rectangle {
 
             CIcon {
                 anchors.centerIn: parent
-                source: "qrc:///resources/drag_point.svg"
+                source: "qrc:///resources/icons/drag_point.svg"
                 iconSize: 16
                 color: dragMouseArea.hovered ? Theme.textPrimary : Theme.textDisabled
             }

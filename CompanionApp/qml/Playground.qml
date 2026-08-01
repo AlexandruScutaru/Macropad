@@ -106,23 +106,23 @@ ApplicationWindow {
                             }
 
                             CIconButton {
-                                iconName: "qrc:///resources/expand.svg"
+                                iconName: "qrc:///resources/icons/icons/expand.svg"
                                 iconAnimationType: CIcon.AnimationType.Rotate
                                 iconToggleAnimation: true
                             }
 
                             CIconButton {
-                                iconName: "qrc:///resources/settings.svg"
+                                iconName: "qrc:///resources/icons/settings.svg"
                                 iconAnimationType: CIcon.AnimationType.Rotate
                             }
 
                             CIconButton {
-                                iconName: "qrc:///resources/sliders.svg"
+                                iconName: "qrc:///resources/icons/sliders.svg"
                                 iconAnimationType: CIcon.AnimationType.Scale
                             }
 
                             CIconButton {
-                                iconName: "qrc:///resources/keys.svg"
+                                iconName: "qrc:///resources/icons/keys.svg"
                             }
 
                             Item {
@@ -160,7 +160,7 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignHCenter
 
                         label: "Tab button with animated icon"
-                        iconName: "qrc:///resources/keys.svg"
+                        iconName: "qrc:///resources/icons/keys.svg"
                         iconAnimationType: CIcon.AnimationType.Rotate
                     }
 
@@ -169,7 +169,7 @@ ApplicationWindow {
                         Layout.alignment: Qt.AlignHCenter
 
                         label: "Tab button with static icon"
-                        iconName: "qrc:///resources/keys.svg"
+                        iconName: "qrc:///resources/icons/keys.svg"
                     }
 
                     CTabButton {

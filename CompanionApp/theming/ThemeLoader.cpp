@@ -7,9 +7,11 @@
 #include <QJsonObject>
 #include <QDebug>
 
+using namespace theme;
 
-Theme* ThemeLoader::LoadTheme(const QString& uri, ThemeVariant variant) {
-    const auto theme = new Theme(variant);
+
+Theme* Loader::Load(const QString& uri, Type type) {
+    const auto theme = new Theme(type);
 
     QFile file(uri);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -41,7 +43,7 @@ Theme* ThemeLoader::LoadTheme(const QString& uri, ThemeVariant variant) {
         return theme;
     }
 
-    const auto themeName = ThemeNameFromVariant(variant);
+    const auto themeName = ThemeNameFromType(type);
     const auto themeData = themesData[themeName];
     if (!themeData.isObject()) {
         qDebug() << "theme '" << themeName << "' is not an object";
@@ -90,16 +92,16 @@ Theme* ThemeLoader::LoadTheme(const QString& uri, ThemeVariant variant) {
     return theme;
 }
 
-void ThemeLoader::SetColor(const QJsonValue& json, const QString& name, Theme* theme, ThemeLoader::SetterFunc setter) {
+void Loader::SetColor(const QJsonValue& json, const QString& name, Theme* theme, Loader::SetterFunc setter) {
     if (const auto& color = json[name]; color.isString()) {
         ((*theme).*setter)(color.toString());
     }
 }
 
-QString ThemeLoader::ThemeNameFromVariant(ThemeVariant variant) {
-    switch (variant) {
-        case ThemeVariant::Dark: return "dark";
-        default: "";
+QString Loader::ThemeNameFromType(Type type) {
+    switch (type) {
+        case Type::Dark: return "dark";
+        case Type::Light: return "light";
+        default: return "";
     };
-    return "";
 }

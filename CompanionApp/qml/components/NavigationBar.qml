@@ -55,7 +55,7 @@ Item {
             Layout.bottomMargin: 8
             Layout.alignment: expandAnimation.running || navBar.expanded ? Qt.AlignRight | Qt.AlignTop : Qt.AlignHCenter | Qt.AlignTop
 
-            iconName: "qrc:///resources/expand.svg"
+            iconName: "qrc:///resources/icons/expand.svg"
             toolTipText: navBar.expanded ? qsTr("Collpase") : qsTr("Expand")
             iconAnimationType: CIcon.AnimationType.Rotate
             iconToggleAnimation: true

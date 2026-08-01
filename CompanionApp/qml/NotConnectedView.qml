@@ -24,7 +24,7 @@ Item {
             AnimatedImage {
                 id: animation
                 anchors.fill: parent
-                source: "qrc:///resources/not_connected_animation.gif"
+                source: "qrc:///resources/anims/not_connected_animation_%1.gif".arg(Theme.isDark() ? "dark" : "light");
                 fillMode: Image.PreserveAspectFit
                 onStatusChanged: playing = (status == AnimatedImage.Ready)
             }

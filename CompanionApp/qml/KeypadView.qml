@@ -40,8 +40,8 @@ Item {
                     color: getColor()
 
                     function getColor() {
-                        if (SplitHandle.pressed) return Theme.buttonSecondaryPressed;
-                        if (SplitHandle.hovered) return Theme.buttonSecondaryHovered;
+                        if (SplitHandle.pressed) return Theme.accentPrimaryNormal;
+                        if (SplitHandle.hovered) return Theme.accentPrimaryHovered;
                         return Theme.backgroundTertiary;
                     }
 

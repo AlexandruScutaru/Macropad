@@ -34,6 +34,41 @@
                 "error": "#b21a1a",
                 "border": "#646464"
             }
+        },
+        "light": {
+            "text": {
+                "primary": "#363636",
+                "secondary": "#625e56",
+                "disabled": "#bfb092"
+            },
+            "buttons": {
+                "primary": {
+                    "normal": "#a9bb8a",
+                    "hovered": "#c0d39d",
+                    "pressed": "#b6c697",
+                    "disabled": "#e4e8c4"
+                },
+                "secondary": {
+                    "normal": "transparent",
+                    "hovered": "#ebe3b6",
+                    "pressed": "#dcd4a8",
+                    "disabled": "transparent"
+                }
+            },
+            "background": {
+                "primary": "#f9f5d7",
+                "secondary": "#f0eccf",
+                "tertiary": "#e6e2c3",
+                "backdrop": "#40000000"
+            },
+            "other": {
+                "accentPrimary": {
+                    "normal": "#86916a",
+                    "hovered": "#95a46d"
+                },
+                "error": "#902111",
+                "border": "#646464"
+            }
         }
     }
 }

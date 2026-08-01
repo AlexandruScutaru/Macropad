@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
                 QMetaObject::invokeMethod(winPtr, SHOW_WINDOW_QML_FUNC_NAME);
             });
 
-            QObject::connect(macropad, &Macropad::themeChanged, qApp, [&engine](Theme* theme) {
+            QObject::connect(macropad, &Macropad::themeChanged, qApp, [&engine](theme::Theme* theme) {
                 engine.rootContext()->setContextProperty("Theme", theme);
             });
 

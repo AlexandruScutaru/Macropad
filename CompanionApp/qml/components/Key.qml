@@ -10,6 +10,7 @@ Rectangle {
     property bool hovered: false
     property bool selected: false
     property bool dragHover: false
+    property bool pressed: false
 
     property string actionId: ""
     property string actionDisplayName: ""
@@ -30,7 +31,7 @@ Rectangle {
         anchors.centerIn: parent
         iconSize: key.width * 0.6
 
-        source: key.actionIconName.length ? "qrc:///resources/%1".arg(key.actionIconName) : ""
+        source: key.actionIconName.length ? "qrc:///resources/icons/%1".arg(key.actionIconName) : ""
         color: key.getTextColor()
         visible: key.actionId.length >= 0
     }
@@ -43,15 +44,28 @@ Rectangle {
 
         onEntered: {
             key.hovered = true;
+
         }
 
         onExited: {
             key.hovered = false;
             key.dragHover = false;
+            key.pressed = false;
         }
 
-        onClicked: key.clicked()
-        onDoubleClicked: key.doubleClicked()
+        onPressed: {
+            key.pressed = true;
+        }
+
+        onClicked: {
+            key.pressed = false;
+            key.clicked();
+        }
+
+        onDoubleClicked: {
+            key.pressed = false;
+            key.doubleClicked();
+        }
     }
 
     DropArea {
@@ -65,11 +79,13 @@ Rectangle {
 
         onExited: () => {
             key.dragHover = false;
+            key.pressed = false;
         }
 
         onDropped: (drag) => {
             if (key.parseDroppedData(drag.text)) {
                 key.dragHover = false;
+                key.pressed = false;
                 key.actionAssigned(key.droppedActionId);
             }
         }
@@ -99,13 +115,13 @@ Rectangle {
     }
 
     function getBgColor() {
-        if (hovered || dragHover) return Theme.backgroundTertiary;
-        if (selected) return Theme.backgroundSecondary;
-        return Theme.backgroundSecondary;
+        if (pressed) return Theme.buttonSecondaryPressed;
+        if (hovered || dragHover) return Theme.buttonSecondaryHovered;
+        return Theme.backgroundTertiary;
     }
 
     function getBorderColor() {
-        if (hovered || dragHover) return Theme.accentPrimaryHovered;
+        if (dragHover) return Theme.accentPrimaryHovered;
         if (selected) return Theme.accentPrimaryNormal;
         return Theme.backgroundTertiary;
     }

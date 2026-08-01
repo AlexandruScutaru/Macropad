@@ -138,7 +138,7 @@ Item {
             id: icon
 
             anchors.centerIn: parent
-            source: "qrc:///resources/chevron_arrow.svg"
+            source: "qrc:///resources/icons/chevron_arrow.svg"
             iconSize: iconButton.buttonSize - iconButton.iconPadding * 2
             color: iconButton.getIconColor()
             flipIcon: iconButton.isNextButton ? false : true

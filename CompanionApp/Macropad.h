@@ -36,7 +36,7 @@ public:
     ~Macropad();
 
     void init(const MacropadConfig& config);
-    Theme* getTheme();
+    theme::Theme* getTheme();
 
     Q_INVOKABLE void connectToDevice();
     Q_INVOKABLE KeypadModule* getKeypadModule();
@@ -48,13 +48,13 @@ public:
 
 signals:
     void showWindowRequested();
-    void themeChanged(Theme* theme);
+    void themeChanged(theme::Theme* theme);
     void deviceConnected();
     void deviceNotFound();
 
 private:
     QObject* const getMainWindowObject();
-    void loadTheme(ThemeVariant variant);
+    void loadTheme(theme::Type type);
 
     void initActionHandlers();
     void initTrayIcon();
@@ -68,7 +68,7 @@ private:
     hid::Device* mHidDevice{ nullptr };
     TrayIcon* mTrayIcon{ nullptr };
 
-    QPointer<Theme> mTheme{ nullptr };
+    QPointer<theme::Theme> mTheme{ nullptr };
 
     std::vector<IActionHandlerPtr> mActionHandlers;
 
