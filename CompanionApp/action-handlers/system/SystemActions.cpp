@@ -64,15 +64,10 @@ bool SystemActions::launch(const nlohmann::json& payload) {
         return false;
     }
 
-    const auto& argStr = payload.value<std::string>("args", "");
-    if (argStr.empty()) {
-        std::printf("launch: empty args in payload\n");
-        return false;
-    }
+    const auto& args = payload.value<std::string>("args", "");
+    const auto& workingDir = payload.value<std::string>("wd", "");
 
-    auto args = utils::split(argStr, ' ');
-
-    return mPlatform->launch(appName, args);
+    return mPlatform->launch(appName, utils::split(args, ' '), workingDir);
 }
 
 
@@ -120,13 +115,19 @@ action_handlers::Section SystemActions::getActions() {
                 .name = "app_name",
                 .displayName = "Application name",
                 .tooltip = "The application name to launch",
-                .type = OptionType::String,
+                .type = OptionType::FilePath,
             },
             Config {
                 .name = "args",
                 .displayName = "Arguments",
                 .tooltip = "The arguments to launch the application with",
                 .type = OptionType::String,
+            },
+            Config {
+                .name = "wd",
+                .displayName = "Working Directory",
+                .tooltip = "The working directory to launch the application in",
+                .type = OptionType::FolderPath,
             }
         }
     };

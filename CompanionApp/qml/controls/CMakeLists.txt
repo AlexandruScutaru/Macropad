@@ -17,11 +17,11 @@ qt_add_qml_module(${MODULE_NAME}
     VERSION 1.0
     QML_FILES
         CBusyIndicator.qml
-        CButton.qml
         CCollapseableHeader.qml
         CDragableItem.qml
         CIcon.qml
         CIconButton.qml
+        CPillButton.qml
         CSlider.qml
         CTabButton.qml
         CText.qml

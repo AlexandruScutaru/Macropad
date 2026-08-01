@@ -95,18 +95,18 @@ ApplicationWindow {
                             anchors.fill: parent
                             spacing: 12
 
-                            CButton {
+                            CPillButton {
                                 label: "Enabled"
-                                toolTipText: "This is button"
+                                toolTipText: "This is a pill button"
                             }
 
-                            CButton {
+                            CPillButton {
                                 label: "Disabled"
                                 enabled: false
                             }
 
                             CIconButton {
-                                iconName: "qrc:///resources/icons/icons/expand.svg"
+                                iconName: "qrc:///resources/icons/expand.svg"
                                 iconAnimationType: CIcon.AnimationType.Rotate
                                 iconToggleAnimation: true
                             }

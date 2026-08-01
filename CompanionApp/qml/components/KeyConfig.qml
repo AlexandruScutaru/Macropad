@@ -1,6 +1,8 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Dialogs
+import QtCore
 import QtQml.Models
 
 import Controls
@@ -94,6 +96,7 @@ Item {
                             role: "type"
 
                             DelegateChoice { roleValue: Keypad.String; delegate: stringOption }
+                            DelegateChoice { roleValue: Keypad.Path; delegate: pathOption }
                         }
                     }
 
@@ -127,7 +130,8 @@ Item {
                 spacing: 8
 
                 CText {
-                    Layout.fillWidth: true
+                    Layout.preferredWidth: option.width * 0.3
+
                     label: option.displayName
                     fontSize: 12
                     hAlign: Text.AlignLeft
@@ -135,7 +139,7 @@ Item {
                 }
 
                 CTextField {
-                    Layout.preferredWidth: option.width * 0.66
+                    Layout.fillWidth: true
 
                     text: option.value
                     toolTipText: option.tooltip
@@ -147,5 +151,100 @@ Item {
                 }
             }
         }
+    }
+
+    Component {
+        id: pathOption
+
+        Item {
+            id: option
+
+            Layout.fillWidth: true
+            Layout.preferredHeight: row.height
+            Layout.leftMargin: 20
+            Layout.rightMargin: 20
+
+            required property string name
+            required property string displayName
+            required property string tooltip
+            required property string value
+            required property bool wantFolder
+
+            RowLayout {
+                id: row
+                width: option.width
+                spacing: 8
+
+                CText {
+                    Layout.preferredWidth: option.width * 0.3
+
+                    label: option.displayName
+                    fontSize: 12
+                    hAlign: Text.AlignLeft
+                    color: Theme.textPrimary
+                }
+
+                CTextField {
+                    Layout.fillWidth: true
+
+                    text: option.value
+                    toolTipText: option.tooltip
+                    radius: 8
+
+                    onInputAccepted: (value) => {
+                        keyconfig.controller.optionChanged(option.name, value);
+                    }
+                }
+
+                CIconButton {
+                    iconName: "qrc:///resources/icons/folder.svg"
+                    toolTipText: qsTr("Open file explorer")
+
+                    onButtonClicked: {
+                        var dialog = fileDialog;
+
+                        if (option.wantFolder) {
+                            dialog = folderDialog;
+                        }
+
+                        dialog.targetOption = option;
+                        dialog.open();
+                    }
+                }
+            }
+        }
+    }
+
+    FileDialog {
+        id: fileDialog
+
+        property var targetOption: null
+
+        currentFolder: StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
+
+        onAccepted: {
+            if (targetOption) {
+                keyconfig.controller.optionChanged(targetOption.name, toLocalPath(selectedFile));
+            }
+        }
+    }
+
+    FolderDialog {
+        id: folderDialog
+
+        property var targetOption: null
+
+        currentFolder: StandardPaths.standardLocations(StandardPaths.HomeLocation)[0]
+
+        onAccepted: {
+            if (targetOption) {
+                keyconfig.controller.optionChanged(targetOption.name, toLocalPath(selectedFolder));
+            }
+        }
+    }
+
+    function toLocalPath(url: url): string {
+        var path = url.toString()
+        return decodeURIComponent(path.substring("file://".length))
     }
 }

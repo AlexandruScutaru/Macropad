@@ -21,5 +21,7 @@ QHash<int, QByteArray> ActionConfigListModel::roleNames() const {
     roles[DisplayName] = "displayName",
     roles[Tooltip] = "tooltip";
     roles[Value] = "value";
+    roles[WantFolder] = "wantFolder";
+
     return roles;
 }

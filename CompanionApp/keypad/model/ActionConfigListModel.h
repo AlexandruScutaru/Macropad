@@ -11,7 +11,8 @@ public:
         Name,
         DisplayName,
         Tooltip,
-        Value
+        Value,
+        WantFolder,
     };
 
     explicit ActionConfigListModel(QObject* parent = nullptr);

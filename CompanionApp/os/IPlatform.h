@@ -11,7 +11,7 @@ namespace osal {
         ~IPlatform() = default;
 
         virtual bool openWebsite(const std::string& address) = 0;
-        virtual bool launch(const std::string& appName, const std::vector<std::string>& args) = 0;
+        virtual bool launch(const std::string& appName, const std::vector<std::string>& args, const std::string& workingDir) = 0;
 
         virtual bool incVolume() = 0;
         virtual bool decVolume() = 0;
