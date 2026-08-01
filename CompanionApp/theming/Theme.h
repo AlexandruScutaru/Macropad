@@ -23,50 +23,56 @@
     PROP_NOTIFY(name);\
     PROP_MEMBER(name, value);
 
-enum class ThemeVariant {
-    Dark = 0
-};
 
-class Theme : public QObject {
-    Q_OBJECT
+namespace theme {
+    enum class Type {
+        Dark = 0,
+        Light
+    };
 
-    COLOR_PROPERTY(textPrimary, "#e1ecd6");
-    COLOR_PROPERTY(textSecondary, "#afafaf");
-    COLOR_PROPERTY(textDisabled, "#919191");
+    class Theme : public QObject {
+        Q_OBJECT
 
-    COLOR_PROPERTY(buttonPrimaryNormal, "#3f4d36");
-    COLOR_PROPERTY(buttonPrimaryHovered, "#495242");
-    COLOR_PROPERTY(buttonPrimaryPressed, "#3c4536");
-    COLOR_PROPERTY(buttonPrimaryDisabled, "#31372f");
+        COLOR_PROPERTY(textPrimary, "#e1ecd6");
+        COLOR_PROPERTY(textSecondary, "#afafaf");
+        COLOR_PROPERTY(textDisabled, "#919191");
 
-    COLOR_PROPERTY(buttonSecondaryNormal, "transparent");
-    COLOR_PROPERTY(buttonSecondaryHovered, "#474747");
-    COLOR_PROPERTY(buttonSecondaryPressed, "#393939");
-    COLOR_PROPERTY(buttonSecondaryDisabled, "transparent");
+        COLOR_PROPERTY(buttonPrimaryNormal, "#3f4d36");
+        COLOR_PROPERTY(buttonPrimaryHovered, "#495242");
+        COLOR_PROPERTY(buttonPrimaryPressed, "#3c4536");
+        COLOR_PROPERTY(buttonPrimaryDisabled, "#31372f");
 
-    COLOR_PROPERTY(backgroundPrimary, "#1e1e1e");
-    COLOR_PROPERTY(backgroundSecondary, "#252525");
-    COLOR_PROPERTY(backgroundTertiary, "#2e2e2e");
-    COLOR_PROPERTY(backgroundBackdrop, "#60000000");
+        COLOR_PROPERTY(buttonSecondaryNormal, "transparent");
+        COLOR_PROPERTY(buttonSecondaryHovered, "#474747");
+        COLOR_PROPERTY(buttonSecondaryPressed, "#393939");
+        COLOR_PROPERTY(buttonSecondaryDisabled, "transparent");
 
-    COLOR_PROPERTY(accentPrimaryNormal, "#414e39");
-    COLOR_PROPERTY(accentPrimaryHovered, "#526049");
-    COLOR_PROPERTY(error, "#b21a1a");
-    COLOR_PROPERTY(border, "#646464");
+        COLOR_PROPERTY(backgroundPrimary, "#1e1e1e");
+        COLOR_PROPERTY(backgroundSecondary, "#252525");
+        COLOR_PROPERTY(backgroundTertiary, "#2e2e2e");
+        COLOR_PROPERTY(backgroundBackdrop, "#60000000");
 
-    ThemeVariant mVariant{ ThemeVariant::Dark };
+        COLOR_PROPERTY(accentPrimaryNormal, "#414e39");
+        COLOR_PROPERTY(accentPrimaryHovered, "#526049");
+        COLOR_PROPERTY(error, "#b21a1a");
+        COLOR_PROPERTY(border, "#646464");
 
-public:
-    explicit Theme(ThemeVariant variant, QObject* parent = nullptr)
-        : mVariant(variant)
-        , QObject(parent) {
-        qDebug() << "Theme::Theme";
-    }
+        Type mType{ Type::Dark };
 
-    ~Theme() {
-        qDebug() << "Theme::~Theme";
-    }
+    public:
+        explicit Theme(Type type, QObject* parent = nullptr)
+            : mType(type)
+            , QObject(parent) {
+            qDebug() << "Theme::Theme";
+        }
 
-    ThemeVariant getVariant() const { return mVariant; }
+        ~Theme() {
+            qDebug() << "Theme::~Theme";
+        }
 
-};
+        Q_INVOKABLE bool isDark() const { return mType == Type::Dark; }
+
+        Type getType() const { return mType; }
+
+    };
+}

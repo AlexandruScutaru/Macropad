@@ -40,7 +40,7 @@ Button {
                 Layout.preferredHeight: 16
                 Layout.alignment: Qt.AlignLeft
 
-                source: "qrc:///resources/chevron_arrow.svg"
+                source: "qrc:///resources/icons/chevron_arrow.svg"
                 iconSize: 16
                 color: button.getTextColor()
 

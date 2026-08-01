@@ -9,7 +9,6 @@
 #include "os/IPlatform.h"
 #include "hid/Device.h"
 
-
 #include <QApplication>
 #include <QDebug>
 #include <QQmlComponent>
@@ -58,15 +57,15 @@ void Macropad::init(const MacropadConfig& config) {
     mKeypadModule = new KeypadModule(mAppSettings, this);
 
     // TODO: get theme from saved settings
-    loadTheme(ThemeVariant::Dark);
+    loadTheme(theme::Type::Light);
     initAppStackView(getMainWindowObject());
     initActionHandlers();
 }
 
-Theme* Macropad::getTheme() {
+theme::Theme* Macropad::getTheme() {
     // load default which is Dark at this stage
     if (!mTheme) {
-        loadTheme(ThemeVariant::Dark);
+        loadTheme(theme::Type::Light);
     }
 
     return mTheme.data();
@@ -109,12 +108,12 @@ QObject* const Macropad::getMainWindowObject() {
     return qmlWindow;
 }
 
-void Macropad::loadTheme(ThemeVariant variant) {
+void Macropad::loadTheme(theme::Type type) {
     if (mTheme) {
         mTheme->deleteLater();
     }
 
-    mTheme = QPointer(ThemeLoader::LoadTheme(THEMES_URI, variant));
+    mTheme = QPointer(theme::Loader::Load(THEMES_URI, type));
     emit themeChanged(mTheme.data());
 }
 

@@ -31,7 +31,7 @@ ListModel {
                 name: keypadTabName,
                 tabEnabled: keypadTabEnabled,
                 tabCheckable: true,
-                iconSource: "qrc:///resources/keys.svg",
+                iconSource: "qrc:///resources/icons/keys.svg",
                 animation: CIcon.AnimationType.Scale
             },
             {
@@ -39,7 +39,7 @@ ListModel {
                 name: slidersTabName,
                 tabEnabled: slidersTabEnabled,
                 tabCheckable: true,
-                iconSource: "qrc:///resources/sliders.svg",
+                iconSource: "qrc:///resources/icons/sliders.svg",
                 animation: CIcon.AnimationType.Scale
             },
             {
@@ -50,7 +50,7 @@ ListModel {
                 name: settingsTabName,
                 tabEnabled: true,
                 tabCheckable: false,
-                iconSource: "qrc:///resources/settings.svg",
+                iconSource: "qrc:///resources/icons/settings.svg",
                 animation: CIcon.AnimationType.Rotate
             }
         ]);

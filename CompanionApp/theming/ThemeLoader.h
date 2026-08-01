@@ -5,19 +5,20 @@
 
 #include <functional>
 
+namespace theme {
+    enum class Type;
+    class Theme;
 
-class Theme;
-enum class ThemeVariant;
+    class Loader {
+    public:
+        using SetterFunc = void (Theme::*)(const QString&);
+        static Theme* Load(const QString& uri, Type type);
 
-class ThemeLoader {
-public:
-    using SetterFunc = void (Theme::*)(const QString&);
-    static Theme* LoadTheme(const QString& uri, ThemeVariant variant);
+    private:
+        Loader() {};
 
-private:
-    ThemeLoader() {};
+        static void SetColor(const QJsonValue& json, const QString& name, Theme* theme, SetterFunc setter);
+        static QString ThemeNameFromType(Type type);
 
-    static void SetColor(const QJsonValue& json, const QString& name, Theme* theme, SetterFunc setter);
-    static QString ThemeNameFromVariant(ThemeVariant variant);
-
-};
+    };
+}

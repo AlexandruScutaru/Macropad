@@ -124,27 +124,29 @@ source_group("QML Files" FILES ${QML_SRC})
 qt_add_resources(${TARGET_NAME} "resources"
     PREFIX "/"
     FILES
-        resources/back_arrow.svg
-        resources/browser.svg
-        resources/chevron_arrow.svg
-        resources/close.svg
-        resources/drag_point.svg
-        resources/expand.svg
-        resources/info.svg
-        resources/keys.svg
-        resources/looking_glass.svg
-        resources/output_device.svg
-        resources/rocket.svg
-        resources/settings.svg
-        resources/sliders.svg
-        resources/system.svg
-        resources/volume_down.svg
-        resources/volume_toggle.svg
-        resources/volume_up.svg
-
         resources/app_icon.png
-        resources/not_connected_animation.gif
         resources/themes.json
+
+        resources/icons/back_arrow.svg
+        resources/icons/browser.svg
+        resources/icons/chevron_arrow.svg
+        resources/icons/close.svg
+        resources/icons/drag_point.svg
+        resources/icons/expand.svg
+        resources/icons/info.svg
+        resources/icons/keys.svg
+        resources/icons/looking_glass.svg
+        resources/icons/output_device.svg
+        resources/icons/rocket.svg
+        resources/icons/settings.svg
+        resources/icons/sliders.svg
+        resources/icons/system.svg
+        resources/icons/volume_down.svg
+        resources/icons/volume_toggle.svg
+        resources/icons/volume_up.svg
+
+        resources/anims/not_connected_animation_dark.gif
+        resources/anims/not_connected_animation_light.gif
 )
 
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Quick)
