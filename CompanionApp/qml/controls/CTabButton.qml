@@ -11,8 +11,8 @@ Button {
     property alias iconFlipIcon: icon.flipIcon
 
     signal buttonClicked
-    property int buttonHeight: 40
-    property int marginSize: 10
+    property int buttonHeight: 32
+    property int marginSize: 6
     property string iconName
     property string label
     property string toolTipText
@@ -45,7 +45,7 @@ Button {
 
         RowLayout {
             anchors.fill: parent
-            spacing: button.marginSize
+            spacing: 8
             anchors.leftMargin: button.marginSize
             anchors.rightMargin: button.marginSize
 

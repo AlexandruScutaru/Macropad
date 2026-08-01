@@ -13,7 +13,8 @@ namespace Keypad {
     QML_ELEMENT
     enum OptionType {
         Unknown = 0,
-        String
+        String,
+        Path,
     };
     Q_ENUM_NS(OptionType);
 
@@ -23,6 +24,7 @@ namespace Keypad {
         QString tooltip;
         OptionType type{ OptionType::String };
         QVariant value;
+        bool wantFolder{ false };
     };
     using Configs = std::vector<Config>;
 

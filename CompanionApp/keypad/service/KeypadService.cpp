@@ -67,6 +67,7 @@ void KeypadService::loadSavedProfile(const Keypad::AvailableActions& availableAc
                             config.tooltip = actionInfo->configs[configIndex].tooltip;
                             config.type = actionInfo->configs[configIndex].type;
                             config.value = utils::json::ReadVariant(configJson, "value", config.type);
+                            config.wantFolder = actionInfo->configs[configIndex].wantFolder;
                         }
                     }
                 }

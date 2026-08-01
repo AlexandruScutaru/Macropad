@@ -52,6 +52,8 @@ void ActionConfigController::onActionConfigChanged(int layer, int key, const Key
         configRow[ActionConfigListModel::DisplayName] = config.displayName;
         configRow[ActionConfigListModel::Tooltip] = config.tooltip;
         configRow[ActionConfigListModel::Value] = config.value;
+        configRow[ActionConfigListModel::WantFolder] = config.wantFolder;
+
         configModel.push_back(configRow);
     }
 

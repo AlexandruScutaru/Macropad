@@ -48,7 +48,7 @@ Item {
             hAlign: Text.AlignHCenter
         }
 
-        CButton {
+        CPillButton {
             id: retryButton
             Layout.topMargin: 20
             Layout.alignment: Qt.AlignHCenter

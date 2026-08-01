@@ -13,7 +13,7 @@ Item {
     signal navBarExpandedChanged(expanded: bool)
 
     readonly property int expanded_width: 180
-    readonly property int collapsed_width: 56
+    readonly property int collapsed_width: 48
     readonly property int margin: 8
 
     property ListModel tabButtonsModel
@@ -50,6 +50,7 @@ Item {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: navBar.margin
+        spacing: 8
 
         CIconButton {
             Layout.bottomMargin: 8

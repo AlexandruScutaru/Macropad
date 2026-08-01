@@ -18,6 +18,8 @@ using namespace Keypad;
 static OptionType GetInternalOptionType(action_handlers::OptionType type) {
     switch (type) {
         case action_handlers::OptionType::String: return OptionType::String;
+        case action_handlers::OptionType::FilePath:
+        case action_handlers::OptionType::FolderPath: return OptionType::Path;
         default: return OptionType::Unknown;
     }
 }
@@ -108,6 +110,7 @@ void KeypadModule::registerHandler(const IActionHandlerPtr& handler) {
             configEntry.displayName = QString::fromStdString(config.displayName);
             configEntry.tooltip = QString::fromStdString(config.tooltip);
             configEntry.type = GetInternalOptionType(config.type);
+            configEntry.wantFolder = config.type == action_handlers::OptionType::FolderPath;
 
             actionEntry.configs.push_back(configEntry);
         }

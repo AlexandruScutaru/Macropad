@@ -11,8 +11,8 @@ Button {
     signal buttonClicked
     property string iconName
     property string toolTipText
-    property int buttonSize: 40
-    property int iconPadding: 10
+    property int buttonSize: 32
+    property int iconPadding: 6
 
     CIcon {
         id: icon
@@ -30,7 +30,7 @@ Button {
         implicitHeight: button.buttonSize
         color: button.getBgColor()
         border.width: 0
-        radius: height / 2
+        radius: 6
     }
 
     onPressed: {

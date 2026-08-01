@@ -133,6 +133,7 @@ qt_add_resources(${TARGET_NAME} "resources"
         resources/icons/close.svg
         resources/icons/drag_point.svg
         resources/icons/expand.svg
+        resources/icons/folder.svg
         resources/icons/info.svg
         resources/icons/keys.svg
         resources/icons/looking_glass.svg

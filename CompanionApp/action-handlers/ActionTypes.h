@@ -6,7 +6,9 @@
 
 namespace action_handlers {
     enum class OptionType {
-        String = 0
+        String = 0,
+        FilePath,
+        FolderPath,
     };
 
     struct Config {
