@@ -3,9 +3,16 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
+import QtQuick.Controls.Basic
 
-Item {
+import Controls
+
+Control {
     id: keys
+
+    activeFocusOnTab: false
+    focusPolicy: Qt.StrongFocus
+    focus: false
 
     signal actionAssigned(key: int, actionId: string)
     signal keySelected(key: int)
@@ -20,7 +27,17 @@ Item {
     implicitWidth: height * aspectRatio
     implicitHeight: width / aspectRatio
 
-    Rectangle {
+    Keys.onPressed: (event) => {
+        if (focus && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
+            if (keysRepeater.count !== 0) {
+                keysRepeater.itemAt(0).forceActiveFocus(Qt.TabFocusReason);
+            }
+
+            event.accepted = true;
+        }
+    }
+
+    contentItem: Rectangle {
         id: gridContainer
 
         anchors.horizontalCenter: parent.horizontalCenter
@@ -40,6 +57,8 @@ Item {
         }
 
         GridLayout {
+            id: gridLayout
+
             anchors.fill: parent
             anchors.margins: 12
             rowSpacing: 12
@@ -62,6 +81,14 @@ Item {
 
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    Layout.row: Math.floor(index / gridLayout.columns)
+                    Layout.column: index % gridLayout.columns
+
+                    KeyNavigation.left: index % gridLayout.columns === 0 ? null : keysRepeater.itemAt(index - 1)
+                    KeyNavigation.right: index % gridLayout.columns === gridLayout.columns - 1 ? null : keysRepeater.itemAt(index + 1)
+                    KeyNavigation.up: index < gridLayout.columns ? null : keysRepeater.itemAt(index - gridLayout.columns)
+                    KeyNavigation.down: index + gridLayout.columns >= keysRepeater.count ? null : keysRepeater.itemAt(index + gridLayout.columns)
+
                     isRound: keyIsRound
                     actionId: keyActionId
                     actionDisplayName: keyActionDisplayName
@@ -81,6 +108,13 @@ Item {
                         keys.keyTriggered(index);
                     }
 
+                    Keys.onPressed: (event) => {
+                        if (event.key === Qt.Key_Escape) {
+                            keys.forceActiveFocus(Qt.BacktabFocusReason);
+                            event.accepted = true;
+                        }
+                    }
+
                     function selectKey() {
                         if (isKeySelected()) {
                             return;
@@ -96,5 +130,11 @@ Item {
                 }
             }
         }
+    }
+
+    CFocusOutline {
+        target: keys
+        anchors.fill: keys
+        radius: 8
     }
 }

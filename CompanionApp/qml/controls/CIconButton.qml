@@ -4,6 +4,9 @@ import QtQuick.Controls.Basic
 Button {
     id: button
 
+    activeFocusOnTab: true
+    focusPolicy: Qt.StrongFocus
+
     property alias iconAnimationType: icon.animationType
     property alias iconToggleAnimation: icon.toggleAnimation
     property alias iconFlipIcon: icon.flipIcon
@@ -30,6 +33,12 @@ Button {
         implicitHeight: button.buttonSize
         color: button.getBgColor()
         border.width: 0
+        radius: 6
+    }
+
+    CFocusOutline {
+        target: button
+        anchors.fill: button
         radius: 6
     }
 

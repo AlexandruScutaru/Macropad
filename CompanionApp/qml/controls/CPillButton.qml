@@ -4,6 +4,9 @@ import QtQuick.Controls.Basic
 Button {
     id: button
 
+    activeFocusOnTab: true
+    focusPolicy: Qt.StrongFocus
+
     signal buttonClicked
     property string label
     property string toolTipText
@@ -34,6 +37,12 @@ Button {
         implicitHeight: 32
         color: button.getBgColor()
         border.width: 0
+        radius: height / 2
+    }
+
+    CFocusOutline {
+        target: button
+        anchors.fill: button
         radius: height / 2
     }
 

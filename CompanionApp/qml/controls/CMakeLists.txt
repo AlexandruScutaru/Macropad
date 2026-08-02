@@ -19,6 +19,7 @@ qt_add_qml_module(${MODULE_NAME}
         CBusyIndicator.qml
         CCollapseableHeader.qml
         CDragableItem.qml
+        CFocusOutline.qml
         CIcon.qml
         CIconButton.qml
         CPillButton.qml

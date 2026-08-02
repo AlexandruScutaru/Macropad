@@ -7,12 +7,19 @@ import QtQuick.Controls.Basic
 import Controls
 import "."
 
-Item {
+FocusScope {
     id: appStackView
+
+    activeFocusOnTab: true
 
     anchors.fill: parent
 
-    // required property MainController mainController
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Escape && settingsPopup.visible) {
+            settingsPopup.visible = false;
+            event.accepted = true;
+        }
+    }
 
     function deviceConnectTryAgainClicked() {
         stack.clear();
@@ -94,6 +101,12 @@ Item {
                     MacroPad.connectToDevice();
                 }
 
+                onCurrentItemChanged: {
+                    if (stack.currentItem) {
+                        stack.currentItem.forceActiveFocus();
+                    }
+                }
+
                 Connections {
                     target: MacroPad
                     function onDeviceConnected() {
@@ -125,6 +138,7 @@ Item {
         height: parent.height * 0.8
 
         visible: false
+        focus: visible
         modal: true
         closePolicy: Popup.CloseOnEscape
 
@@ -157,8 +171,13 @@ Item {
         }
 
         onVisibleChanged: {
-            focus = visible;
             settingsLoader.active = visible;
+
+            if (visible) {
+                forceActiveFocus();
+            } else {
+                appStackView.forceActiveFocus();
+            }
         }
     }
 

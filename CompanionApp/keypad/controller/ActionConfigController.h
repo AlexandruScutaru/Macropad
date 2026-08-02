@@ -36,7 +36,10 @@ signals:
     void configOptionChanged(int layer, int key, const QString& name, const QVariant& value);
 
 public slots:
+    // to be used only when the entire model needs to be updated as this function resets it
     void onActionConfigChanged(int layer, int key, const Keypad::Action& action);
+    // to be used only when updating a single config option entry, in place update no reset
+    void onActionConfigOptionChanged(int layer, int key, const QString& name, const QVariant& value);
 
 private:
     QString mActionId;

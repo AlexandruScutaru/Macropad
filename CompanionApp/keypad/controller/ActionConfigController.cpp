@@ -67,3 +67,37 @@ void ActionConfigController::onActionConfigChanged(int layer, int key, const Key
     mKeyActionLayer = layer;
     mKeyAction = key;
 }
+
+void ActionConfigController::onActionConfigOptionChanged(int layer, int key, const QString& name, const QVariant& value) {
+    if (!mActionConfigListModel) {
+        return;
+    }
+
+    if (layer != mKeyActionLayer || key != mKeyAction) {
+        return;
+    }
+
+    QModelIndex modelIndex;
+    size_t i = 0;
+    for (; i < mActionConfigListModel->getCount(); i++) {
+        auto index = mActionConfigListModel->index(i, 0);
+        if (mActionConfigListModel->data(index, ActionConfigListModel::Name).toString() == name) {
+            modelIndex = index;
+            break;
+        }
+    }
+
+    if (!modelIndex.isValid()) {
+        return;
+    }
+
+    QMap<int, QVariant> row;
+    row[ActionConfigListModel::Type] = mActionConfigListModel->data(modelIndex, ActionConfigListModel::Type);
+    row[ActionConfigListModel::Name] = name;
+    row[ActionConfigListModel::DisplayName] = mActionConfigListModel->data(modelIndex, ActionConfigListModel::DisplayName);
+    row[ActionConfigListModel::Tooltip] = mActionConfigListModel->data(modelIndex, ActionConfigListModel::Tooltip);
+    row[ActionConfigListModel::Value] = value;
+    row[ActionConfigListModel::WantFolder] = mActionConfigListModel->data(modelIndex, ActionConfigListModel::WantFolder);
+
+    mActionConfigListModel->updateRow(i, row);
+}

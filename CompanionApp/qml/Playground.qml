@@ -256,8 +256,19 @@ ApplicationWindow {
 
                         validator: IntValidator { bottom: 100000; top: 999999}
 
-                        placeholder: "Placeholder text"
+                        placeholder: "Placeholder text #1"
                         toolTipText: "Enter a valid number in range [100000, 999999]"
+
+                        onInputAccepted: (value) => {}
+                    }
+
+                    CTextField {
+                        Layout.leftMargin: 30
+                        Layout.rightMargin: 30
+                        Layout.fillWidth: true
+
+                        placeholder: "Placeholder text #2"
+                        toolTipText: "Enter something"
 
                         onInputAccepted: (value) => {}
                     }

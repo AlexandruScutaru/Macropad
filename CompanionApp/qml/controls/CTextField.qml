@@ -4,6 +4,9 @@ import QtQuick.Controls.Basic
 TextField {
     id: textField
 
+    activeFocusOnTab: true
+    focusPolicy: Qt.StrongFocus
+
     signal inputAccepted(value: string)
     property string placeholder
     property string toolTipText
@@ -39,14 +42,14 @@ TextField {
         radius: textField.radius
     }
 
+    CFocusOutline {
+        target: textField
+        anchors.fill: textField
+        radius: textField.radius
+    }
+
     onAccepted: textField.handleText()
     onEditingFinished: textField.handleText()
-
-    // onActiveFocusChanged: {
-    //     if (!activeFocus) {
-    //         textField.handleText()
-    //     }
-    // }
 
     ToolTip {
         id: invalidInput

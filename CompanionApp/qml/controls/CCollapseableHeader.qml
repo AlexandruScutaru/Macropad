@@ -5,6 +5,9 @@ import QtQuick.Controls.Basic
 Button {
     id: button
 
+    activeFocusOnTab: true
+    focusPolicy: Qt.StrongFocus
+
     signal buttonClicked
 
     property alias expanded: chevronIcon.expanded
@@ -88,6 +91,12 @@ Button {
         implicitHeight: button.buttonHeight
         color: button.getBgColor()
         border.width: 0
+        radius: 0
+    }
+
+    CFocusOutline {
+        target: button
+        anchors.fill: button
         radius: 0
     }
 
