@@ -45,6 +45,9 @@ Item {
             Button {
                 id: button
 
+                activeFocusOnTab: true
+                focusPolicy: Qt.StrongFocus
+
                 required property int index
                 property int buttonSize: pagination.componentHeight
 
@@ -71,6 +74,8 @@ Item {
                 }
 
                 background: Rectangle {
+                    id: backgroundRect
+
                     width: button.buttonSize
                     height: button.buttonSize
                     implicitWidth: button.buttonSize
@@ -92,6 +97,15 @@ Item {
                         pagination.currentPage = button.index;
                         pagination.pageChanged(pagination.currentPage);
                     }
+                }
+
+                CFocusOutline {
+                    target: button
+                    anchors.fill: button
+                    topLeft: backgroundRect.topLeftRadius
+                    topRight: backgroundRect.topRightRadius
+                    bottomLeft: backgroundRect.bottomLeftRadius
+                    bottomRight: backgroundRect.bottomRightRadius
                 }
 
                 function getBgColor() {
@@ -128,6 +142,9 @@ Item {
     component PrevNextButton : Button {
         id: iconButton
 
+        activeFocusOnTab: true
+        focusPolicy: Qt.StrongFocus
+
         signal buttonClicked
 
         property bool isNextButton: true
@@ -161,6 +178,12 @@ Item {
             text: iconButton.isNextButton ? qsTr("Next Layer") : qsTr("Previous layer")
             visible: iconButton.hovered && iconButton.enabled && !iconButton.down && text.length > 0
             delay: 600
+        }
+
+        CFocusOutline {
+            target: iconButton
+            anchors.fill: iconButton
+            radius: height / 2
         }
 
         function getBgColor() {

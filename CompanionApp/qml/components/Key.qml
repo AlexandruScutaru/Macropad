@@ -3,14 +3,19 @@ import QtQuick.Controls.Basic
 
 import Controls
 
-Rectangle {
+Control {
     id: key
 
+    activeFocusOnTab: false
+    focus: false
+
+    // disabling it so tab can't reach this normally,
+    // only when user explicitly enters the grid via enter/return press
+    // focusPolicy: Qt.StrongFocus
+
     property bool isRound: false
-    property bool hovered: false
     property bool selected: false
     property bool dragHover: false
-    property bool pressed: false
 
     property string actionId: ""
     property string actionDisplayName: ""
@@ -22,48 +27,63 @@ Rectangle {
     signal clicked
     signal doubleClicked
 
-    color: getBgColor()
-    border.color: getBorderColor()
-    border.width: 2
-    radius: isRound ? width / 2 : 8
+    implicitWidth: 64
+    implicitHeight: 64
 
-    CIcon {
-        anchors.centerIn: parent
-        iconSize: key.width * 0.6
+    Keys.onPressed: (event) => {
+        if (event.key === Qt.Key_Space) {
+            key.clicked();
+            event.accepted = true;
+        } else if (selected && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
+            key.doubleClicked();
+            event.accepted = true;
+        }
+    }
 
-        source: key.actionIconName.length ? "qrc:///resources/icons/%1".arg(key.actionIconName) : ""
-        color: key.getTextColor()
-        visible: key.actionId.length >= 0
+    contentItem: Item {
+        anchors.fill: parent
+
+        CIcon {
+            anchors.centerIn: parent
+            iconSize: key.width * 0.6
+
+            source: key.actionIconName.length ? "qrc:///resources/icons/%1".arg(key.actionIconName) : ""
+            color: key.getTextColor()
+            visible: key.actionId.length >= 0
+        }
+    }
+
+    background: Rectangle {
+        id: backgroundRect
+        color: key.getBgColor()
+        border.color: key.getBorderColor()
+        border.width: 2
+        radius: key.isRound ? key.width / 2 : 8
+    }
+
+    CFocusOutline {
+        target: key
+        anchors.fill: parent
+        radius: key.isRound ? key.width / 2 : 8
     }
 
     MouseArea {
+        id: mouseArea
         anchors.fill: parent
 
         hoverEnabled: true
         acceptedButtons: Qt.LeftButton
 
-        onEntered: {
-            key.hovered = true;
-
-        }
-
         onExited: {
-            key.hovered = false;
             key.dragHover = false;
-            key.pressed = false;
-        }
-
-        onPressed: {
-            key.pressed = true;
         }
 
         onClicked: {
-            key.pressed = false;
+            key.forceActiveFocus();
             key.clicked();
         }
 
         onDoubleClicked: {
-            key.pressed = false;
             key.doubleClicked();
         }
     }
@@ -79,13 +99,11 @@ Rectangle {
 
         onExited: () => {
             key.dragHover = false;
-            key.pressed = false;
         }
 
         onDropped: (drag) => {
             if (key.parseDroppedData(drag.text)) {
                 key.dragHover = false;
-                key.pressed = false;
                 key.actionAssigned(key.droppedActionId);
             }
         }
@@ -94,7 +112,7 @@ Rectangle {
     ToolTip {
         id: tooltip
         text: key.actionDisplayName
-        visible: key.hovered && key.actionId >= 0 && key.actionDisplayName.length > 0
+        visible: mouseArea.containsMouse && key.actionId >= 0 && key.actionDisplayName.length > 0
         delay: 600
     }
 
@@ -115,8 +133,8 @@ Rectangle {
     }
 
     function getBgColor() {
-        if (pressed) return Theme.buttonSecondaryPressed;
-        if (hovered || dragHover) return Theme.buttonSecondaryHovered;
+        if (mouseArea.pressed) return Theme.buttonSecondaryPressed;
+        if (mouseArea.containsMouse || dragHover) return Theme.buttonSecondaryHovered;
         return Theme.backgroundTertiary;
     }
 
@@ -127,7 +145,7 @@ Rectangle {
     }
 
     function getTextColor() {
-        if (key.hovered || key.selected) return Theme.textPrimary;
+        if (mouseArea.containsMouse || key.selected) return Theme.textPrimary;
         return Theme.textSecondary;
     }
 }

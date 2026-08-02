@@ -196,7 +196,7 @@ void KeypadModule::onConfigOptionChanged(int layer, int key, const QString& name
             config->value = value;
             mService->saveProfile(mCurrentProfile);
 
-            mActionConfigController->onActionConfigChanged(layer, key, action);
+            mActionConfigController->onActionConfigOptionChanged(layer, key, name, value);
         }
     } catch(...) {
         qWarning() << "An error ocurred updating the key config option:" << layer << key << name;
