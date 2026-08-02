@@ -5,7 +5,7 @@ import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import QtQuick.Controls.Basic
 
-import Controls
+import Components
 
 Control {
     id: keys

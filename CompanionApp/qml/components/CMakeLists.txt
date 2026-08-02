@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.19)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(MODULE_NAME "Controls")
+set(MODULE_NAME "Components")
 
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -20,6 +20,7 @@ qt_add_qml_module(${MODULE_NAME}
         CCollapseableHeader.qml
         CDragableItem.qml
         CFocusOutline.qml
+        CGradientSeparator.qml
         CIcon.qml
         CIconButton.qml
         CPillButton.qml

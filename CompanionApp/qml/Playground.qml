@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic
 
-import Controls
+import Components
 
 ApplicationWindow {
     id: mainWindow

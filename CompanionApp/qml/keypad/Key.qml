@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Basic
 
-import Controls
+import Components
 
 Control {
     id: key

@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic
 
-import Controls
+import Components
 
 Item {
     id: pagination

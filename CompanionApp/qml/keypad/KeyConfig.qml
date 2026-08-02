@@ -5,7 +5,7 @@ import QtQuick.Dialogs
 import QtCore
 import QtQml.Models
 
-import Controls
+import Components
 
 Item {
     id: keyconfig
@@ -46,7 +46,7 @@ Item {
                 color: Theme.textPrimary
             }
 
-            GradientSeparator {
+            CGradientSeparator {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 1
 

@@ -5,7 +5,7 @@
 #include <QIcon>
 
 #include <QtQml/QQmlExtensionPlugin>
-Q_IMPORT_QML_PLUGIN(ControlsPlugin)
+Q_IMPORT_QML_PLUGIN(ComponentsPlugin)
 
 #include "AppSettings.h"
 #include "Macropad.h"

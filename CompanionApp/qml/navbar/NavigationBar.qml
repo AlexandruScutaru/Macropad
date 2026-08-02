@@ -4,7 +4,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQml.Models
 
-import Controls
+import Components
 
 Item {
     id: navBar

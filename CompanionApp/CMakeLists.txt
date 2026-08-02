@@ -24,7 +24,7 @@ find_package(Qt6 REQUIRED COMPONENTS Concurrent)
 
 qt_standard_project_setup()
 
-add_subdirectory(qml/controls)
+add_subdirectory(qml/components)
 
 qt_add_executable(${TARGET_NAME}
     main.cpp
@@ -34,22 +34,25 @@ qt_policy(SET QTP0001 NEW)
 
 set(qml_plain_files
     qml/Main.qml
+    qml/AppStack.qml
     qml/Playground.qml
-    qml/AppStackView.qml
-    qml/NotConnectedView.qml
-    qml/KeypadView.qml
-    qml/SlidersView.qml
-    qml/SettingsView.qml
 
-    qml/components/ActionsList.qml
-    qml/components/GradientSeparator.qml
-    qml/components/NavigationBar.qml
-    qml/components/NavigationBarModel.qml
-    qml/components/Key.qml
-    qml/components/KeyConfig.qml
-    qml/components/KeypadLayers.qml
-    qml/components/KeysGrid.qml
-    qml/components/LayerPagination.qml
+    qml/navbar/NavigationBar.qml
+    qml/navbar/NavigationBarModel.qml
+
+    qml/not-connected/NotConnectedView.qml
+
+    qml/settings/SettingsView.qml
+
+    qml/sliders/SlidersView.qml
+
+    qml/keypad/KeypadView.qml
+    qml/keypad/ActionsList.qml
+    qml/keypad/Key.qml
+    qml/keypad/KeyConfig.qml
+    qml/keypad/KeypadLayers.qml
+    qml/keypad/KeysGrid.qml
+    qml/keypad/LayerPagination.qml
 )
 
 foreach(file_name ${qml_plain_files})
@@ -155,7 +158,7 @@ target_link_libraries(${TARGET_NAME} PRIVATE Qt6::QuickControls2)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Widgets)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Concurrent)
 
-target_link_libraries(${TARGET_NAME} PRIVATE Controlsplugin)
+target_link_libraries(${TARGET_NAME} PRIVATE Componentsplugin)
 
 # common configurations
 set(NLOHMANN_JSON_INCLUDE "${CMAKE_SOURCE_DIR}/deps/common/nlohmann_json")
