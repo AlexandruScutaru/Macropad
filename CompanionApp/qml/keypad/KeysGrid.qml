@@ -20,15 +20,10 @@ Control {
 
     property alias model: keysRepeater.model
     property color outlineColor: "transparent"
-
     property int selectedKey: -1
-    property real aspectRatio: 1.0
-
-    implicitWidth: height * aspectRatio
-    implicitHeight: width / aspectRatio
 
     Keys.onPressed: (event) => {
-        if (focus && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
+        if (focus && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space)) {
             if (keysRepeater.count !== 0) {
                 keysRepeater.itemAt(0).forceActiveFocus(Qt.TabFocusReason);
             }
@@ -37,12 +32,15 @@ Control {
         }
     }
 
-    contentItem: Rectangle {
+    // another level of indirection to break out of the Control.contentItem geometry management,
+    // so the Rectangle is bound to expected property values
+    contentItem: Item { Rectangle {
         id: gridContainer
 
-        anchors.horizontalCenter: parent.horizontalCenter
-        height: parent.height
-        implicitWidth: height * keys.aspectRatio
+        // maintain 1:1 aspect ratio regardless of size
+        width: Math.min(keys.width, keys.height)
+        height: width
+        anchors.centerIn: parent
 
         color: Theme.backgroundPrimary
         radius: 8
@@ -130,11 +128,12 @@ Control {
                 }
             }
         }
-    }
 
-    CFocusOutline {
-        target: keys
-        anchors.fill: keys
-        radius: 8
-    }
+        CFocusOutline {
+            target: keys
+            anchors.fill: gridContainer
+
+            radius: 8
+        }
+    }}
 }
