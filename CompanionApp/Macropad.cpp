@@ -14,7 +14,7 @@
 #include <QQmlComponent>
 #include <QQuickItem>
 
-static constexpr auto QML_APP_CONTAINER_NAME = "appStackViewContainer";
+static constexpr auto QML_APP_CONTAINER_NAME = "appStackContainer";
 static constexpr auto THEMES_URI = ":/resources/themes.json";
 
 static constexpr auto VID = 0xFEED;
@@ -58,7 +58,7 @@ void Macropad::init(const MacropadConfig& config) {
 
     // TODO: get theme from saved settings
     loadTheme(theme::Type::Light);
-    initAppStackView(getMainWindowObject());
+    initAppStack(getMainWindowObject());
     initActionHandlers();
 }
 
@@ -134,11 +134,11 @@ void Macropad::initTrayIcon() {
     QObject::connect(trayIcon, &TrayIcon::quitActionTriggered, qApp, &QApplication::quit);
 }
 
-void Macropad::initAppStackView(const QObject* const qmlWindow) {
+void Macropad::initAppStack(const QObject* const qmlWindow) {
     if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(QML_APP_CONTAINER_NAME); deviceViewContainer) {
-        QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/AppStackView.qml"));
+        QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/AppStack.qml"));
         if (deviceView.isError() || deviceView.isNull()) {
-            qDebug() << "Cannot create AppStackView.qml: " << deviceView.errors();
+            qDebug() << "Cannot create AppStack.qml: " << deviceView.errors();
             return;
         }
 

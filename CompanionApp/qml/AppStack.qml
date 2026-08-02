@@ -4,11 +4,11 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic
 
-import Controls
+import Components
 import "."
 
 FocusScope {
-    id: appStackView
+    id: appStack
 
     activeFocusOnTab: true
 
@@ -176,7 +176,7 @@ FocusScope {
             if (visible) {
                 forceActiveFocus();
             } else {
-                appStackView.forceActiveFocus();
+                appStack.forceActiveFocus();
             }
         }
     }

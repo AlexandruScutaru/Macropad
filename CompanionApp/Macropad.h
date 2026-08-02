@@ -58,7 +58,7 @@ private:
 
     void initActionHandlers();
     void initTrayIcon();
-    void initAppStackView(const QObject* const qmlWindow);
+    void initAppStack(const QObject* const qmlWindow);
 
     QQmlApplicationEngine& mQmlEngine;
 

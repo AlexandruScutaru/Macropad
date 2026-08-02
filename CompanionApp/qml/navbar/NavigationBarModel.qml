@@ -1,6 +1,6 @@
 import QtQuick
 
-import Controls
+import Components
 
 ListModel {
     id: model

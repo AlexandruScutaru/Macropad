@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 
-import Controls
+import Components
 
 Item {
     id: notConnectedView
@@ -57,7 +57,7 @@ Item {
             toolTipText: qsTr("Retry device connection")
 
             onButtonClicked: {
-                appStackView.deviceConnectTryAgainClicked();
+                appStack.deviceConnectTryAgainClicked();
             }
         }
 
