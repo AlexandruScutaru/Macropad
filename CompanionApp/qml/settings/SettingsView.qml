@@ -52,7 +52,7 @@ Rectangle {
                         Layout.fillWidth: true
 
                         required property string name
-                        //required property string viewSource
+                        required property string viewSource
 
                         label: name
                         checked: name === settings.currentSelection
@@ -63,7 +63,7 @@ Rectangle {
                             }
 
                             settings.currentSelection = name;
-                            //TODO: settingsStack.replace(viewSource);
+                            settingsStack.replace(viewSource);
                         }
                     }
                 }
@@ -75,46 +75,47 @@ Rectangle {
         }
 
         ColumnLayout {
-            CText {
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignTop
-                Layout.topMargin: 12
-                Layout.leftMargin: 20
+            spacing: 0
 
-                label: settings.currentSelection
-                fontSize: 20
-                hAlign: Text.AlignLeft
+            RowLayout {
+                CText {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 12
+                    Layout.leftMargin: 12
+
+                    label: settings.currentSelection
+                    fontSize: 16
+                    hAlign: Text.AlignLeft
+                }
+
+                CIconButton {
+                    Layout.alignment: Qt.AlignTop | Qt.AlignRight
+                    Layout.topMargin: 12
+                    Layout.rightMargin: 12
+
+                    iconName: "qrc:///resources/icons/close.svg"
+                    toolTipText: qsTr("Close")
+                    iconAnimationType: CIcon.AnimationType.Scale
+
+                    onButtonClicked: {
+                        settings.closeRequested();
+                    }
+                }
             }
 
-            Item {
+            CGradientSeparator {
+                Layout.fillWidth: true
+                Layout.topMargin: 8
+            }
+
+            StackView {
+                id: settingsStack
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.leftMargin: 20
-                Layout.bottomMargin: 12
 
-                StackView {
-                    id: settingsStack
-
-                    anchors.fill: parent
-                    anchors.margins: 12
-
-                    clip: true
-                    //initialItem: settingsTabsModel.get(0).viewSource
-                }
-            }
-        }
-
-        CIconButton {
-            Layout.alignment: Qt.AlignTop
-            Layout.topMargin: 12
-            Layout.rightMargin: 12
-
-            iconName: "qrc:///resources/icons/close.svg"
-            toolTipText: qsTr("Close")
-            iconAnimationType: CIcon.AnimationType.Scale
-
-            onButtonClicked: {
-                settings.closeRequested();
+                initialItem: settingsTabsModel.get(0).viewSource
             }
         }
     }
@@ -122,8 +123,9 @@ Rectangle {
     ListModel {
         id: settingsTabsModel
 
-        ListElement { name: "General" }
-        ListElement { name: "Sliders" }
-        ListElement { name: "About" }
+        ListElement {
+            name: qsTr("Appearance")
+            viewSource: "/qt/qml/MacropadCompanion/Appearance.qml"
+        }
     }
 }

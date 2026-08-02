@@ -4,6 +4,7 @@ Item {
     id: focusOutline
 
     property var target: null
+
     // to be added from theme side
     property color color: "#5DADE2"
     property int borderWidth: 2
@@ -26,7 +27,7 @@ Item {
     }
 
     Rectangle {
-        anchors.fill: parent
+        anchors.fill: focusOutline
 
         color: "transparent"
         border.color: focusOutline.color

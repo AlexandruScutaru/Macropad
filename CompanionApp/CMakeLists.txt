@@ -43,6 +43,7 @@ set(qml_plain_files
     qml/not-connected/NotConnectedView.qml
 
     qml/settings/SettingsView.qml
+    qml/settings/Appearance.qml
 
     qml/sliders/SlidersView.qml
 
