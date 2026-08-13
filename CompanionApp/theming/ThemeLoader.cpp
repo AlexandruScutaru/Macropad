@@ -7,15 +7,17 @@
 #include <QJsonObject>
 #include <QDebug>
 
+static constexpr auto THEMES_URI = ":/resources/themes.json";
+
 using namespace theme;
 
 
-Theme* Loader::Load(const QString& uri, Type type) {
+Theme* Loader::Load(Type type) {
     const auto theme = new Theme(type);
 
-    QFile file(uri);
+    QFile file(THEMES_URI);
     if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Cannot open file" << uri;
+        qDebug() << "Cannot open file" << THEMES_URI;
         return theme;
     }
 
@@ -104,4 +106,12 @@ QString Loader::ThemeNameFromType(Type type) {
         case Type::Light: return "light";
         default: return "";
     };
+}
+
+
+Type Loader::ThemeTypeFromName(const QString& name) {
+    if (name == "dark") return Type::Dark;
+    if (name == "light") return Type::Light;
+
+    return Type::Dark;
 }

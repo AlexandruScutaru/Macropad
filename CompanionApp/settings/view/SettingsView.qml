@@ -9,6 +9,12 @@ import Components
 Rectangle {
     id: settings
 
+    required property SettingsController controller
+
+    property string currentSelection
+
+    signal closeRequested
+
     anchors.fill: parent
     anchors.margins: 0
 
@@ -16,9 +22,6 @@ Rectangle {
     border.color: Theme.border
     border.width: 1
     radius:8
-
-    signal closeRequested
-    property string currentSelection: settingsTabsModel.get(0).name
 
     RowLayout {
         anchors.fill: parent
@@ -46,13 +49,13 @@ Rectangle {
 
                 Repeater {
                     id: tabButtonsRepeater
-                    model: settingsTabsModel
+                    model: settings.controller.tabsListModel
 
                     CTabButton {
                         Layout.fillWidth: true
 
                         required property string name
-                        required property string viewSource
+                        required property string url
 
                         label: name
                         checked: name === settings.currentSelection
@@ -63,7 +66,9 @@ Rectangle {
                             }
 
                             settings.currentSelection = name;
-                            settingsStack.replace(viewSource);
+                            settingsStack.replace(url, {
+                                controller: settings.controller
+                            });
                         }
                     }
                 }
@@ -84,7 +89,8 @@ Rectangle {
                     Layout.leftMargin: 12
 
                     label: settings.currentSelection
-                    fontSize: 16
+                    fontSize: 14
+                    fontWeight: Font.Normal
                     hAlign: Text.AlignLeft
                 }
 
@@ -115,17 +121,30 @@ Rectangle {
                 Layout.fillHeight: true
                 Layout.leftMargin: 20
 
-                initialItem: settingsTabsModel.get(0).viewSource
+                pushEnter: animNone
+                popEnter: animNone
+                replaceEnter: animNone
+                pushExit: animNone
+                popExit: animNone
+                replaceExit: animNone
+
+                Component.onCompleted: {
+                    let firstTabButton = tabButtonsRepeater.itemAt(0);
+                    if (!firstTabButton) {
+                        return;
+                    }
+
+                    settings.currentSelection = firstTabButton.name;
+
+                    settingsStack.push(firstTabButton.url, {
+                        controller: settings.controller
+                    });
+                }
+
+                Transition {
+                    id: animNone
+                }
             }
-        }
-    }
-
-    ListModel {
-        id: settingsTabsModel
-
-        ListElement {
-            name: qsTr("Appearance")
-            viewSource: "/qt/qml/MacropadCompanion/Appearance.qml"
         }
     }
 }

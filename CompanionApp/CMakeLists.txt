@@ -42,8 +42,11 @@ set(qml_plain_files
 
     qml/not-connected/NotConnectedView.qml
 
-    qml/settings/SettingsView.qml
-    qml/settings/Appearance.qml
+    settings/view/SettingsPopup.qml
+    settings/view/SettingsView.qml
+    settings/view/Appearance.qml
+    settings/view/ThemePreview.qml
+    settings/view/ThemeSelector.qml
 
     qml/sliders/SlidersView.qml
 
@@ -91,6 +94,13 @@ qt_add_qml_module(${TARGET_NAME}
         hid/PotentiometersReader.cpp
         hid/PotentiometersReader.h
 
+        settings/controller/SettingsController.cpp
+        settings/controller/SettingsController.h
+        settings/model/TabsListModel.cpp
+        settings/model/TabsListModel.h
+        settings/model/ThemesListModel.cpp
+        settings/model/ThemesListModel.h
+
         theming/Theme.h
         theming/ThemeLoader.cpp
         theming/ThemeLoader.h
@@ -114,11 +124,11 @@ add_subdirectory(action-handlers)
 # by using QML_ELEMENT, qt6 cmake will try to automatically register the type
 # and the class in question needs to be accessible via include path without prefixes
 target_include_directories(${TARGET_NAME} PUBLIC
-    controllers
-    controllers/settings
     keypad
     keypad/controller
     keypad/model
+    settings/controller
+    settings/model
     theming
 )
 

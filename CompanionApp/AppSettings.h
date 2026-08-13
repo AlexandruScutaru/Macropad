@@ -7,18 +7,8 @@
 #include <memory>
 #include <unordered_map>
 
+
 class QSettings;
-
-namespace Hotkeys {
-    enum class Actions;
-}
-
-struct PotentiometerInfo {
-    int min{ 0 };
-    int max{ 1023 };
-};
-using Potentiometers = std::vector<PotentiometerInfo>;
-
 
 class AppSettings : public QObject {
     Q_OBJECT
@@ -32,11 +22,11 @@ public:
     QSize windowSize();
     void saveWindowSize(const QSize& size);
 
+    QString themeName();
+    void saveThemeName(const QString& theme);
+
     bool navBarExpanded();
     void saveNavBarExpanded(bool expanded);
-
-    Potentiometers potentiometersInfo();
-    void savePotentiometersInfo(const Potentiometers& potentiometers);
 
     QString profileData();
     void saveProfileData(const QString& profile);
@@ -47,12 +37,12 @@ private:
     void addLayersAsNeeded(int layer);
 
     void readWindowState();
-    void readPotentiometersInfo();
+    void readTheme();
     void readProfileData();
 
     QSize mWindowSize;
+    QString mThemeName;
     bool mNavBarExpanded{ true };
-    Potentiometers mPotentiometersInfo;
     QString mProfileData;
 
 };

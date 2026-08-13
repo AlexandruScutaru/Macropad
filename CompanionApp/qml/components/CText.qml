@@ -6,6 +6,7 @@ Text {
 
     property string label
     property int fontSize: 12
+    property int fontWeight: Font.Normal
     property int hAlign: Text.AlignLeft
     property int vAlign: Text.AlignVCenter
     property int wrap: Text.NoWrap
@@ -16,6 +17,7 @@ Text {
     text: label
     color: Theme.textPrimary
     font.pointSize: fontSize
+    font.weight: fontWeight
     elide: wrap == Text.NoWrap ? Text.ElideRight : Text.ElideNone
     wrapMode: wrap
 

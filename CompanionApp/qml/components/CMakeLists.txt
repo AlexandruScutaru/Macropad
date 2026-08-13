@@ -24,6 +24,7 @@ qt_add_qml_module(${MODULE_NAME}
         CIcon.qml
         CIconButton.qml
         CPillButton.qml
+        CRadioButton.qml
         CSlider.qml
         CTabButton.qml
         CText.qml

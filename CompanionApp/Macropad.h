@@ -22,6 +22,10 @@ namespace hid {
     class Device;
 }
 
+namespace settings {
+    class SettingsController;
+}
+
 struct MacropadConfig {
     bool isDebug = false;
     bool isSkipPhysicalDevice = false;
@@ -52,6 +56,9 @@ signals:
     void deviceConnected();
     void deviceNotFound();
 
+private slots:
+    void onThemeChangeRequested(const QString& name);
+
 private:
     QObject* const getMainWindowObject();
     void loadTheme(theme::Type type);
@@ -61,6 +68,8 @@ private:
     void initAppStack(const QObject* const qmlWindow);
 
     QQmlApplicationEngine& mQmlEngine;
+
+    settings::SettingsController* mSettingsController{ nullptr };
 
     MacropadConfig mConfig;
     AppSettings* mAppSettings{ nullptr };

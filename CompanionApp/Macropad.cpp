@@ -8,6 +8,7 @@
 #include "tray/TrayIcon.h"
 #include "os/IPlatform.h"
 #include "hid/Device.h"
+#include "settings/controller/SettingsController.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -15,7 +16,6 @@
 #include <QQuickItem>
 
 static constexpr auto QML_APP_CONTAINER_NAME = "appStackContainer";
-static constexpr auto THEMES_URI = ":/resources/themes.json";
 
 static constexpr auto VID = 0xFEED;
 static constexpr auto PID = 0xB00B;
@@ -50,22 +50,24 @@ void Macropad::init(const MacropadConfig& config) {
         return;
     }
 
+    mSettingsController = new settings::SettingsController(this);
+    QObject::connect(mSettingsController, &settings::SettingsController::changeThemeRequested, this, &Macropad::onThemeChangeRequested);
+
     mHidDevice = new hid::Device(this);
     QObject::connect(mHidDevice, &hid::Device::deviceConnected, this, &Macropad::deviceConnected);
     QObject::connect(mHidDevice, &hid::Device::deviceNotFound, this, &Macropad::deviceNotFound);
 
     mKeypadModule = new KeypadModule(mAppSettings, this);
 
-    // TODO: get theme from saved settings
-    loadTheme(theme::Type::Light);
+    loadTheme(theme::Loader::ThemeTypeFromName(mAppSettings->themeName()));
     initAppStack(getMainWindowObject());
     initActionHandlers();
 }
 
 theme::Theme* Macropad::getTheme() {
-    // load default which is Dark at this stage
+    // load dark theme as the default
     if (!mTheme) {
-        loadTheme(theme::Type::Light);
+        loadTheme(theme::Type::Dark);
     }
 
     return mTheme.data();
@@ -105,6 +107,7 @@ void Macropad::saveNavBarExpanded(bool expanded) {
 QObject* const Macropad::getMainWindowObject() {
     const auto qmlWindow = mQmlEngine.rootObjects().constFirst();
     assert(qmlWindow && "Couldn't get main window object");
+
     return qmlWindow;
 }
 
@@ -113,7 +116,12 @@ void Macropad::loadTheme(theme::Type type) {
         mTheme->deleteLater();
     }
 
-    mTheme = QPointer(theme::Loader::Load(THEMES_URI, type));
+    mTheme = QPointer(theme::Loader::Load(type));
+
+    if (mSettingsController) {
+        mSettingsController->setCurrentTheme(theme::Loader::ThemeNameFromType(mTheme->getType()));
+    }
+
     emit themeChanged(mTheme.data());
 }
 
@@ -135,15 +143,35 @@ void Macropad::initTrayIcon() {
 }
 
 void Macropad::initAppStack(const QObject* const qmlWindow) {
-    if (auto deviceViewContainer = qmlWindow->findChild<QObject*>(QML_APP_CONTAINER_NAME); deviceViewContainer) {
-        QQmlComponent deviceView(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/AppStack.qml"));
-        if (deviceView.isError() || deviceView.isNull()) {
-            qDebug() << "Cannot create AppStack.qml: " << deviceView.errors();
+    if (auto appStackContainer = qmlWindow->findChild<QObject*>(QML_APP_CONTAINER_NAME); appStackContainer) {
+        QQmlComponent component(&mQmlEngine, QStringLiteral(":/qt/qml/MacropadCompanion/AppStack.qml"));
+        if (component.isError() || component.isNull()) {
+            qDebug() << "Cannot load AppStack.qml: " << component.errors();
             return;
         }
 
-        auto component = deviceView.createWithInitialProperties(/*QVariantMap{{ "mainController", QVariant::fromValue<MainController*>(mMainController) }}*/ {});
-        auto item = qobject_cast<QQuickItem*>(component);
-        item->setParentItem(qobject_cast<QQuickItem*>(deviceViewContainer));
+        auto object = component.createWithInitialProperties(QVariantMap{{ "settingsController", QVariant::fromValue<settings::SettingsController*>(mSettingsController) }});
+        if (!object) {
+            qDebug() << "Cannot create AppStack.qml instance:";
+            for (const QQmlError &error : component.errors()) {
+                qDebug().noquote() << error.toString() << "\n";
+            }
+
+            return;
+        }
+
+        auto item = qobject_cast<QQuickItem*>(object);
+        if (!item) {
+            qDebug() << "Cannot cast QObject* to QQuickItem*";
+            return;
+        }
+
+        item->setParentItem(qobject_cast<QQuickItem*>(appStackContainer));
     }
+}
+
+
+void Macropad::onThemeChangeRequested(const QString& name) {
+    loadTheme(theme::Loader::ThemeTypeFromName(name));
+    mAppSettings->saveThemeName(name);
 }
