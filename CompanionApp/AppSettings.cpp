@@ -4,21 +4,17 @@
 #include <QDebug>
 #include <QSettings>
 
+static constexpr auto WINDOWSTATE_GROUP = "window-state";
+static constexpr auto WIDTH = "width";
+static constexpr auto HEIGHT = "height";
+static constexpr auto NAVBAR_EXPANDED = "nav-bar-expanded";
 
-static constexpr auto WINDOWSTATE_WIDTH = "windowState/width";
-static constexpr auto WINDOWSTATE_HEIGHT = "windowState/height";
-static constexpr auto WINDOWSTATE_NAVBAR_EXPANDED = "windowState/navBarExpanded";
+static constexpr auto SETTINGS_GROUP = "settings";
+static constexpr auto THEME = "theme";
 
-static constexpr auto DEVICE = "device";
-static constexpr auto KEYPAD = "keypad";
+static constexpr auto DEVICE_GROUP = "device";
+static constexpr auto KEYPAD_GROUP = "keypad";
 static constexpr auto PROFILE = "profile";
-static constexpr auto ACTION_ID = "actionId";
-
-static constexpr auto SLIDERS_ARRAY = "sliders";
-static constexpr auto MIN = "min";
-static constexpr auto MAX = "max";
-
-static constexpr auto NUM_POTENTIOMETERS = 4;
 
 
 AppSettings::AppSettings(QObject* parent)
@@ -27,7 +23,7 @@ AppSettings::AppSettings(QObject* parent)
     qDebug() << "AppSettings::AppSettings";
 
     readWindowState();
-    readPotentiometersInfo();
+    readTheme();
     readProfileData();
 }
 
@@ -49,8 +45,27 @@ void AppSettings::saveWindowSize(const QSize& size) {
     mWindowSize = size;
 
     auto settings = getSettings();
-    settings->setValue(WINDOWSTATE_WIDTH, size.width());
-    settings->setValue(WINDOWSTATE_HEIGHT, size.height());
+    settings->beginGroup(WINDOWSTATE_GROUP);
+
+    settings->setValue(WIDTH, size.width());
+    settings->setValue(HEIGHT, size.height());
+
+    settings->endGroup();
+}
+
+QString AppSettings::themeName() {
+    return mThemeName;
+}
+
+void AppSettings::saveThemeName(const QString& theme) {
+    mThemeName = theme;
+
+    auto settings = getSettings();
+    settings->beginGroup(SETTINGS_GROUP);
+
+    settings->setValue(THEME, theme);
+
+    settings->endGroup();
 }
 
 bool AppSettings::navBarExpanded() {
@@ -61,59 +76,33 @@ void AppSettings::saveNavBarExpanded(bool expanded) {
     mNavBarExpanded = expanded;
 
     auto settings = getSettings();
-    settings->setValue(WINDOWSTATE_NAVBAR_EXPANDED, mNavBarExpanded);
+    settings->beginGroup(WINDOWSTATE_GROUP);
+
+    settings->setValue(NAVBAR_EXPANDED, mNavBarExpanded);
+
+    settings->endGroup();
 }
 
 void AppSettings::readWindowState() {
     auto settings = getSettings();
 
-    auto w = settings->value(WINDOWSTATE_WIDTH, 900).toInt();
-    auto h = settings->value(WINDOWSTATE_HEIGHT, 540).toInt();
+    settings->beginGroup(WINDOWSTATE_GROUP);
+
+    auto w = settings->value(WIDTH, 900).toInt();
+    auto h = settings->value(HEIGHT, 540).toInt();
     mWindowSize = QSize(w, h);
+    mNavBarExpanded = settings->value(NAVBAR_EXPANDED, true).toBool();
 
-    mNavBarExpanded = settings->value(WINDOWSTATE_NAVBAR_EXPANDED, true).toBool();
-}
-
-Potentiometers AppSettings::potentiometersInfo() {
-    return mPotentiometersInfo;
-}
-
-void AppSettings::savePotentiometersInfo(const Potentiometers& potentiometers) {
-    mPotentiometersInfo = potentiometers;
-
-    auto settings = getSettings();
-    settings->beginGroup(DEVICE);
-    settings->beginWriteArray(SLIDERS_ARRAY);
-    for (int i = 0; i < mPotentiometersInfo.size(); i++) {
-        settings->setArrayIndex(i);
-        settings->setValue(MIN, mPotentiometersInfo[i].min);
-        settings->setValue(MAX, mPotentiometersInfo[i].max);
-    }
-    settings->endArray();
     settings->endGroup();
 }
 
-void AppSettings::readPotentiometersInfo() {
+void AppSettings::readTheme() {
     auto settings = getSettings();
+    settings->beginGroup(SETTINGS_GROUP);
 
-    settings->beginGroup(DEVICE);
-    auto size = settings->beginReadArray(SLIDERS_ARRAY);
+    mThemeName = settings->value(THEME, "dark").toString();
 
-    mPotentiometersInfo.clear();
-    mPotentiometersInfo.resize(size);
-    for (int i = 0; i < size; i++) {
-        settings->setArrayIndex(i);
-        auto min = settings->value(MIN, 0).toInt();
-        auto max = settings->value(MAX, 1023).toInt();
-        mPotentiometersInfo[i].min = min;
-        mPotentiometersInfo[i].max = max;
-    }
-    settings->endArray();
     settings->endGroup();
-
-    if (mPotentiometersInfo.size() == 0) {
-        mPotentiometersInfo.resize(NUM_POTENTIOMETERS);
-    }
 }
 
 QString AppSettings::profileData() {
@@ -122,9 +111,8 @@ QString AppSettings::profileData() {
 
 void AppSettings::saveProfileData(const QString& profile) {
     auto settings = getSettings();
-
-    settings->beginGroup(DEVICE);
-    settings->beginGroup(KEYPAD);
+    settings->beginGroup(DEVICE_GROUP);
+    settings->beginGroup(KEYPAD_GROUP);
 
     settings->setValue(PROFILE, profile);
 
@@ -134,9 +122,8 @@ void AppSettings::saveProfileData(const QString& profile) {
 
 void AppSettings::readProfileData() {
     auto settings = getSettings();
-
-    settings->beginGroup(DEVICE);
-    settings->beginGroup(KEYPAD);
+    settings->beginGroup(DEVICE_GROUP);
+    settings->beginGroup(KEYPAD_GROUP);
 
     mProfileData = settings->value(PROFILE, "").toString();
 

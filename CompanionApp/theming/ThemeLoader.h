@@ -12,13 +12,15 @@ namespace theme {
     class Loader {
     public:
         using SetterFunc = void (Theme::*)(const QString&);
-        static Theme* Load(const QString& uri, Type type);
+        static Theme* Load(Type type);
+
+        static QString ThemeNameFromType(Type type);
+        static Type ThemeTypeFromName(const QString& name);
 
     private:
         Loader() {};
 
         static void SetColor(const QJsonValue& json, const QString& name, Theme* theme, SetterFunc setter);
-        static QString ThemeNameFromType(Type type);
 
     };
 }

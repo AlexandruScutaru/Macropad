@@ -3,12 +3,20 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic
+import QtQml
 
 import Components
 import "."
 
 FocusScope {
     id: appStack
+
+    enum View {
+        Keypad = 0,
+        Sliders = 1
+    }
+
+    required property SettingsController settingsController
 
     activeFocusOnTab: true
 
@@ -47,10 +55,10 @@ FocusScope {
                 onNavTabButtonClicked: (tabName) => {
                     switch (tabName) {
                         case navBarModel.keypadTabName:
-                            stack.currentItem.currentIndex = 0;
+                            stack.currentItem.currentIndex = AppStack.View.Keypad;
                             break;
                         case navBarModel.slidersTabName:
-                            stack.currentItem.currentIndex = 1;
+                            stack.currentItem.currentIndex = AppStack.View.Sliders;
                             break;
                         case navBarModel.settingsTabName:
                             settingsPopup.visible = true;
@@ -109,6 +117,7 @@ FocusScope {
 
                 Connections {
                     target: MacroPad
+
                     function onDeviceConnected() {
                         navBarModel.keypadTabEnabled = true;
                         navBarModel.slidersTabEnabled = true;
@@ -129,60 +138,22 @@ FocusScope {
         }
     }
 
-    Popup {
+    SettingsPopup {
         id: settingsPopup
 
-        parent: Overlay.overlay
         anchors.centerIn: parent
         width: parent.width * 0.7
         height: parent.height * 0.8
 
-        visible: false
-        focus: visible
-        modal: true
-        closePolicy: Popup.CloseOnEscape
+        controller: appStack.settingsController
 
-        background: Rectangle {
-            color: "transparent"
-        }
-
-        Overlay.modal: Rectangle {
-            color: Theme.backgroundBackdrop
-        }
-
-        contentItem: Item {
-            anchors.fill: parent
-
-            Loader {
-                id: settingsLoader
-                anchors.fill: parent
-
-                active: false
-                sourceComponent: settingsView
-            }
-
-            Connections {
-                target: settingsLoader.item
-                function onCloseRequested() {
-                    settingsLoader.active = false;
-                    settingsPopup.visible = false;
-                }
-            }
-        }
-
-        onVisibleChanged: {
-            settingsLoader.active = visible;
-
-            if (visible) {
-                forceActiveFocus();
-            } else {
-                appStack.forceActiveFocus();
-            }
-        }
+        onOpened: settingsPopup.forceActiveFocus()
+        onClosed: appStack.forceActiveFocus()
     }
 
     Component {
         id: loadingView
+
         Item {
             CBusyIndicator {
                 anchors.centerIn: parent
@@ -194,22 +165,20 @@ FocusScope {
 
     Component {
         id: notConnectedView
+
         NotConnectedView {}
     }
 
     Component {
         id: macropadView
+
         StackLayout {
             id: stackLayout
-            currentIndex: 0
+
+            currentIndex: AppStack.View.Keypad;
 
             KeypadView {}
             SlidersView {}
         }
-    }
-
-    Component {
-        id: settingsView
-        SettingsView {}
     }
 }
