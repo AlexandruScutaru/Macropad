@@ -70,18 +70,13 @@ TabsListModel* SettingsController::createTabsListModel() {
 }
 
 ThemesListModel* SettingsController::createThemesListModel() {
-    using ThemeEntry = std::tuple<QString, theme::Theme*>;
-
-    std::vector<ThemeEntry> availableThemes = {
-        { "dark", theme::Loader::Load(theme::Type::Dark) },
-        { "light", theme::Loader::Load(theme::Type::Light) },
-    };
+    const auto availableThemes = theme::Loader::GetAvailableThemes();
 
     QList<QMap<int, QVariant>> themesModel;
-    for (auto& [name, colors]: availableThemes) {
+    for (const auto& theme: availableThemes) {
         QMap<int, QVariant> themeRow;
-        themeRow[ThemesListModel::Name] = name;
-        themeRow[ThemesListModel::Colors] = QVariant::fromValue(colors);
+        themeRow[ThemesListModel::Name] = theme;
+        themeRow[ThemesListModel::Colors] = QVariant::fromValue(theme::Loader::Load(theme));
         themesModel.push_back(themeRow);
     }
 

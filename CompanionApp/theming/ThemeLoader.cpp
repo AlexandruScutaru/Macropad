@@ -12,43 +12,24 @@ static constexpr auto THEMES_URI = ":/resources/themes.json";
 using namespace theme;
 
 
-Theme* Loader::Load(Type type) {
-    const auto theme = new Theme(type);
+Theme* Loader::Load(const QString& name) {
+    const auto theme = new Theme(name);
 
-    QFile file(THEMES_URI);
-    if (!file.open(QIODevice::ReadOnly)) {
-        qDebug() << "Cannot open file" << THEMES_URI;
+    const auto themesJson = LoadThemesJson(THEMES_URI);
+    if (themesJson == std::nullopt) {
+        qDebug() << "failed to load" << THEMES_URI;
         return theme;
     }
 
-    QJsonParseError parseError;
-    QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll(), &parseError);
-    if (jsonDoc.isNull()) {
-        qDebug() << "Cannot parse JSON file:" << parseError.errorString();
-        return theme;
-    }
-
-    if (!jsonDoc.isObject()) {
-        qDebug() << "JSON document is not an object";
-        return theme;
-    }
-
-    QJsonObject json = jsonDoc.object();
-    if (json.isEmpty()) {
-        qDebug() << "JSON is empty";
-        return theme;
-    }
-
-    const auto themesData = json["themes"];
+    const auto themesData = (*themesJson)["themes"];
     if (!themesData.isObject()) {
         qDebug() << "'themes' json property is not an object";
         return theme;
     }
 
-    const auto themeName = ThemeNameFromType(type);
-    const auto themeData = themesData[themeName];
+    const auto themeData = themesData[name];
     if (!themeData.isObject()) {
-        qDebug() << "theme '" << themeName << "' is not an object";
+        qDebug() << "theme '" << name << "' is not an object";
         return theme;
     }
 
@@ -94,24 +75,53 @@ Theme* Loader::Load(Type type) {
     return theme;
 }
 
+QStringList Loader::GetAvailableThemes() {
+    const auto themesJson = LoadThemesJson(THEMES_URI);
+    if (themesJson == std::nullopt) {
+        qDebug() << "failed to load" << THEMES_URI;
+        return {};
+    }
+
+    const auto themesData = (*themesJson)["themes"];
+    if (!themesData.isObject()) {
+        qDebug() << "'themes' json property is not an object";
+        return {};
+    }
+
+    return themesData.toObject().keys().toList();
+}
+
+std::optional<QJsonObject> Loader::LoadThemesJson(const QString& filePath) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Cannot open file" << filePath;
+        return std::nullopt;
+    }
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll(), &parseError);
+    if (jsonDoc.isNull()) {
+        qDebug() << "Cannot parse JSON file:" << parseError.errorString();
+        return std::nullopt;
+    }
+
+    if (!jsonDoc.isObject()) {
+        qDebug() << "JSON document is not an object";
+        return std::nullopt;
+    }
+
+    QJsonObject json = jsonDoc.object();
+    if (json.isEmpty()) {
+        qDebug() << "JSON is empty";
+        return std::nullopt;
+    }
+
+    return json;
+}
+
+
 void Loader::SetColor(const QJsonValue& json, const QString& name, Theme* theme, Loader::SetterFunc setter) {
     if (const auto& color = json[name]; color.isString()) {
         ((*theme).*setter)(color.toString());
     }
-}
-
-QString Loader::ThemeNameFromType(Type type) {
-    switch (type) {
-        case Type::Dark: return "dark";
-        case Type::Light: return "light";
-        default: return "";
-    };
-}
-
-
-Type Loader::ThemeTypeFromName(const QString& name) {
-    if (name == "dark") return Type::Dark;
-    if (name == "light") return Type::Light;
-
-    return Type::Dark;
 }

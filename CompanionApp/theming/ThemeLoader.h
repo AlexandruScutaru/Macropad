@@ -2,24 +2,25 @@
 
 #include <QJsonObject>
 #include <QString>
+#include <QStringList>
 
-#include <functional>
+#include <optional>
+
 
 namespace theme {
-    enum class Type;
     class Theme;
 
     class Loader {
     public:
         using SetterFunc = void (Theme::*)(const QString&);
-        static Theme* Load(Type type);
 
-        static QString ThemeNameFromType(Type type);
-        static Type ThemeTypeFromName(const QString& name);
+        static Theme* Load(const QString& name);
+        static QStringList GetAvailableThemes();
 
     private:
         Loader() {};
 
+        static std::optional<QJsonObject> LoadThemesJson(const QString& filePath);
         static void SetColor(const QJsonValue& json, const QString& name, Theme* theme, SetterFunc setter);
 
     };

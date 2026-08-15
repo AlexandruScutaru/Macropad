@@ -59,15 +59,14 @@ void Macropad::init(const MacropadConfig& config) {
 
     mKeypadModule = new KeypadModule(mAppSettings, this);
 
-    loadTheme(theme::Loader::ThemeTypeFromName(mAppSettings->themeName()));
+    loadTheme(mAppSettings->themeName());
     initAppStack(getMainWindowObject());
     initActionHandlers();
 }
 
 theme::Theme* Macropad::getTheme() {
-    // load dark theme as the default
     if (!mTheme) {
-        loadTheme(theme::Type::Dark);
+        loadTheme(theme::DEFAULT_THEME_NAME);
     }
 
     return mTheme.data();
@@ -111,15 +110,15 @@ QObject* const Macropad::getMainWindowObject() {
     return qmlWindow;
 }
 
-void Macropad::loadTheme(theme::Type type) {
+void Macropad::loadTheme(const QString& name) {
     if (mTheme) {
         mTheme->deleteLater();
     }
 
-    mTheme = QPointer(theme::Loader::Load(type));
+    mTheme = QPointer(theme::Loader::Load(name));
 
     if (mSettingsController) {
-        mSettingsController->setCurrentTheme(theme::Loader::ThemeNameFromType(mTheme->getType()));
+        mSettingsController->setCurrentTheme(mTheme->getName());
     }
 
     emit themeChanged(mTheme.data());
@@ -172,6 +171,6 @@ void Macropad::initAppStack(const QObject* const qmlWindow) {
 
 
 void Macropad::onThemeChangeRequested(const QString& name) {
-    loadTheme(theme::Loader::ThemeTypeFromName(name));
+    loadTheme(name);
     mAppSettings->saveThemeName(name);
 }
