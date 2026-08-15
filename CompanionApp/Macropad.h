@@ -61,7 +61,7 @@ private slots:
 
 private:
     QObject* const getMainWindowObject();
-    void loadTheme(theme::Type type);
+    void loadTheme(const QString& name);
 
     void initActionHandlers();
     void initTrayIcon();

@@ -25,10 +25,7 @@
 
 
 namespace theme {
-    enum class Type {
-        Dark = 0,
-        Light
-    };
+    inline constexpr auto DEFAULT_THEME_NAME = "dark";
 
     class Theme : public QObject {
         Q_OBJECT
@@ -57,22 +54,22 @@ namespace theme {
         COLOR_PROPERTY(error, "#b21a1a");
         COLOR_PROPERTY(border, "#646464");
 
-        Type mType{ Type::Dark };
+        QString mName{ DEFAULT_THEME_NAME };
 
     public:
-        explicit Theme(Type type, QObject* parent = nullptr)
-            : mType(type)
+        explicit Theme(const QString& name, QObject* parent = nullptr)
+            : mName(name)
             , QObject(parent) {
-            qDebug() << "Theme::Theme";
+            qDebug() << "Theme::Theme(" << mName << ")";
         }
 
         ~Theme() {
             qDebug() << "Theme::~Theme";
         }
 
-        Q_INVOKABLE bool isDark() const { return mType == Type::Dark; }
+        Q_INVOKABLE bool isDark() const { return mName == DEFAULT_THEME_NAME; }
 
-        Type getType() const { return mType; }
+        QString getName() const { return mName; }
 
     };
 }
