@@ -5,11 +5,9 @@
 #include <QFutureWatcher>
 #include <QSharedPointer>
 
-#include <vector>
 
 struct hid_device_;
 typedef struct hid_device_ hid_device;
-
 
 namespace hid {
     class Device : public QObject {

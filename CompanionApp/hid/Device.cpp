@@ -9,8 +9,8 @@ extern "C" {
 #include <hidapi.h>
 }
 
-using namespace hid;
 
+using namespace hid;
 
 Device::Device(QObject* parent)
     : QObject(parent)

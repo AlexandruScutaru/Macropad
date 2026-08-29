@@ -1,20 +1,20 @@
 #include "SettingsController.h"
-#include "theming/Theme.h"
-#include "theming/ThemeLoader.h"
 
 #include <QDebug>
 #include <QVariantMap>
+#include <cassert>
+
+
+static constexpr auto VIEW_URL_TEMPLATE = "/qt/qml/MacropadCompanion/%1.qml";
 
 using namespace settings;
 
-
 SettingsController::SettingsController(QObject* parent)
     : QObject(parent)
+    , mTabsListModel(new TabsListModel(this))
+    , mThemesListModel(new ThemesListModel(this))
 {
     qDebug() << "SettingsController::SettingsController";
-
-    mTabsListModel = createTabsListModel();
-    mThemesListModel = createThemesListModel();
 }
 
 SettingsController::~SettingsController() {
@@ -22,21 +22,8 @@ SettingsController::~SettingsController() {
 }
 
 
-void SettingsController::changeTheme(const QString& name) {
-    emit changeThemeRequested(name);
-}
-
 QString SettingsController::currentTheme() {
     return mCurrentTheme;
-}
-
-void SettingsController::setCurrentTheme(const QString& name) {
-    if (mCurrentTheme == name) {
-        return;
-    }
-
-    mCurrentTheme = name;
-    emit currentThemeChanged(mCurrentTheme);
 }
 
 TabsListModel* SettingsController::tabsListModel() {
@@ -47,41 +34,54 @@ ThemesListModel* SettingsController::themesListModel() {
     return mThemesListModel;
 }
 
-TabsListModel* SettingsController::createTabsListModel() {
-    QString urlTemplate = QString("/qt/qml/MacropadCompanion/%1.qml");
+void SettingsController::setAppContext(IAppContext* appContext) {
+    mSettingsService = appContext->settingsService();
 
-    using TabEntry = std::tuple<QString, QString>;
-    std::vector<TabEntry> availableTabs = {
-        { QObject::tr("Appearance"), urlTemplate.arg("Appearance") },
-    };
+    // maybe set some signal/slot handling to get service updates
+    onCurrentThemeChanged(mSettingsService->getCurrentTheme());
+    onTabsListChanged(mSettingsService->getAvailableTabs());
+    onThemesListChanged(mSettingsService->getAvailableThemes());
+}
 
+void SettingsController::changeTheme(const QString& name) {
+    mSettingsService->changeTheme(name);
+    onCurrentThemeChanged(name);
+}
+
+
+void SettingsController::onCurrentThemeChanged(const QString& name) {
+    if (mCurrentTheme == name) {
+        return;
+    }
+
+    mCurrentTheme = name;
+    emit currentThemeChanged(mCurrentTheme);
+}
+
+void SettingsController::onTabsListChanged(const QStringList& tabs) {
     QList<QMap<int, QVariant>> tabsModel;
-    for (auto& [name, url]: availableTabs) {
+    tabsModel.reserve(tabs.length());
+
+    for (const auto& tab: tabs) {
         QMap<int, QVariant> tabRow;
-        tabRow[TabsListModel::Name] = name;
-        tabRow[TabsListModel::Url] = url;
+        tabRow[TabsListModel::Name] = tab;
+        tabRow[TabsListModel::Url] = QString(VIEW_URL_TEMPLATE).arg(tab);
         tabsModel.push_back(tabRow);
     }
 
-    const auto tabsListModel = new TabsListModel(this);
-    tabsListModel->setData(tabsModel);
-    
-    return tabsListModel;
+    mTabsListModel->updateData(tabsModel);
 }
 
-ThemesListModel* SettingsController::createThemesListModel() {
-    const auto availableThemes = theme::Loader::GetAvailableThemes();
-
+void SettingsController::onThemesListChanged(const std::vector<ThemeEntry>& themes) {
     QList<QMap<int, QVariant>> themesModel;
-    for (const auto& theme: availableThemes) {
+    themesModel.reserve(themes.size());
+
+    for (const auto& [name, colors]: themes) {
         QMap<int, QVariant> themeRow;
-        themeRow[ThemesListModel::Name] = theme;
-        themeRow[ThemesListModel::Colors] = QVariant::fromValue(theme::Loader::Load(theme));
+        themeRow[ThemesListModel::Name] = name;
+        themeRow[ThemesListModel::Colors] = colors;
         themesModel.push_back(themeRow);
     }
 
-    const auto themesListModel = new ThemesListModel(this);
-    themesListModel->setData(themesModel);
-    
-    return themesListModel;
+    mThemesListModel->setData(themesModel);
 }

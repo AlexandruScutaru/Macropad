@@ -24,42 +24,36 @@ find_package(Qt6 REQUIRED COMPONENTS Concurrent)
 
 qt_standard_project_setup()
 
-add_subdirectory(qml/components)
-
 qt_add_executable(${TARGET_NAME}
     main.cpp
 )
 
 qt_policy(SET QTP0001 NEW)
 
-set(qml_plain_files
-    qml/Main.qml
-    qml/AppStack.qml
-    qml/Playground.qml
+# custom qml components library plugin
+add_subdirectory(qml-components)
 
-    qml/navbar/NavigationBar.qml
-    qml/navbar/NavigationBarModel.qml
-
-    qml/not-connected/NotConnectedView.qml
-
-    settings/view/SettingsPopup.qml
-    settings/view/SettingsView.qml
-    settings/view/Appearance.qml
-    settings/view/ThemePreview.qml
-    settings/view/ThemeSelector.qml
-
-    qml/sliders/SlidersView.qml
-
-    qml/keypad/KeypadView.qml
-    qml/keypad/ActionsList.qml
-    qml/keypad/Key.qml
-    qml/keypad/KeyConfig.qml
-    qml/keypad/KeypadLayers.qml
-    qml/keypad/KeysGrid.qml
-    qml/keypad/LayerPagination.qml
+# variable to collect all qml plain files into
+set(QML_PLAIN_FILES
 )
+macro(append_qml_files)
+    foreach(file ${ARGN})
+        list(APPEND QML_PLAIN_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${file}")
+    endforeach()
 
-foreach(file_name ${qml_plain_files})
+    if(NOT CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(QML_PLAIN_FILES "${QML_PLAIN_FILES}" PARENT_SCOPE)
+    endif()
+endmacro()
+
+add_subdirectory(app)
+add_subdirectory(action-handlers)
+add_subdirectory(module/keypad)
+add_subdirectory(module/sliders)
+add_subdirectory(settings)
+
+# adding qml files sources to the resource
+foreach(file_name ${QML_PLAIN_FILES})
     get_filename_component(alias "${file_name}" NAME)
     set_source_files_properties(${file_name} PROPERTIES QT_RESOURCE_ALIAS ${alias})
 endforeach()
@@ -73,19 +67,14 @@ qt_add_qml_module(${TARGET_NAME}
     VERSION 1.0
 
     QML_FILES
-        ${qml_plain_files}
+        ${QML_PLAIN_FILES}
 
     SOURCES
-        misc/CmdArgs.cpp
-        misc/CmdArgs.h
-        misc/DebugChecker.h
-        misc/ListModel.cpp
-        misc/ListModel.h
-        misc/TaskRunner.h
-        misc/Utils.cpp
-        misc/Utils.h
-
-        os/IPlatform.h
+        helpers/ListModel.cpp
+        helpers/ListModel.h
+        helpers/String.cpp
+        helpers/String.h
+        helpers/TaskRunner.h
 
         hid/Device.cpp
         hid/Device.h
@@ -94,42 +83,27 @@ qt_add_qml_module(${TARGET_NAME}
         hid/PotentiometersReader.cpp
         hid/PotentiometersReader.h
 
-        settings/controller/SettingsController.cpp
-        settings/controller/SettingsController.h
-        settings/model/TabsListModel.cpp
-        settings/model/TabsListModel.h
-        settings/model/ThemesListModel.cpp
-        settings/model/ThemesListModel.h
+        services/HidDeviceService.cpp
+        services/HidDeviceService.h
+        services/SettingsService.cpp
+        services/SettingsService.h
 
-        theming/Theme.h
-        theming/ThemeLoader.cpp
-        theming/ThemeLoader.h
-
-        tray/TrayIcon.cpp
-        tray/TrayIcon.h
-
-        AppSettings.cpp
-        AppSettings.h
-        Macropad.cpp
-        Macropad.h
+        os/IPlatform.h
 )
-
-# devices
-add_subdirectory(keypad)
-
-# action handlers for the configurable keypad keys
-add_subdirectory(action-handlers)
 
 # unfortunately I have to add this to include path
 # by using QML_ELEMENT, qt6 cmake will try to automatically register the type
 # and the class in question needs to be accessible via include path without prefixes
 target_include_directories(${TARGET_NAME} PUBLIC
-    keypad
-    keypad/controller
-    keypad/model
+    app/controller
+    app/theming
+
+    module/keypad/controller
+    module/keypad/model
+    module/keypad/service
+
     settings/controller
     settings/model
-    theming
 )
 
 file(GLOB_RECURSE QML_SRC "*.qml")
@@ -177,15 +151,12 @@ include_directories(SYSTEM ${NLOHMANN_JSON_INCLUDE})
 
 # platform specific configurations
 if(WIN32)
+    add_subdirectory(os/windows)
+
     set(HIDAPI_DIR "${CMAKE_SOURCE_DIR}/deps/windows/hidapi/cmake")
     find_package(HIDAPI REQUIRED)
     set(HIDAPI_INCLUDE "${CMAKE_SOURCE_DIR}/deps/windows/hidapi/include")
     include_directories(HIDAPI ${HIDAPI_INCLUDE})
-
-    target_sources(${TARGET_NAME} PUBLIC
-        os/windows/WindowsPlatform.cpp
-        os/windows/WindowsPlatform.h
-    )
 
     set_target_properties(${TARGET_NAME} PROPERTIES
         WIN32_EXECUTABLE TRUE
@@ -202,20 +173,14 @@ if(WIN32)
 
     install(IMPORTED_RUNTIME_ARTIFACTS HIDAPI::hidapi)
 elseif (LINUX)
+    add_subdirectory(os/linux)
+
     # on linux Qt6.9 needs WrapOpenGL (dnf install mesa-libGL-devel)
 
     # sudo dnf install hidapi hidapi-devel
     find_package(hidapi REQUIRED)
-
     # sudo dnf install pulseaudio-libs-devel
     find_package(PulseAudio REQUIRED)
-
-    target_sources(${TARGET_NAME} PUBLIC
-        os/linux/Audio.cpp
-        os/linux/Audio.h
-        os/linux/LinuxPlatform.cpp
-        os/linux/LinuxPlatform.h
-    )
 
     target_link_libraries(${TARGET_NAME} PRIVATE hidapi::hidapi)
     target_link_libraries(${TARGET_NAME} PRIVATE pulse)

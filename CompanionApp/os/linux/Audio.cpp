@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-using namespace osal;
 
+using namespace os;
 
 struct SinkInfo {
     pa_cvolume volume;

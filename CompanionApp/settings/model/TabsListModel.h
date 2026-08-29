@@ -1,6 +1,6 @@
 #pragma once
 
-#include "misc/ListModel.h"
+#include "helpers/ListModel.h"
 
 
 namespace settings {

@@ -11,13 +11,13 @@
 #include <memory>
 #include <vector>
 
-using namespace osal;
+
+using namespace os;
 
 template<typename T>
 using Resource = std::unique_ptr<T, std::function<void(T*)>>;
 
-
-osal::IPlatformPtr osal::CreatePlatform() {
+os::IPlatformPtr os::CreatePlatform() {
     return std::make_shared<LinuxPlatform>();
 }
 

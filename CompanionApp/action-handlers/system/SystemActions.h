@@ -8,29 +8,31 @@
 #include <unordered_map>
 
 
-namespace osal {
+namespace os {
     class IPlatform;
     using IPlatformPtr = std::shared_ptr<IPlatform>;
 }
 
-class SystemActions: public IActionHandler {
-public:
-    SystemActions(osal::IPlatformPtr platform);
+namespace action_handlers {
+    class SystemActions: public IActionHandler {
+    public:
+        SystemActions(os::IPlatformPtr platform);
 
-    std::string id() override;
-    action_handlers::Section getActions() override;
-    bool handleAction(const std::string& payload) override;
+        std::string id() override;
+        action_handlers::Section getActions() override;
+        bool handleAction(const std::string& payload) override;
 
-private:
-    bool openWebsite(const nlohmann::json& payload);
-    bool launch(const nlohmann::json& payload);
+    private:
+        bool openWebsite(const nlohmann::json& payload);
+        bool launch(const nlohmann::json& payload);
 
-    bool increaseVolume(const nlohmann::json& payload);
-    bool decreaseVolume(const nlohmann::json& payload);
-    bool toggleMute(const nlohmann::json& payload);
-    bool switchOutput(const nlohmann::json& payload);
+        bool increaseVolume(const nlohmann::json& payload);
+        bool decreaseVolume(const nlohmann::json& payload);
+        bool toggleMute(const nlohmann::json& payload);
+        bool switchOutput(const nlohmann::json& payload);
 
-    std::unordered_map<std::string, bool (SystemActions::*)(const nlohmann::json&)> mActionHandlersMap;
-    osal::IPlatformPtr mPlatform{ nullptr };
+        std::unordered_map<std::string, bool (SystemActions::*)(const nlohmann::json&)> mActionHandlersMap;
+        os::IPlatformPtr mPlatform{ nullptr };
 
-};
+    };
+}

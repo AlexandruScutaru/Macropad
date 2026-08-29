@@ -5,8 +5,6 @@ import QtQuick.Controls.Basic
 Popup {
     id: popup
 
-    required property SettingsController controller
-
     parent: Overlay.overlay
     anchors.centerIn: parent
     width: parent.width * 0.7
@@ -43,9 +41,7 @@ Popup {
                     return;
                 }
 
-                setSource("/qt/qml/MacropadCompanion/SettingsView.qml", {
-                    controller: popup.controller
-                });
+                setSource("/qt/qml/MacropadCompanion/SettingsView.qml");
             }
         }
 

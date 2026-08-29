@@ -5,7 +5,7 @@
 #include <vector>
 
 
-namespace osal {
+namespace os {
     class IPlatform {
     public:
         ~IPlatform() = default;
