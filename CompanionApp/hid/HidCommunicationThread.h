@@ -3,7 +3,7 @@
 #include <QThread>
 
 extern "C" {
-#include <hidapi.h>
+    #include <hidapi.h>
 }
 
 

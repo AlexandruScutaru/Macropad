@@ -7,7 +7,7 @@
 
 struct PulseRequest;
 
-namespace osal {
+namespace os {
     class Audio {
     public:
         Audio() = default;

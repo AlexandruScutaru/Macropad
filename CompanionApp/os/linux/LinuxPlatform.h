@@ -4,7 +4,7 @@
 #include "../IPlatform.h"
 
 
-namespace osal {
+namespace os {
     class LinuxPlatform: public IPlatform {
     public:
         LinuxPlatform();

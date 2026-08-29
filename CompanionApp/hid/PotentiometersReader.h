@@ -6,11 +6,11 @@
 #include <vector>
 
 extern "C" {
-#include <hidapi.h>
+    #include <hidapi.h>
 }
 
-class HidCommunicationThread;
 
+class HidCommunicationThread;
 
 class PotentiometersReader : public QObject {
     Q_OBJECT

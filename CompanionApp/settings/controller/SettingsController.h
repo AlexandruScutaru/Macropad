@@ -1,5 +1,7 @@
 #pragma once
 
+#include "app/context/IAppContext.h"
+#include "services/SettingsService.h"
 #include "../model/TabsListModel.h"
 #include "../model/ThemesListModel.h"
 
@@ -11,41 +13,41 @@ namespace settings {
     class SettingsController: public QObject {
         Q_OBJECT
         QML_ELEMENT
-        QML_UNCREATABLE("Not intended to be created from QML directly")
 
-        Q_PROPERTY(QString currentTheme READ currentTheme WRITE setCurrentTheme NOTIFY currentThemeChanged)
+        Q_PROPERTY(IAppContext* appContext WRITE setAppContext REQUIRED)
 
+        Q_PROPERTY(QString currentTheme READ currentTheme NOTIFY currentThemeChanged)
         Q_PROPERTY(TabsListModel* tabsListModel READ tabsListModel NOTIFY tabsListModelChanged)
         Q_PROPERTY(ThemesListModel* themesListModel READ themesListModel NOTIFY themesListModelChanged)
-
     public:
         explicit SettingsController(QObject* parent = nullptr);
         ~SettingsController();
 
-        Q_INVOKABLE void changeTheme(const QString& name);
-
         QString currentTheme();
-        void setCurrentTheme(const QString& name);
-
         TabsListModel* tabsListModel();
         ThemesListModel* themesListModel();
+        
+        Q_INVOKABLE void changeTheme(const QString& name);
+
+        void setAppContext(IAppContext* appContext);
 
     signals:
         void currentThemeChanged(const QString& name);
-
         void tabsListModelChanged(TabsListModel* model);
         void themesListModelChanged(ThemesListModel* model);
 
-        void changeThemeRequested(const QString& name);
+    private slots:
+        void onCurrentThemeChanged(const QString& name);
+        void onTabsListChanged(const QStringList& tabs);
+        void onThemesListChanged(const std::vector<ThemeEntry>& themes);
 
     private:
-        TabsListModel* createTabsListModel();
-        ThemesListModel* createThemesListModel();
-
         QString mCurrentTheme;
 
         TabsListModel* mTabsListModel{ nullptr };
         ThemesListModel* mThemesListModel{ nullptr };
+
+        QPointer<settings::SettingsService> mSettingsService{ nullptr };
 
     };
 }

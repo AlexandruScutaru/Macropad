@@ -5,15 +5,20 @@ import QtQuick.Layouts
 import QtQuick.Controls.Basic
 
 import Components
+import Macropad.AppContext 1.0
+
 
 Rectangle {
     id: settings
 
-    required property SettingsController controller
-
     property string currentSelection
 
     signal closeRequested
+
+    SettingsController {
+        id: controller
+        appContext: AppContext
+    }
 
     anchors.fill: parent
     anchors.margins: 0
@@ -49,7 +54,7 @@ Rectangle {
 
                 Repeater {
                     id: tabButtonsRepeater
-                    model: settings.controller.tabsListModel
+                    model: controller.tabsListModel
 
                     CTabButton {
                         Layout.fillWidth: true
@@ -67,7 +72,7 @@ Rectangle {
 
                             settings.currentSelection = name;
                             settingsStack.replace(url, {
-                                controller: settings.controller
+                                controller: controller
                             });
                         }
                     }
@@ -137,7 +142,7 @@ Rectangle {
                     settings.currentSelection = firstTabButton.name;
 
                     settingsStack.push(firstTabButton.url, {
-                        controller: settings.controller
+                        controller: controller
                     });
                 }
 

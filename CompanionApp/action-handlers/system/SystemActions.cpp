@@ -1,18 +1,15 @@
 #include "SystemActions.h"
-#include <os/IPlatform.h>
-#include "misc/Utils.h"
+#include "os/IPlatform.h"
+#include "helpers/String.h"
 
 #include <nlohmann/json.hpp>
 
-#include <iostream>
-
-
-using namespace action_handlers;
 
 static constexpr std::string HANDLER_ID = "system";
 
+using namespace action_handlers;
 
-SystemActions::SystemActions(osal::IPlatformPtr platform)
+SystemActions::SystemActions(os::IPlatformPtr platform)
     : mPlatform(platform)
 {
     assert(mPlatform && "NULL IPlatformPtr instance");
@@ -67,7 +64,7 @@ bool SystemActions::launch(const nlohmann::json& payload) {
     const auto& args = payload.value<std::string>("args", "");
     const auto& workingDir = payload.value<std::string>("wd", "");
 
-    return mPlatform->launch(appName, utils::split(args, ' '), workingDir);
+    return mPlatform->launch(appName, str::split(args, ' '), workingDir);
 }
 
 

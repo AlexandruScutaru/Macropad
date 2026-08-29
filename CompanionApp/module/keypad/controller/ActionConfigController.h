@@ -1,0 +1,57 @@
+#pragma once
+
+#include "app/context/IAppContext.h"
+#include "../model/ActionConfigListModel.h"
+#include "../service/KeypadTypes.h"
+
+#include <QObject>
+#include <QPointer>
+#include <QQmlEngine>
+
+
+class ActionConfigController: public QObject {
+    Q_OBJECT
+    QML_ELEMENT
+    
+    Q_PROPERTY(IAppContext* appContext WRITE setAppContext REQUIRED)
+
+    Q_PROPERTY(QString keyActionId READ keyActionId NOTIFY keyActionIdChanged)
+    Q_PROPERTY(QString keyActionDisplayName READ keyActionDisplayName NOTIFY keyActionDisplayNameChanged)
+    Q_PROPERTY(ActionConfigListModel* model READ model NOTIFY modelChanged)
+
+public:
+    explicit ActionConfigController(QObject* parent = nullptr);
+    ~ActionConfigController();
+
+    Q_INVOKABLE void optionChanged(const QString& name, const QVariant& value);
+
+    QString keyActionId();
+    QString keyActionDisplayName();
+    ActionConfigListModel* model();
+
+    void setAppContext(IAppContext* appContext);
+
+signals:
+    void keyActionIdChanged(const QString& id);
+    void keyActionDisplayNameChanged(const QString& displayName);
+    void modelChanged(ActionConfigListModel* model);
+    
+    //void configOptionChanged(int layer, int key, const QString& name, const QVariant& value);
+
+public slots:
+    // to be used only when the entire model needs to be updated as this function resets it
+    void onActionConfigChanged(int layer, int key, const Keypad::Action& action);
+    // to be used only when updating a single config option entry, in place update no reset
+    void onActionConfigOptionChanged(int layer, int key, const QString& name, const QVariant& value);
+
+private:
+    int mKeyActionLayer{ 0 };
+    int mKeyAction{ 0 };
+
+    QString mActionId;
+    QString mActionDisplayName;
+
+    QPointer<ActionConfigListModel> mActionConfigListModel{ nullptr };
+    QPointer<KeypadService> mKeypadService{ nullptr };
+
+};
