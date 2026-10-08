@@ -1,10 +1,10 @@
 target_sources(${TARGET_NAME} PRIVATE
     App.cpp
     App.h
-    AppSettings.cpp
-    AppSettings.h
-    CmdArgs.cpp
-    CmdArgs.h
+    ArgsParser.cpp
+    ArgsParser.h
+    Config.cpp
+    Config.h
 
     context/AppContext.cpp
     context/AppContext.h

@@ -6,7 +6,7 @@
 #include <vector>
 
 
-class AppSettings;
+class Config;
 
 namespace action_handlers {
     class IActionHandler;
@@ -16,10 +16,10 @@ namespace action_handlers {
 class AppContext: public IAppContext {
     Q_OBJECT
 public:
-    AppContext(AppSettings* appSettings, const AppConfig& config, QObject *parent = nullptr);
+    AppContext(Config* config, const CmdArgs& args, QObject *parent = nullptr);
     ~AppContext();
 
-    AppConfig getAppConfig() const override;
+    CmdArgs getCmdArgs() const override;
 
     settings::SettingsService* settingsService() override;
     hid::DeviceService* hidDeviceService() override;
@@ -28,7 +28,7 @@ public:
 private:
     void initActionHandlers();
 
-    AppConfig mConfig;
+    CmdArgs mArgs;
     std::vector<action_handlers::IActionHandlerPtr> mActionHandlers;
 
     settings::SettingsService* mSettingsService{ nullptr };

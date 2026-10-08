@@ -13,7 +13,7 @@ namespace settings {
         Q_OBJECT
         QML_ELEMENT
 
-        Q_PROPERTY(IAppContext* appContext WRITE setAppContext REQUIRED)
+        Q_PROPERTY(IAppContext* appContext READ appContext WRITE setAppContext REQUIRED)
 
         Q_PROPERTY(QSize windowSize READ windowSize NOTIFY windowSizeChanged)
         Q_PROPERTY(bool navBarExpanded READ navBarExpanded NOTIFY navBarExpandedChanged)
@@ -29,6 +29,7 @@ namespace settings {
 
         Q_INVOKABLE void connectToDevice();
 
+        IAppContext* appContext() const { return mAppContext; }
         void setAppContext(IAppContext* appContext);
 
     signals:
@@ -43,6 +44,7 @@ namespace settings {
         QSize mWindowSize;
         bool mNavBarExpanded{ false };
 
+        QPointer<IAppContext> mAppContext{ nullptr };
         QPointer<settings::SettingsService> mSettingsService{ nullptr };
         QPointer<hid::DeviceService> mHidDeviceService{ nullptr };
 

@@ -12,26 +12,26 @@ static constexpr auto THEMES_URI = ":/resources/themes.json";
 using namespace theme;
 
 
-Theme* Loader::Load(const QString& name) {
-    const auto theme = new Theme(name);
-
+void Loader::Load(const QString& name, Theme& theme) {
     const auto themesJson = LoadThemesJson(THEMES_URI);
     if (themesJson == std::nullopt) {
         qDebug() << "failed to load" << THEMES_URI;
-        return theme;
+        return;
     }
 
     const auto themesData = (*themesJson)["themes"];
     if (!themesData.isObject()) {
         qDebug() << "'themes' json property is not an object";
-        return theme;
+        return;
     }
 
     const auto themeData = themesData[name];
     if (!themeData.isObject()) {
         qDebug() << "theme '" << name << "' is not an object";
-        return theme;
+        return;
     }
+
+    theme.setName(name);
 
     if (const auto& text = themeData["text"]; text.isObject()) {
         SetColor(text, "primary", theme, &Theme::set_textPrimary);
@@ -71,8 +71,6 @@ Theme* Loader::Load(const QString& name) {
         SetColor(other, "error", theme, &Theme::set_error);
         SetColor(other, "border", theme, &Theme::set_border);
     }
-
-    return theme;
 }
 
 QStringList Loader::GetAvailableThemes() {
@@ -120,8 +118,8 @@ std::optional<QJsonObject> Loader::LoadThemesJson(const QString& filePath) {
 }
 
 
-void Loader::SetColor(const QJsonValue& json, const QString& name, Theme* theme, Loader::SetterFunc setter) {
+void Loader::SetColor(const QJsonValue& json, const QString& name, Theme& theme, Loader::SetterFunc setter) {
     if (const auto& color = json[name]; color.isString()) {
-        ((*theme).*setter)(color.toString());
+        (theme.*setter)(color.toString());
     }
 }

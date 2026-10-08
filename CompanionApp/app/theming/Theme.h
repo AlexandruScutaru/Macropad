@@ -9,8 +9,12 @@
 
 #define PROP_ACCESSOR(name) \
     public: \
-    QString name() { return m_ ## name; } \
-    void set_ ## name(const QString& color) { m_ ## name = color; emit name ## Changed(color); }
+    QString name() const { return m_ ## name; } \
+    void set_ ## name(const QString& color) { \
+        if (m_ ## name == color) return; \
+        m_ ## name = color; \
+        emit name ## Changed(color); \
+    }
 
 // Had to use 'Q_SIGNALS:' rather than 'signals:'
 // It seems using the 'signals' macro directly causes issues during pre-processor step
@@ -58,10 +62,8 @@ namespace theme {
         QString mName{ DEFAULT_THEME_NAME };
 
     public:
-        explicit Theme(const QString& name, QObject* parent = nullptr)
-            : mName(name)
-            , QObject(parent) {
-            qDebug() << "Theme::Theme(" << mName << ")";
+        explicit Theme(QObject* parent = nullptr) : QObject(parent) {
+            qDebug() << "Theme::Theme";
         }
 
         ~Theme() {
@@ -71,6 +73,7 @@ namespace theme {
         Q_INVOKABLE bool isDark() const { return mName == DEFAULT_THEME_NAME; }
 
         QString getName() const { return mName; }
+        void setName(const QString& name) { mName = name; }
 
     };
 }

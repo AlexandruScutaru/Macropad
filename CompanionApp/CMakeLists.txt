@@ -47,10 +47,10 @@ macro(append_qml_files)
 endmacro()
 
 add_subdirectory(app)
-add_subdirectory(action-handlers)
-add_subdirectory(module/keypad)
-add_subdirectory(module/sliders)
-add_subdirectory(settings)
+add_subdirectory(modules/keypad)
+add_subdirectory(modules/settings)
+add_subdirectory(modules/sliders)
+add_subdirectory(shared/actions)
 
 # adding qml files sources to the resource
 foreach(file_name ${QML_PLAIN_FILES})
@@ -70,25 +70,22 @@ qt_add_qml_module(${TARGET_NAME}
         ${QML_PLAIN_FILES}
 
     SOURCES
-        helpers/ListModel.cpp
-        helpers/ListModel.h
-        helpers/String.cpp
-        helpers/String.h
-        helpers/TaskRunner.h
+        shared/helpers/ListModel.cpp
+        shared/helpers/ListModel.h
+        shared/helpers/String.cpp
+        shared/helpers/String.h
+        shared/helpers/TaskRunner.h
 
-        hid/Device.cpp
-        hid/Device.h
-        hid/HidCommunicationThread.cpp
-        hid/HidCommunicationThread.h
-        hid/PotentiometersReader.cpp
-        hid/PotentiometersReader.h
+        shared/hid/Device.cpp
+        shared/hid/Device.h
+        shared/hid/HidCommunicationThread.cpp
+        shared/hid/HidCommunicationThread.h
+        shared/hid/HidDeviceService.cpp
+        shared/hid/HidDeviceService.h
+        shared/hid/PotentiometersReader.cpp
+        shared/hid/PotentiometersReader.h
 
-        services/HidDeviceService.cpp
-        services/HidDeviceService.h
-        services/SettingsService.cpp
-        services/SettingsService.h
-
-        os/IPlatform.h
+        shared/os/IPlatform.h
 )
 
 # unfortunately I have to add this to include path
@@ -98,12 +95,13 @@ target_include_directories(${TARGET_NAME} PUBLIC
     app/controller
     app/theming
 
-    module/keypad/controller
-    module/keypad/model
-    module/keypad/service
+    modules/keypad/controller
+    modules/keypad/model
+    modules/keypad/service
 
-    settings/controller
-    settings/model
+    modules/settings/controller
+    modules/settings/model
+    modules/settings/service
 )
 
 file(GLOB_RECURSE QML_SRC "*.qml")
@@ -151,7 +149,7 @@ include_directories(SYSTEM ${NLOHMANN_JSON_INCLUDE})
 
 # platform specific configurations
 if(WIN32)
-    add_subdirectory(os/windows)
+    add_subdirectory(shared/os/windows)
 
     set(HIDAPI_DIR "${CMAKE_SOURCE_DIR}/deps/windows/hidapi/cmake")
     find_package(HIDAPI REQUIRED)
@@ -173,7 +171,7 @@ if(WIN32)
 
     install(IMPORTED_RUNTIME_ARTIFACTS HIDAPI::hidapi)
 elseif (LINUX)
-    add_subdirectory(os/linux)
+    add_subdirectory(shared/os/linux)
 
     # on linux Qt6.9 needs WrapOpenGL (dnf install mesa-libGL-devel)
 

@@ -14,14 +14,14 @@ namespace theme {
     public:
         using SetterFunc = void (Theme::*)(const QString&);
 
-        static Theme* Load(const QString& name);
+        static void Load(const QString& name, Theme& theme);
         static QStringList GetAvailableThemes();
 
     private:
         Loader() {};
 
         static std::optional<QJsonObject> LoadThemesJson(const QString& filePath);
-        static void SetColor(const QJsonValue& json, const QString& name, Theme* theme, SetterFunc setter);
+        static void SetColor(const QJsonValue& json, const QString& name, Theme& theme, SetterFunc setter);
 
     };
 }
