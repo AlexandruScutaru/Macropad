@@ -7,7 +7,7 @@
 #include <QQmlApplicationEngine>
 
 
-class AppSettings;
+class Config;
 class TrayIcon;
 
 class App : public QApplication {
@@ -23,18 +23,15 @@ public slots:
     void onChangeThemeRequested(const QString& name);
 
 private:
-    AppConfig getConfig(int& argc, char** argv);
-    void initQmlEngine(const AppConfig& config);
+    CmdArgs parseCmdArgs(int& argc, char** argv);
+    void initQmlEngine(const CmdArgs& args);
     void initTrayIcon();
 
-    theme::Theme* getTheme();
-
+    theme::Theme mTheme;
     QQmlApplicationEngine mQmlEngine;
 
     TrayIcon* mTrayIcon{ nullptr };
     IAppContext* mAppContext{ nullptr };
-    QPointer<theme::Theme> mTheme{ nullptr };
-
 };
 
 #define APP (qobject_cast<App*>(qApp))

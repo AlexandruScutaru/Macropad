@@ -1,9 +1,9 @@
 #include "App.h"
 #include "Theme.h"
-#include "CmdArgs.h"
+#include "ArgsParser.h"
 #include "theming/ThemeLoader.h"
 #include "tray/TrayIcon.h"
-#include "app/AppSettings.h"
+#include "app/Config.h"
 #include "app/context/AppContext.h"
 
 #include <QDebug>
@@ -29,60 +29,48 @@ App::App(int &argc, char **argv)
     setOrganizationName("Macropad");
     setApplicationName("Companion");
 
-    auto config = getConfig(argc, argv);
-    mAppContext = new AppContext(new AppSettings(this), config, this);
+    auto args = parseCmdArgs(argc, argv);
+    mAppContext = new AppContext(new Config(this), args, this);
 
-    initQmlEngine(config);
+    initQmlEngine(args);
     initTrayIcon();
 }
 
 App::~App() {
     qDebug() << "App::~App";
-
-    if (mTheme) {
-        delete mTheme;
-        mTheme = nullptr;
-    }
 }
 
 
 void App::onChangeThemeRequested(const QString& name) {
-    if (mTheme && mTheme->getName() == name) {
+    if (mTheme.getName() == name) {
         return;
     }
 
-    if (mTheme) {
-        mTheme->deleteLater();
-    }
-
-    mTheme = QPointer(theme::Loader::Load(name));
-
-    mQmlEngine.rootContext()->setContextProperty("Theme", mTheme.data());
+    theme::Loader::Load(name, mTheme);
 }
 
-AppConfig App::getConfig(int& argc, char** argv) {
+CmdArgs App::parseCmdArgs(int& argc, char** argv) {
     bool isDebug = false;
 
 #ifndef NDEBUG
     isDebug = true;
 #endif
 
-    CmdArgs cmdArgs(argc, argv, {
+    ArgsParser args(argc, argv, {
         CMD_ARG_SKIP_PHYSICAL_DEVICE,
         CMD_ARG_PLAYGROUND
     });
 
-    const auto isPlayground = isDebug && cmdArgs.getFlag(CMD_ARG_PLAYGROUND);
+    const auto isPlayground = isDebug && args.getFlag(CMD_ARG_PLAYGROUND);
 
     return {
-        .isDebug = isDebug,
-        .isSkipPhysicalDevice = isPlayground || cmdArgs.getFlag(CMD_ARG_SKIP_PHYSICAL_DEVICE),
+        .isSkipPhysicalDevice = isPlayground || args.getFlag(CMD_ARG_SKIP_PHYSICAL_DEVICE),
         .isPlayground = isPlayground,
     };
 }
 
 
-void App::initQmlEngine(const AppConfig& config) {
+void App::initQmlEngine(const CmdArgs& args) {
     qmlRegisterSingletonInstance(
         "Macropad.AppContext",
         1, 0,
@@ -113,11 +101,11 @@ void App::initQmlEngine(const AppConfig& config) {
     );
 
     // TODO: maybe register this as a singleton so the QML side understands the type
-    mQmlEngine.rootContext()->setContextProperty("Theme", getTheme());
+    mQmlEngine.rootContext()->setContextProperty("Theme", &mTheme);
 
     // this should be removed
     // and a dedicated app should be created just for it
-    if (config.isPlayground) {
+    if (args.isPlayground) {
         mQmlEngine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Playground.qml"));
     } else {
         mQmlEngine.load(QStringLiteral(":/qt/qml/MacropadCompanion/Main.qml"));
@@ -130,12 +118,4 @@ void App::initTrayIcon() {
     QObject::connect(trayIcon, &TrayIcon::activated, this, &App::showWindowRequested);
     QObject::connect(trayIcon, &TrayIcon::showActionTriggered, this, &App::showWindowRequested);
     QObject::connect(trayIcon, &TrayIcon::quitActionTriggered, qApp, &App::quit);
-}
-
-theme::Theme* App::getTheme() {
-    if (!mTheme) {
-        mTheme = QPointer(theme::Loader::Load(theme::DEFAULT_THEME_NAME));
-    }
-
-    return mTheme.data();
 }

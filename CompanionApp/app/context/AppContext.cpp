@@ -1,28 +1,28 @@
 #include "AppContext.h"
-#include "app/AppSettings.h"
+#include "app/Config.h"
 #include "app/App.h"
-#include "module/keypad/service/KeypadService.h"
-#include "services/HidDeviceService.h"
-#include "services/SettingsService.h"
-#include "action-handlers/system/SystemActions.h"
-#include "os/IPlatform.h"
+#include "modules/keypad/service/KeypadService.h"
+#include "shared/hid/HidDeviceService.h"
+#include "modules/settings/service/SettingsService.h"
+#include "shared/actions/system/SystemActions.h"
+#include "shared/os/IPlatform.h"
 
 #include <QDebug>
 
 
-AppContext::AppContext(AppSettings* appSettings, const AppConfig& config, QObject *parent)
+AppContext::AppContext(Config* config, const CmdArgs& args, QObject *parent)
     : IAppContext(parent)
-    , mConfig(config)
+    , mArgs(args)
 {
     qDebug() << "AppContext::AppContext";
 
-    mSettingsService = new settings::SettingsService(appSettings, this);
+    mSettingsService = new settings::SettingsService(config, this);
     QObject::connect(APP, &App::showWindowRequested, mSettingsService, &settings::SettingsService::showWindowRequested);
     QObject::connect(mSettingsService, &settings::SettingsService::changeThemeRequested, APP, &App::onChangeThemeRequested);
     APP->onChangeThemeRequested(mSettingsService->getCurrentTheme());
     
-    mHidDeviceService = new hid::DeviceService(config.isSkipPhysicalDevice, this);    
-    mKeypadService = new KeypadService(appSettings, this);
+    mHidDeviceService = new hid::DeviceService(args.isSkipPhysicalDevice, this);    
+    mKeypadService = new KeypadService(config, this);
 
     initActionHandlers();
 }
@@ -32,8 +32,8 @@ AppContext::~AppContext() {
 }
 
 
-AppConfig AppContext::getAppConfig() const {
-    return mConfig;
+CmdArgs AppContext::getCmdArgs() const {
+    return mArgs;
 }
 
 settings::SettingsService* AppContext::settingsService() {

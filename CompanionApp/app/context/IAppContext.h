@@ -3,8 +3,7 @@
 #include <QObject>
 
 
-struct AppConfig {
-    bool isDebug = false;
+struct CmdArgs {
     bool isSkipPhysicalDevice = false;
     bool isPlayground = false;
 };
@@ -24,8 +23,8 @@ class IAppContext: public QObject {
 public:
     explicit IAppContext(QObject* parent = nullptr) : QObject(parent) {}
     virtual ~IAppContext() = default;
-    
-    virtual AppConfig getAppConfig() const = 0;
+
+    virtual CmdArgs getCmdArgs() const = 0;
 
     virtual settings::SettingsService* settingsService() = 0;
     virtual hid::DeviceService* hidDeviceService() = 0;
