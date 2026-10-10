@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Virtual Device",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/${workspaceRootFolderName}",
+            "args": [],
+            "cwd": "${workspaceRoot}",
+            "console": "externalTerminal",
+            "sourceLanguages": [
+                "rust"
+            ],
+            "preLaunchTask": "cargo build"
+        }
+    ]
+}

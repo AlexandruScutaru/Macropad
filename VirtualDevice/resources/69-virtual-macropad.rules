@@ -1,0 +1,2 @@
+KERNEL=="uhid", SUBSYSTEM=="misc", MODE="0660", TAG+="uaccess"
+KERNEL=="hidraw*", SUBSYSTEM=="hidraw", KERNELS=="0003:FEED:B00B.*", MODE="0660", TAG+="uaccess"

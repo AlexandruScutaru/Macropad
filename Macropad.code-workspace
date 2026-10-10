@@ -11,13 +11,20 @@
         },
         {
             "path": "Firmware"
+        },
+        {
+            "path": "VirtualDevice"
         }
     ],
     "settings": {
         "files.exclude": {
             "Backend": true,
             "CompanionApp": true,
-            "Firmware": true
-        }
+            "Firmware": true,
+            "VirtualDevice": true
+        },
+        "rust-analyzer.linkedProjects": [
+            "./VirtualDevice/Cargo.toml"
+        ]
     }
 }

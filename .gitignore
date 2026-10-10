@@ -7,3 +7,8 @@ __pycache__/
 env/
 .env
 instance/
+
+target/
+**/*.rs.bk
+*.pdb
+rustc-ice-*.txt
