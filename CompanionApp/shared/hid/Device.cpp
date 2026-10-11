@@ -4,10 +4,13 @@
 #include <QtConcurrent>
 
 #include <string>
+#include <vector>
 
 extern "C" {
 #include <hidapi.h>
 }
+
+static constexpr size_t BUFFER_SIZE = 32;
 
 
 using namespace hid;
@@ -90,6 +93,24 @@ void Device::connect(int vid, int pid, int usagePage, int usageId) {
     }, pid, vid, usagePage, usageId);
 
     mDeviceOpenFutureWatcher->setFuture(mDeviceOpenFuture);
+}
+
+ReadResult Device::read() {
+    unsigned char buffer[BUFFER_SIZE]{ 0 };
+    auto bytesRead = hid_read_timeout(mDevice, buffer, BUFFER_SIZE, 50);
+
+    if (bytesRead < 0) {
+        return ReadResult{ .data = {}, .error = true };
+    }
+
+    if (bytesRead > 0) {
+        return ReadResult{
+            .data = std::vector<unsigned char>(buffer, buffer + BUFFER_SIZE),
+            .error = false
+        };
+    }
+
+    return ReadResult{ .data = {}, .error = false };
 }
 
 QString Device::GetHidError() {

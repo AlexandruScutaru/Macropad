@@ -24,6 +24,8 @@ AppContext::AppContext(Config* config, const CmdArgs& args, QObject *parent)
     mHidDeviceService = new hid::DeviceService(args.isSkipPhysicalDevice, this);    
     mKeypadService = new KeypadService(config, this);
 
+    QObject:connect(mHidDeviceService, &hid::DeviceService::keyPressed, mKeypadService, &KeypadService::onKeyTriggered);
+
     initActionHandlers();
 }
 

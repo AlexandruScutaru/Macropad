@@ -10,6 +10,12 @@ struct hid_device_;
 typedef struct hid_device_ hid_device;
 
 namespace hid {
+    // maybe move to a newer standard std::expected
+    struct ReadResult {
+        std::vector<unsigned char> data;
+        bool error{ false };
+    };
+
     class Device : public QObject {
         Q_OBJECT
     public:
@@ -17,6 +23,9 @@ namespace hid {
         ~Device();
 
         void connect(int vid, int pid, int usagePage, int usageId);
+
+        // call is blocking, suitable to be called from a dedicated thread
+        ReadResult read();
 
     signals:
         void deviceConnected();

@@ -82,8 +82,6 @@ qt_add_qml_module(${TARGET_NAME}
         shared/hid/HidCommunicationThread.h
         shared/hid/HidDeviceService.cpp
         shared/hid/HidDeviceService.h
-        shared/hid/PotentiometersReader.cpp
-        shared/hid/PotentiometersReader.h
 
         shared/os/IPlatform.h
 )

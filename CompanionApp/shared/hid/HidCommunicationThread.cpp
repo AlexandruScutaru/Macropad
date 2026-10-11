@@ -1,9 +1,12 @@
 #include "HidCommunicationThread.h"
+#include "Device.h"
 
 #include <QDebug>
 
 
-HidCommunicationThread::HidCommunicationThread(hid_device* device, QObject* parent)
+using namespace hid;
+
+HidCommunicationThread::HidCommunicationThread(Device* device, QObject* parent)
     : QThread(parent)
     , mDevice(device)
 {
@@ -17,17 +20,15 @@ HidCommunicationThread::~HidCommunicationThread() {
 
 void HidCommunicationThread::run() {
     while (!isInterruptionRequested()) {
-        std::memset(mBuffer, 0, BUFFER_LENGTH);
-        auto res = hid_read_timeout(mDevice, mBuffer, BUFFER_LENGTH, 50);
+        auto result = mDevice->read();
 
-        if (res < 0) {
+        if (result.error) {
             emit readError();
             return;
         }
 
-        if (res > 0) {
-            auto data = std::vector<unsigned char>(mBuffer, mBuffer + BUFFER_LENGTH);
-            emit messageReceived(data);
+        if (result.data.size() > 0) {
+            emit messageReceived(result.data);
         }
     }
 }
