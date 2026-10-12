@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Types.h"
+
 #include <QObject>
 #include <QFuture>
 #include <QFutureWatcher>
@@ -9,12 +11,9 @@
 struct hid_device_;
 typedef struct hid_device_ hid_device;
 
+
 namespace hid {
-    // maybe move to a newer standard std::expected
-    struct ReadResult {
-        std::vector<unsigned char> data;
-        bool error{ false };
-    };
+    inline constexpr size_t BUFFER_SIZE = 32;
 
     class Device : public QObject {
         Q_OBJECT

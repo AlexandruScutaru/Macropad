@@ -282,6 +282,12 @@ void KeypadService::saveProfile() {
     }
 }
 
+void KeypadService::handleKeypress(const std::vector<unsigned char>& data) {
+    if (data[0] == 1) {
+        onKeyTriggered(data[1], data[2]);
+    }
+}
+
 Keypad::AvailableActions KeypadService::getAvailableActions() const {
     return mAvailableActions;
 }

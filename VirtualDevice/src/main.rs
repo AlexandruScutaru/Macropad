@@ -27,8 +27,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         let (keep_running, actions) = ui.poll_input().await?;
         for action in actions {
             match action {
-                UiAction::KeypadButton { row, col } => {
-                    hid.send_button(row, col).await?;
+                UiAction::KeypadButton { layer, key } => {
+                    hid.send_button(layer, key).await?;
                 }
                 UiAction::EncoderRotated { direction } => {
                     hid.send_encoder_rotation(direction).await?;

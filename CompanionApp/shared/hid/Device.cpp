@@ -10,8 +10,6 @@ extern "C" {
 #include <hidapi.h>
 }
 
-static constexpr size_t BUFFER_SIZE = 32;
-
 
 using namespace hid;
 
@@ -96,21 +94,21 @@ void Device::connect(int vid, int pid, int usagePage, int usageId) {
 }
 
 ReadResult Device::read() {
-    unsigned char buffer[BUFFER_SIZE]{ 0 };
+    unsigned char buffer[BUFFER_SIZE+1]{ 0 };
     auto bytesRead = hid_read_timeout(mDevice, buffer, BUFFER_SIZE, 50);
 
     if (bytesRead < 0) {
-        return ReadResult{ .data = {}, .error = true };
+        return ReadResult{ .message = {}, .error = true };
     }
 
     if (bytesRead > 0) {
         return ReadResult{
-            .data = std::vector<unsigned char>(buffer, buffer + BUFFER_SIZE),
+            .message = std::vector<unsigned char>(buffer, buffer + BUFFER_SIZE),
             .error = false
         };
     }
 
-    return ReadResult{ .data = {}, .error = false };
+    return ReadResult{ .message = {}, .error = false };
 }
 
 QString Device::GetHidError() {

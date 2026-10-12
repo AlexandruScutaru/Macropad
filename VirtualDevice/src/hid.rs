@@ -193,11 +193,11 @@ impl AsyncUhidDevice {
         ))
     }
 
-    pub async fn send_button(&self, row: u8, col: u8) -> tokio::io::Result<()> {
+    pub async fn send_button(&self, layer: u8, key: u8) -> tokio::io::Result<()> {
         let mut report = [0; REPORT_SIZE];
         report[0] = BUTTON_REPORT;
-        report[1] = row;
-        report[2] = col;
+        report[1] = layer;
+        report[2] = key;
         self.send_vendor_report(&report).await
     }
 

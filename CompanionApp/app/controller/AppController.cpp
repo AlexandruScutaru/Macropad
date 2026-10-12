@@ -1,6 +1,6 @@
 #include "AppController.h"
 #include "modules/settings/service/SettingsService.h"
-#include "shared/hid/HidDeviceService.h"
+#include "shared/hid/DeviceService.h"
 
 #include <QDebug>
 #include <QVariantMap>
@@ -67,7 +67,7 @@ void AppController::setAppContext(IAppContext* appContext) {
     emit navBarExpandedChanged(mNavBarExpanded);
 
     mHidDeviceService = mAppContext->hidDeviceService();
-    assert(mHidDeviceService && "HidDeviceService is null");
+    assert(mHidDeviceService && "DeviceService is null");
 
     QObject::connect(mHidDeviceService, &hid::DeviceService::deviceConnected, this, &AppController::deviceConnected);
     QObject::connect(mHidDeviceService, &hid::DeviceService::deviceNotFound, this, &AppController::deviceNotFound);

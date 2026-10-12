@@ -28,6 +28,7 @@ public:
     void registerHandler(const action_handlers::IActionHandlerPtr& handler);
     void loadSavedProfile();
     void saveProfile();
+    void handleKeypress(const std::vector<unsigned char>& data);
 
     Keypad::AvailableActions getAvailableActions() const;
     Keypad::Profile getCurrentProfile() const;

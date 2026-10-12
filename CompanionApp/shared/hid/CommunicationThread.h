@@ -7,15 +7,15 @@
 
 
 namespace hid {
-    class HidCommunicationThread : public QThread {
+    class CommunicationThread : public QThread {
         Q_OBJECT
         void run() override;
     public:
-        explicit HidCommunicationThread(Device* device, QObject* parent = nullptr);
-        ~HidCommunicationThread();
+        explicit CommunicationThread(Device* device, QObject* parent = nullptr);
+        ~CommunicationThread();
 
     signals:
-        void messageReceived(const std::vector<unsigned char>& data);
+        void messageReceived(const Message& message);
         void readError();
 
     private:

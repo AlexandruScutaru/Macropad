@@ -50,7 +50,7 @@ pub struct Ui {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum UiAction {
-    KeypadButton { row: u8, col: u8 },
+    KeypadButton { layer: u8, key: u8 },
     EncoderRotated { direction: bool },
     SlidersEnabledChanged { enabled: bool },
     SliderChanged { index: usize, value: u8 },
@@ -396,7 +396,7 @@ impl Ui {
                 KeyCode::Enter if self.focus == Focus::Keypad => {
                     let row = self.selected_row as u8;
                     let col = self.selected_col as u8;
-                    actions.push(UiAction::KeypadButton { row, col });
+                    actions.push(UiAction::KeypadButton { layer: 0, key: row * 3 + col });
                     self.status_msg =
                         format!("Key ({}, {}) pressed", self.selected_row, self.selected_col);
                 }
@@ -467,7 +467,7 @@ impl Ui {
                         self.drag_state.is_dragging_encoder = false;
                     } else {
                         if let Some((row, col)) = self.select_cell_at(x, y, "clicked") {
-                            actions.push(UiAction::KeypadButton { row, col });
+                            actions.push(UiAction::KeypadButton { layer: 0, key: row * 3 + col });
                         }
                     }
                 }

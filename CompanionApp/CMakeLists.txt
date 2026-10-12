@@ -47,10 +47,13 @@ macro(append_qml_files)
 endmacro()
 
 add_subdirectory(app)
+
 add_subdirectory(modules/keypad)
 add_subdirectory(modules/settings)
 add_subdirectory(modules/sliders)
+
 add_subdirectory(shared/actions)
+add_subdirectory(shared/hid)
 
 # adding qml files sources to the resource
 foreach(file_name ${QML_PLAIN_FILES})
@@ -75,13 +78,6 @@ qt_add_qml_module(${TARGET_NAME}
         shared/helpers/String.cpp
         shared/helpers/String.h
         shared/helpers/TaskRunner.h
-
-        shared/hid/Device.cpp
-        shared/hid/Device.h
-        shared/hid/HidCommunicationThread.cpp
-        shared/hid/HidCommunicationThread.h
-        shared/hid/HidDeviceService.cpp
-        shared/hid/HidDeviceService.h
 
         shared/os/IPlatform.h
 )

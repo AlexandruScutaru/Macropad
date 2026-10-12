@@ -2,7 +2,7 @@
 #include "app/Config.h"
 #include "app/App.h"
 #include "modules/keypad/service/KeypadService.h"
-#include "shared/hid/HidDeviceService.h"
+#include "shared/hid/DeviceService.h"
 #include "modules/settings/service/SettingsService.h"
 #include "shared/actions/system/SystemActions.h"
 #include "shared/os/IPlatform.h"
@@ -20,11 +20,13 @@ AppContext::AppContext(Config* config, const CmdArgs& args, QObject *parent)
     QObject::connect(APP, &App::showWindowRequested, mSettingsService, &settings::SettingsService::showWindowRequested);
     QObject::connect(mSettingsService, &settings::SettingsService::changeThemeRequested, APP, &App::onChangeThemeRequested);
     APP->onChangeThemeRequested(mSettingsService->getCurrentTheme());
-    
-    mHidDeviceService = new hid::DeviceService(args.isSkipPhysicalDevice, this);    
+
+    mHidDeviceService = new hid::DeviceService(args.isSkipPhysicalDevice, this);
     mKeypadService = new KeypadService(config, this);
 
-    QObject:connect(mHidDeviceService, &hid::DeviceService::keyPressed, mKeypadService, &KeypadService::onKeyTriggered);
+    mHidDeviceService->registerMessageHandler(hid::MessageType::KeyPress, [service = QPointer(mKeypadService)](auto& message){
+        if (service) service->handleKeypress(message);
+    });
 
     initActionHandlers();
 }
@@ -44,7 +46,7 @@ settings::SettingsService* AppContext::settingsService() {
 }
 
 hid::DeviceService* AppContext::hidDeviceService() {
-    assert(mHidDeviceService && "HidDeviceService is null");
+    assert(mHidDeviceService && "DeviceService is null");
     return mHidDeviceService;
 }
 
@@ -52,7 +54,6 @@ KeypadService* AppContext::keypadService() {
     assert(mKeypadService && "KeypadService is null");
     return mKeypadService;
 }
-
 
 void AppContext::initActionHandlers() {
     auto platform = os::CreatePlatform();

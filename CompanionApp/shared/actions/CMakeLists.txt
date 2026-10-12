@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 3.19)
-
 target_sources(${TARGET_NAME} PRIVATE
     ActionTypes.h
     IActionHandler.h
