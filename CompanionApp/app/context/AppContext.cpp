@@ -24,11 +24,8 @@ AppContext::AppContext(Config* config, const CmdArgs& args, QObject *parent)
     mHidDeviceService = new hid::DeviceService(args.isSkipPhysicalDevice, this);
     mKeypadService = new KeypadService(config, this);
 
-    mHidDeviceService->registerMessageHandler(hid::MessageType::KeyPress, [service = QPointer(mKeypadService)](auto& message){
-        if (service) service->handleKeypress(message);
-    });
-
     initActionHandlers();
+    initMessageHandlers();
 }
 
 AppContext::~AppContext() {
@@ -63,4 +60,10 @@ void AppContext::initActionHandlers() {
     for (const auto& handler: mActionHandlers) {
         mKeypadService->registerHandler(handler);
     }
+}
+
+void AppContext::initMessageHandlers() {
+    mHidDeviceService->registerMessageHandler(hid::MessageType::KeyPress, [service = QPointer(mKeypadService)](auto& message){
+        if (service) service->handleKeypress(message);
+    });
 }

@@ -13,11 +13,6 @@ FocusScope {
 
     required property AppController controller
 
-    enum View {
-        Keypad = 0,
-        Sliders = 1
-    }
-
     activeFocusOnTab: true
 
     anchors.fill: parent
@@ -35,6 +30,27 @@ FocusScope {
         controller.connectToDevice();
     }
 
+    Connections {
+        target: appStack.controller
+
+        function onDeviceConnected() {
+            stack.replace(macropadView);
+        }
+
+        function onDeviceNotFound() {
+            stack.replace(notConnectedView);
+        }
+
+        function onOpenSettings() {
+            settingsPopup.visible = true;
+        }
+
+        function onSwitchTab(index, name) {
+            stack.currentItem.currentIndex = index;
+            navBar.currentSelection = name;
+        }
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 0
@@ -50,35 +66,16 @@ FocusScope {
             NavigationBar {
                 id: navBar
                 anchors.fill: navSidePanel
-                tabButtonsModel: navBarModel
+                model: appStack.controller.navBarModel
 
                 expanded: appStack.controller.navBarExpanded
 
                 onNavTabButtonClicked: (tabName) => {
-                    switch (tabName) {
-                        case navBarModel.keypadTabName:
-                            stack.currentItem.currentIndex = AppStack.View.Keypad;
-                            break;
-                        case navBarModel.slidersTabName:
-                            stack.currentItem.currentIndex = AppStack.View.Sliders;
-                            break;
-                        case navBarModel.settingsTabName:
-                            settingsPopup.visible = true;
-                            break;
-                        default:
-                            console.log("Uhm!? Oops...");
-                    }
+                    appStack.controller.navigationRequested(tabName);
                 }
 
                 onNavBarExpandedChanged: (expanded) => {
-                    appStack.controller.setNavBarExpanded(expanded);
-                }
-
-                NavigationBarModel {
-                    id: navBarModel
-
-                    keypadTabEnabled: false
-                    slidersTabEnabled: false
+                    appStack.controller.navBarExpanded = expanded;
                 }
             }
         }
@@ -110,22 +107,6 @@ FocusScope {
                 onCurrentItemChanged: {
                     if (stack.currentItem) {
                         stack.currentItem.forceActiveFocus();
-                    }
-                }
-
-                Connections {
-                    target: appStack.controller
-
-                    function onDeviceConnected() {
-                        navBarModel.keypadTabEnabled = true;
-                        navBarModel.slidersTabEnabled = true;
-                        stack.replace(macropadView);
-                    }
-
-                    function onDeviceNotFound() {
-                        navBarModel.keypadTabEnabled = false;
-                        navBarModel.slidersTabEnabled = false;
-                        stack.replace(notConnectedView);
                     }
                 }
 
@@ -171,7 +152,7 @@ FocusScope {
         StackLayout {
             id: stackLayout
 
-            currentIndex: AppStack.View.Keypad;
+            currentIndex: 0;
 
             KeypadView {}
             SlidersView {}

@@ -1,6 +1,7 @@
 #include "DeviceService.h"
 #include "Device.h"
 #include "CommunicationThread.h"
+#include "shared/hid/Types.h"
 
 #include <QDebug>
 
@@ -62,6 +63,13 @@ void DeviceService::onDeviceConnected() {
 
 void DeviceService::onMessageReceived(const Message& message) {
     auto messageType = static_cast<MessageType>(message[0]);
+
+    // this takes precedence, no other component would need to handle main device state changes
+    if (messageType == MessageType::SlidersModuleState) {
+        emit slidersModuleStateChanged(message[1] == 1);
+        return;
+    }
+
     if (const auto& it = mMessageHandlers.find(messageType); it != mMessageHandlers.end()) {
         it->second(message);
     }

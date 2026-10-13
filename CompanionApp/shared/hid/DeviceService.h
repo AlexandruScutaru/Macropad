@@ -25,6 +25,7 @@ namespace hid {
     signals:
         void deviceConnected();
         void deviceNotFound();
+        void slidersModuleStateChanged(bool connected);
 
     private slots:
         void onDeviceConnected();

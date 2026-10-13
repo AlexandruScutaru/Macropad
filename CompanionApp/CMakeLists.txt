@@ -88,6 +88,7 @@ qt_add_qml_module(${TARGET_NAME}
 target_include_directories(${TARGET_NAME} PUBLIC
     app/controller
     app/theming
+    app/model
 
     modules/keypad/controller
     modules/keypad/model

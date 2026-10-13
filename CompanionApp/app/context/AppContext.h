@@ -27,6 +27,7 @@ public:
 
 private:
     void initActionHandlers();
+    void initMessageHandlers();
 
     CmdArgs mArgs;
     std::vector<action_handlers::IActionHandlerPtr> mActionHandlers;

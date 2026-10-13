@@ -62,8 +62,8 @@ private:
     int mLayerCount{ 0 };
     int mCurrentLayer{ 0 };
     QString mLayerColor{ "transparent" };
-    KeysListModel* mCurrentModel{ nullptr };
-
+    
+    QPointer<KeysListModel> mCurrentModel{ nullptr };
     QPointer<IAppContext> mAppContext{ nullptr };
     QPointer<KeypadService> mKeypadService{ nullptr };
 

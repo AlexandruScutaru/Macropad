@@ -12,7 +12,10 @@ target_sources(${TARGET_NAME} PRIVATE
 
     controller/AppController.cpp
     controller/AppController.h
-    
+
+    model/NavigationBarListModel.cpp
+    model/NavigationBarListModel.h
+
     theming/Theme.h
     theming/ThemeLoader.cpp
     theming/ThemeLoader.h
@@ -25,7 +28,6 @@ append_qml_files(
     view/AppStack.qml
     view/Main.qml
     view/NavigationBar.qml
-    view/NavigationBarModel.qml
     view/NotConnectedView.qml
     view/Playground.qml
 )

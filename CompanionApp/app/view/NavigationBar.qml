@@ -16,25 +16,11 @@ Item {
     readonly property int collapsed_width: 48
     readonly property int margin: 8
 
-    property ListModel tabButtonsModel
+    required property var model
     property string currentSelection
     property bool expanded: true
 
     implicitWidth: expanded ? expanded_width : collapsed_width
-
-    Component.onCompleted: {
-        if (tabButtonsModel.count == 0) {
-            return;
-        }
-
-        const tab = tabButtonsModel.get(0);
-        if (!tab.tabEnabled) {
-            return;
-        }
-
-        navBar.currentSelection = tab.name;
-        navBar.navTabButtonClicked(tab.name);
-    }
 
     PropertyAnimation {
         id: expandAnimation
@@ -73,7 +59,7 @@ Item {
 
         Repeater {
             id: tabButtonsRepeater
-            model: navBar.tabButtonsModel
+            model: navBar.model
             delegate: chooser
 
             DelegateChooser {
@@ -91,16 +77,17 @@ Item {
 
         CTabButton {
             required property string name
+            required property string displayName
+            required property string iconSource
             required property bool tabEnabled
             required property bool tabCheckable
-            required property string iconSource
             required property int animation
 
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
 
-            label: name
-            toolTipText: name
+            label: displayName
+            toolTipText: displayName
             iconName: iconSource
             checked: tabCheckable && name === navBar.currentSelection
             expanded: !expandAnimation.running && navBar.expanded
@@ -109,9 +96,10 @@ Item {
 
             onButtonClicked: {
                 if (tabCheckable) {
-                    navBar.currentSelection = label;
+                    navBar.currentSelection = name;
                 }
-                navBar.navTabButtonClicked(label);
+
+                navBar.navTabButtonClicked(name);
             }
         }
     }
