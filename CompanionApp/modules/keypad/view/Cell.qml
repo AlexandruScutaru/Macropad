@@ -1,10 +1,8 @@
 import QtQuick
 import QtQuick.Controls.Basic
 
-import Components
-
 Control {
-    id: key
+    id: cell
 
     activeFocusOnTab: false
     focus: false
@@ -13,15 +11,15 @@ Control {
     // only when user explicitly enters the grid via enter/return press
     // focusPolicy: Qt.StrongFocus
 
-    property bool isRound: false
+    required property int cellIndex
+
     property bool selected: false
     property bool dragHover: false
-
-    property string actionId: ""
-    property string actionDisplayName: ""
-    property string actionIconName: ""
-
     property string droppedActionId: ""
+    property int navigationColumns: 1
+    property var navigationItems: null
+
+    property alias isHovered: mouseArea.containsMouse
 
     signal actionAssigned(actionId: string)
     signal clicked
@@ -30,41 +28,23 @@ Control {
     implicitWidth: 64
     implicitHeight: 64
 
+    KeyNavigation.left: !navigationItems || cellIndex % navigationColumns === 0 ? null : navigationItems.itemAt(cellIndex - 1)
+    KeyNavigation.right: !navigationItems || cellIndex % navigationColumns === navigationColumns - 1 ? null : navigationItems.itemAt(cellIndex + 1)
+    KeyNavigation.up: !navigationItems || cellIndex < navigationColumns ? null : navigationItems.itemAt(cellIndex - navigationColumns)
+    KeyNavigation.down: !navigationItems || cellIndex + navigationColumns >= navigationItems.count ? null : navigationItems.itemAt(cellIndex + navigationColumns)
+
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Space) {
-            key.clicked();
+            cell.clicked();
             event.accepted = true;
         } else if (selected && (event.key === Qt.Key_Return || event.key === Qt.Key_Enter)) {
-            key.doubleClicked();
+            cell.doubleClicked();
             event.accepted = true;
         }
     }
 
     contentItem: Item {
         anchors.fill: parent
-
-        CIcon {
-            anchors.centerIn: parent
-            iconSize: key.width * 0.6
-
-            source: key.actionIconName.length ? "qrc:///resources/icons/%1".arg(key.actionIconName) : ""
-            color: key.getTextColor()
-            visible: key.actionId.length >= 0
-        }
-    }
-
-    background: Rectangle {
-        id: backgroundRect
-        color: key.getBgColor()
-        border.color: key.getBorderColor()
-        border.width: 2
-        radius: key.isRound ? key.width / 2 : 8
-    }
-
-    CFocusOutline {
-        target: key
-        anchors.fill: parent
-        radius: key.isRound ? key.width / 2 : 8
     }
 
     MouseArea {
@@ -75,16 +55,16 @@ Control {
         acceptedButtons: Qt.LeftButton
 
         onExited: {
-            key.dragHover = false;
+            cell.dragHover = false;
         }
 
         onClicked: {
-            key.forceActiveFocus();
-            key.clicked();
+            cell.forceActiveFocus();
+            cell.clicked();
         }
 
         onDoubleClicked: {
-            key.doubleClicked();
+            cell.doubleClicked();
         }
     }
 
@@ -93,27 +73,20 @@ Control {
 
         keys: ["actionItem"]
 
-        onEntered: (drag) => {
-            key.dragHover = true;
+        onEntered: {
+            cell.dragHover = true;
         }
 
-        onExited: () => {
-            key.dragHover = false;
+        onExited: {
+            cell.dragHover = false;
         }
 
         onDropped: (drag) => {
-            if (key.parseDroppedData(drag.text)) {
-                key.dragHover = false;
-                key.actionAssigned(key.droppedActionId);
+            if (cell.parseDroppedData(drag.text)) {
+                cell.dragHover = false;
+                cell.actionAssigned(cell.droppedActionId);
             }
         }
-    }
-
-    ToolTip {
-        id: tooltip
-        text: key.actionDisplayName
-        visible: mouseArea.containsMouse && key.actionId >= 0 && key.actionDisplayName.length > 0
-        delay: 600
     }
 
     function parseDroppedData(data: string): bool {
@@ -145,7 +118,7 @@ Control {
     }
 
     function getTextColor() {
-        if (mouseArea.containsMouse || key.selected) return Theme.textPrimary;
+        if (mouseArea.containsMouse || selected) return Theme.textPrimary;
         return Theme.textSecondary;
     }
 }

@@ -23,7 +23,9 @@ target_sources(${TARGET_NAME} PRIVATE
 append_qml_files(
     view/KeypadView.qml
     view/ActionsList.qml
-    view/Key.qml
+    view/Cell.qml
+    view/CellButton.qml
+    view/CellEncoder.qml
     view/KeyConfig.qml
     view/KeypadLayers.qml
     view/KeysGrid.qml

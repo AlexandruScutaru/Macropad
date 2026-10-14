@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <qobject.h>
 
+static constexpr auto ENCODER_INDEX = 0;
+static constexpr auto ENCODER_KEY_TYPE = "encoder";
+static constexpr auto BUTTON_KEY_TYPE = "button";
 
 KeypadController::KeypadController(QObject* parent)
     : QObject(parent)
@@ -108,7 +111,7 @@ void KeypadController::onProfileChanged(const Keypad::Profile& profile) {
 
 void KeypadController::onActionAssigned(int layer, int key, const Keypad::Action& action) {
     QMap<int, QVariant> keyRow;
-    keyRow[KeysListModel::Round] = key == 0;
+    keyRow[KeysListModel::Type] = getKeyType(key);
     keyRow[KeysListModel::ActionId] = action.id;
     keyRow[KeysListModel::ActionDisplayName] = action.displayName;
     keyRow[KeysListModel::ActionIcon] = action.iconName;
@@ -124,7 +127,7 @@ KeysListModel* KeypadController::createKeysListModels(const Keypad::Layer& layer
     for (int key = 0; key < layer.actions.size(); key++) {
         const auto& action = layer.actions[key];
         QMap<int, QVariant> keyRow;
-        keyRow[KeysListModel::Round] = key == 0;
+        keyRow[KeysListModel::Type] = getKeyType(key);
         keyRow[KeysListModel::ActionId] = action.id;
         keyRow[KeysListModel::ActionDisplayName] = action.displayName;
         keyRow[KeysListModel::ActionIcon] = action.iconName;
@@ -134,6 +137,14 @@ KeysListModel* KeypadController::createKeysListModels(const Keypad::Layer& layer
     keysListModel->setData(keysModel);
     
     return keysListModel;
+}
+
+QString KeypadController::getKeyType(int index) const {
+    if (index == ENCODER_INDEX) {
+        return ENCODER_KEY_TYPE;
+    }
+
+    return BUTTON_KEY_TYPE;
 }
 
 bool KeypadController::isIndexInBounds(int index) const {

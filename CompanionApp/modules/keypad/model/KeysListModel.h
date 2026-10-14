@@ -7,7 +7,7 @@ class KeysListModel : public ListModel {
     Q_OBJECT
 public:
     enum KeysRoles {
-        Round = Qt::UserRole + 1,
+        Type = Qt::UserRole + 1,
         ActionId,
         ActionDisplayName,
         ActionIcon

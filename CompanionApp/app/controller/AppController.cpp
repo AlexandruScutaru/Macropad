@@ -15,7 +15,6 @@ static constexpr auto KEYPAD_TAB_NAME = "keypad";
 static constexpr auto SLIDERS_TAB_NAME = "sliders";
 static constexpr auto SETTINGS_TAB_NAME = "settings";
 
-using namespace settings;
 
 enum Animation {
     None = 0,

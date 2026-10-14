@@ -16,7 +16,7 @@ KeysListModel::~KeysListModel() {
 
 QHash<int, QByteArray> KeysListModel::roleNames() const {
     QHash<int, QByteArray> roles;
-    roles[Round] = "keyIsRound";
+    roles[Type] = "type";
     roles[ActionId] = "keyActionId";
     roles[ActionDisplayName] = "keyActionDisplayName";
     roles[ActionIcon] = "keyActionIcon";

@@ -67,64 +67,14 @@ Control {
 
             Repeater {
                 id: keysRepeater
+                delegate: chooser
 
-                Key {
-                    id: keyCell
+                DelegateChooser {
+                    id: chooser
+                    role: "type"
 
-                    required property int index
-                    required property bool keyIsRound
-                    required property string keyActionId
-                    required property string keyActionDisplayName
-                    required property string keyActionIcon
-
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    Layout.row: Math.floor(index / gridLayout.columns)
-                    Layout.column: index % gridLayout.columns
-
-                    KeyNavigation.left: index % gridLayout.columns === 0 ? null : keysRepeater.itemAt(index - 1)
-                    KeyNavigation.right: index % gridLayout.columns === gridLayout.columns - 1 ? null : keysRepeater.itemAt(index + 1)
-                    KeyNavigation.up: index < gridLayout.columns ? null : keysRepeater.itemAt(index - gridLayout.columns)
-                    KeyNavigation.down: index + gridLayout.columns >= keysRepeater.count ? null : keysRepeater.itemAt(index + gridLayout.columns)
-
-                    isRound: keyIsRound
-                    actionId: keyActionId
-                    actionDisplayName: keyActionDisplayName
-                    actionIconName: keyActionIcon
-
-                    selected: isKeySelected()
-
-                    onActionAssigned:(actionId) => {
-                        keys.actionAssigned(index, actionId);
-                        keys.selectedKey = -1;
-                        selectKey();
-                    }
-
-                    onClicked: selectKey()
-
-                    onDoubleClicked: {
-                        keys.keyTriggered(index);
-                    }
-
-                    Keys.onPressed: (event) => {
-                        if (event.key === Qt.Key_Escape) {
-                            keys.forceActiveFocus(Qt.BacktabFocusReason);
-                            event.accepted = true;
-                        }
-                    }
-
-                    function selectKey() {
-                        if (isKeySelected()) {
-                            return;
-                        }
-
-                        keys.selectedKey = index;
-                        keys.keySelected(index);
-                    }
-
-                    function isKeySelected(): bool {
-                        return keys.selectedKey === index;
-                    }
+                    DelegateChoice { roleValue: "button"; delegate: buttonCell }
+                    DelegateChoice { roleValue: "encoder"; delegate: encoderCell }
                 }
             }
         }
@@ -136,4 +86,120 @@ Control {
             radius: 8
         }
     }}
+
+    Component {
+        id: buttonCell
+
+        CellButton {
+            required property int index
+            required property string keyActionId
+            required property string keyActionDisplayName
+            required property string keyActionIcon
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.row: Math.floor(index / gridLayout.columns)
+            Layout.column: index % gridLayout.columns
+
+            cellIndex: index
+            navigationColumns: gridLayout.columns
+            navigationItems: keysRepeater
+
+            actionId: keyActionId
+            actionDisplayName: keyActionDisplayName
+            actionIconName: keyActionIcon
+
+            selected: isKeySelected()
+
+            onActionAssigned:(actionId) => {
+                keys.actionAssigned(index, actionId);
+                keys.selectedKey = -1;
+                selectKey();
+            }
+
+            onClicked: selectKey()
+
+            onDoubleClicked: {
+                keys.keyTriggered(index);
+            }
+
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Escape) {
+                    keys.forceActiveFocus(Qt.BacktabFocusReason);
+                    event.accepted = true;
+                }
+            }
+
+            function selectKey() {
+                if (isKeySelected()) {
+                    return;
+                }
+
+                keys.selectedKey = index;
+                keys.keySelected(index);
+            }
+
+            function isKeySelected(): bool {
+                return keys.selectedKey === index;
+            }
+        }
+    }
+
+    Component {
+        id: encoderCell
+
+        CellEncoder {
+            required property int index
+            required property string keyActionId
+            required property string keyActionDisplayName
+            required property string keyActionIcon
+
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            Layout.row: Math.floor(index / gridLayout.columns)
+            Layout.column: index % gridLayout.columns
+
+            cellIndex: index
+            navigationColumns: gridLayout.columns
+            navigationItems: keysRepeater
+
+            actionId: keyActionId
+            actionDisplayName: keyActionDisplayName
+            actionIconName: keyActionIcon
+
+            selected: isKeySelected()
+
+            onActionAssigned:(actionId) => {
+                keys.actionAssigned(index, actionId);
+                keys.selectedKey = -1;
+                selectKey();
+            }
+
+            onClicked: selectKey()
+
+            onDoubleClicked: {
+                keys.keyTriggered(index);
+            }
+
+            Keys.onPressed: (event) => {
+                if (event.key === Qt.Key_Escape) {
+                    keys.forceActiveFocus(Qt.BacktabFocusReason);
+                    event.accepted = true;
+                }
+            }
+
+            function selectKey() {
+                if (isKeySelected()) {
+                    return;
+                }
+
+                keys.selectedKey = index;
+                keys.keySelected(index);
+            }
+
+            function isKeySelected(): bool {
+                return keys.selectedKey === index;
+            }
+        }
+    }
 }

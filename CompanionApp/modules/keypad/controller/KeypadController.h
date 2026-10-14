@@ -53,6 +53,7 @@ public slots:
 
 private:
     KeysListModel* createKeysListModels(const Keypad::Layer& layer);
+    QString getKeyType(int index) const;
     bool isIndexInBounds(int index) const;
     void handleLayerChange(int newLayer);
 
