@@ -167,6 +167,7 @@ Control {
             actionDisplayName: keyActionDisplayName
             actionIconName: keyActionIcon
 
+            clickReleaseSelects: false
             selected: isKeySelected()
 
             onActionAssigned:(actionId) => {

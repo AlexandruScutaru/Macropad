@@ -13,13 +13,14 @@ Control {
 
     required property int cellIndex
 
+    property bool clickReleaseSelects: true
     property bool selected: false
     property bool dragHover: false
     property string droppedActionId: ""
     property int navigationColumns: 1
     property var navigationItems: null
 
-    property alias isHovered: mouseArea.containsMouse
+    property alias mouseArea: mouseAreaPriv
 
     signal actionAssigned(actionId: string)
     signal clicked
@@ -47,8 +48,10 @@ Control {
         anchors.fill: parent
     }
 
+    background: Item {}
+
     MouseArea {
-        id: mouseArea
+        id: mouseAreaPriv
         anchors.fill: parent
 
         hoverEnabled: true
@@ -59,8 +62,17 @@ Control {
         }
 
         onClicked: {
-            cell.forceActiveFocus();
-            cell.clicked();
+            if (cell.clickReleaseSelects) {
+                cell.forceActiveFocus();
+                cell.clicked();
+            }
+        }
+
+        onPressed: {
+            if (!cell.clickReleaseSelects) {
+                cell.forceActiveFocus();
+                cell.clicked();
+            }
         }
 
         onDoubleClicked: {
@@ -106,8 +118,8 @@ Control {
     }
 
     function getBgColor() {
-        if (mouseArea.pressed) return Theme.buttonSecondaryPressed;
-        if (mouseArea.containsMouse || dragHover) return Theme.buttonSecondaryHovered;
+        if (mouseAreaPriv.pressed) return Theme.buttonSecondaryPressed;
+        if (mouseAreaPriv.containsMouse || dragHover) return Theme.buttonSecondaryHovered;
         return Theme.backgroundTertiary;
     }
 
@@ -118,7 +130,7 @@ Control {
     }
 
     function getTextColor() {
-        if (mouseArea.containsMouse || selected) return Theme.textPrimary;
+        if (mouseAreaPriv.containsMouse || selected) return Theme.textPrimary;
         return Theme.textSecondary;
     }
 }

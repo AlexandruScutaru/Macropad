@@ -38,7 +38,7 @@ Cell {
 
     ToolTip {
         text: button.actionDisplayName
-        visible: button.isHovered && button.actionId >= 0 && button.actionDisplayName.length > 0
+        visible: button.mouseArea.containsMouse && button.actionId >= 0 && button.actionDisplayName.length > 0
         delay: 600
     }
 }
